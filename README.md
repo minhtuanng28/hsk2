@@ -1,6 +1,6 @@
 # Học tiếng Trung · 新HSK教程 HSK 1 + 2 + 3
 
-App học tiếng Trung theo bài (835 từ, 48 bài, 3 lộ trình HSK 1–3) chạy trên điện thoại và máy tính, dùng được cả khi không có mạng.
+App học tiếng Trung theo bài (1084 từ: 835 từ trong sách + 249 từ mở rộng chuẩn HSK 3.0, 48 bài, 3 lộ trình HSK 1–3) chạy trên điện thoại và máy tính, dùng được cả khi không có mạng.
 
 - Mở app: https://minhtuanng28.github.io/hsk2/ — trên iPhone: Safari → Chia sẻ → Thêm vào MH chính.
 - Flashcard ôn tập lặp lại ngắt quãng, trắc nghiệm, kế hoạch học mỗi ngày, chuỗi ngày, XP, huy hiệu.
@@ -10,4 +10,4 @@ App học tiếng Trung theo bài (835 từ, 48 bài, 3 lộ trình HSK 1–3) c
 - Đăng nhập Google / email (Firebase) để đồng bộ tiến độ giữa các thiết bị và lên bảng xếp hạng.
 - `widget-hsk.js` + `words.json` + `capy-*.png`: widget màn hình khoá và màn hình chính cho app Scriptable, có bé capybara.
 
-Ghi âm: bộ HSK của Yue Tan (Shtooka, CC BY-SA) qua audio-cmn. Phân tích chữ: Make Me a Hanzi. Bài khóa và hình capybara được soạn/vẽ riêng cho app.
+Từ mở rộng: danh sách từ chuẩn HSK 3.0 (bộ dữ liệu complete-hsk-vocabulary, MIT), xếp vào bài có chủ đề gần nhất. Ghi âm: bộ HSK của Yue Tan (Shtooka, CC BY-SA) qua audio-cmn. Phân tích chữ: Make Me a Hanzi. Bài khóa và hình capybara được soạn/vẽ riêng cho app.
