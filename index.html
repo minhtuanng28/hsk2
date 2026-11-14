@@ -201,6 +201,43 @@ nav.bottom .badge{position:absolute;top:4px;left:calc(50% + 6px);background:var(
 .lb{padding:6px 10px}.lbr{display:flex;align-items:center;gap:10px;padding:9px 6px;border-bottom:1px solid var(--line)}.lbr:last-child{border-bottom:0}
 .lbr.me{background:var(--primary-2);border-radius:10px}.lbn{width:28px;text-align:center;font-weight:800;color:var(--muted)}.lbr b{flex:0 1 auto;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.lbr small{color:var(--muted);font-size:12px;flex:1}.lbx{font-weight:800;color:var(--accent)}
 .onb input{width:100%;box-sizing:border-box}
+/* ---------- luyện gõ ---------- */
+.gm{position:fixed;inset:0;z-index:60;display:flex;flex-direction:column;height:100dvh;color:#fff;user-select:none;-webkit-user-select:none;touch-action:manipulation;
+  background:radial-gradient(1px 1px at 12% 18%,#fff8,transparent),radial-gradient(1px 1px at 72% 12%,#fff9,transparent),radial-gradient(1.5px 1.5px at 38% 42%,#fff7,transparent),radial-gradient(1px 1px at 88% 55%,#fff8,transparent),radial-gradient(1px 1px at 22% 70%,#fff6,transparent),radial-gradient(1.5px 1.5px at 60% 78%,#fff7,transparent),radial-gradient(circle at 20% 25%,#3a2468 0,transparent 45%),linear-gradient(170deg,#1a1436,#251548 55%,#141a3c)}
+.gm.hurt{animation:ghurt .35s}@keyframes ghurt{30%{box-shadow:inset 0 0 0 100vmax rgba(255,60,60,.28)}}
+.ghud{display:flex;justify-content:space-between;gap:6px;padding:calc(8px + env(safe-area-inset-top)) 10px 0;position:relative;z-index:3}
+.gpill{background:rgba(10,8,30,.55);border:1px solid rgba(255,255,255,.14);border-radius:999px;padding:6px 12px;font-weight:700;font-size:13.5px;white-space:nowrap}
+#ghearts{color:#FF6B8A;letter-spacing:2px}
+.gside{position:absolute;right:8px;top:calc(52px + env(safe-area-inset-top));display:flex;flex-direction:column;gap:8px;z-index:3}
+.gside button{width:38px;height:38px;border-radius:50%;background:rgba(10,8,30,.6);border:1px solid rgba(255,255,255,.16);color:#fff;font-size:14px;font-weight:700;opacity:.75}
+.gside button.on{background:#2E9D77;opacity:1}
+.gsky{position:relative;flex:1;min-height:0;overflow:hidden}
+.gline{position:absolute;left:0;right:0;bottom:0;height:2px;background:#FF5A5A;box-shadow:0 0 18px 6px rgba(255,90,90,.35)}
+.gi{position:absolute;left:0;top:0;text-align:center;padding:4px 8px;border-radius:12px;will-change:transform;white-space:nowrap}
+.gi.on{background:rgba(255,255,255,.1);box-shadow:0 0 0 1.5px #FFC83D}
+.gih{font-weight:800;line-height:1.15;text-shadow:0 0 14px rgba(140,160,255,.7)}
+.gip{font-size:15px;opacity:.85;letter-spacing:.3px;min-height:18px}.gip b{color:#FFC83D}
+.gi.shk,.gship.shk{animation:gshk .25s}@keyframes gshk{25%{margin-left:-6px}75%{margin-left:6px}}
+.gbeam{position:absolute;height:3px;transform-origin:0 50%;background:linear-gradient(90deg,#7FD4FF,#fff);border-radius:3px;box-shadow:0 0 10px #7FD4FF;animation:gfade .22s forwards;pointer-events:none}
+@keyframes gfade{to{opacity:0}}
+.gpt{position:absolute;width:7px;height:7px;border-radius:2px;animation:gpt .6s ease-out forwards;pointer-events:none}@keyframes gpt{to{transform:translate(var(--dx),var(--dy)) rotate(200deg) scale(.2);opacity:0}}
+.gmean{position:absolute;background:rgba(255,255,255,.96);color:#2B2118;border-radius:14px;padding:6px 12px;text-align:center;font-size:13px;box-shadow:0 6px 20px rgba(0,0,0,.35);animation:gmean 2.1s ease-out forwards;pointer-events:none;max-width:86%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.gmean b{font-size:17px}.gmean small{color:#8C7B6B}.gmean span{display:block;font-weight:700;font-size:14.5px;color:#5B4BC4;white-space:normal}
+@keyframes gmean{0%{transform:scale(.3);opacity:0}12%{transform:scale(1.12);opacity:1}20%{transform:scale(1)}75%{opacity:1;transform:translateY(-14px)}100%{opacity:0;transform:translateY(-34px)}}
+.gstage{position:absolute;left:50%;top:38%;transform:translateX(-50%);font-size:26px;font-weight:800;color:#FFC83D;text-shadow:0 0 20px rgba(255,200,61,.6);animation:gmean 1.5s forwards;pointer-events:none;white-space:nowrap}
+.gdock{position:relative;display:flex;flex-direction:column;align-items:center;margin-top:-34px;z-index:2;pointer-events:none}
+.gbuf{min-height:22px;font:700 17px ui-monospace,Menlo,monospace;letter-spacing:2px;color:#FFC83D;background:rgba(10,8,30,.55);border-radius:8px;padding:0 10px}.gbuf:empty{visibility:hidden}
+.gship{filter:drop-shadow(0 0 12px rgba(127,212,255,.7))}
+.gkb{padding:6px 3px calc(6px + env(safe-area-inset-bottom));background:rgba(8,6,24,.9);border-top:1px solid rgba(255,255,255,.1)}
+.gkr{display:flex;justify-content:center;gap:5px;margin-bottom:6px}.gkr:last-child{margin-bottom:0}
+.gkb button{flex:1 1 0;max-width:42px;height:44px;border-radius:8px;background:#3a3560;color:#fff;font-size:18px;font-weight:600;text-transform:lowercase;touch-action:manipulation}
+.gkb button.gkw{max-width:60px;flex:1.5 1 0;background:#2a2648}.gkb button.dn{background:#8C7BFF;transform:scale(1.08)}.gkb button.nx{box-shadow:inset 0 0 0 2px #FFC83D}
+.gm.paused .gsky{filter:blur(3px) brightness(.6)}
+.gover{position:absolute;inset:0;background:rgba(10,8,30,.78);z-index:5;align-items:center;justify-content:center;padding:16px;overflow:auto}
+.gcard{background:var(--card);color:var(--ink);border-radius:24px;padding:20px;width:min(420px,100%);text-align:center;max-height:100%;overflow:auto}
+.gcard h2{margin:4px 0}.gsc{font-size:44px;font-weight:800;color:var(--primary);line-height:1.1}
+.gmiss{text-align:left;margin-top:12px;border-top:1px dashed var(--line);padding-top:8px}.gmiss small{color:var(--muted)}.gmiss div{display:flex;gap:8px;align-items:center;padding:4px 0;font-size:14px}.gmiss i{color:var(--muted);font-size:12.5px}.gmiss span{margin-left:auto;text-align:right;color:var(--muted);font-size:13px}
+@media (min-width:900px){.gship .capy{width:84px !important;height:84px !important}.gdock{margin-top:-48px}.gi .gih{font-size:34px !important}.gip{font-size:18px}.gmean{font-size:15px}.gmean b{font-size:22px}.gmean span{font-size:17px}.gside{right:16px}}
 /* ---------- capybara ---------- */
 .capy{display:inline-block;line-height:0;flex:0 0 auto}.capy svg{width:100%;height:100%}
 .dash-top .capy.dm{position:absolute;right:14px;top:6px}
@@ -300,7 +337,7 @@ nav.bottom a.desk{display:none}
   .side.userbox{position:absolute;left:10px;right:10px;bottom:12px;border:1px solid var(--line);border-radius:16px;padding:10px 12px;font-size:13px}
   .toast{bottom:30px}
   header.top{display:none}
-  .tiles{grid-template-columns:repeat(6,1fr)}
+  .tiles{grid-template-columns:repeat(4,1fr)}
   .tile{min-height:150px}
   .cols{display:grid;grid-template-columns:1.7fr 1fr;gap:14px;align-items:start}
   .lessons{display:grid;grid-template-columns:1fr 1fr}
@@ -662,6 +699,7 @@ function mergeState(a, b){
   o.xpd = {}; for (const src of [a.xpd||{}, b.xpd||{}]) for (const [dv,x] of Object.entries(src)){ const y = o.xpd[dv] || (o.xpd[dv] = {t:0, d:{}}); y.t = Math.max(y.t, x.t||0); for (const [k,v] of Object.entries(x.d||{})) y.d[k] = Math.max(y.d[k]||0, v); }
   o.xp = Object.values(o.xpd).reduce((s,x)=>s+(x.t||0), 0);
   o.done = {}; for (const src of [a.done||{}, b.done||{}]) for (const [k,v] of Object.entries(src)){ const y = o.done[k] || (o.done[k] = {}); Object.entries(v).forEach(([f,val]) => { y[f] = (typeof val === 'object') ? Object.assign({}, y[f]||{}, val) : (y[f] || val); }); }
+  if (a.game || b.game){ o.game = Object.assign({}, (nb?a:b).game||{}, N.game||{}); o.game.best = Math.max((a.game||{}).best||0, (b.game||{}).best||0); }
   o.planDays = Math.max(a.planDays||0, b.planDays||0); o.perfect = a.perfect || b.perfect; o.onb = a.onb || b.onb;
   o.updated = Math.max(a.updated||0, b.updated||0);
   return o;
@@ -789,6 +827,134 @@ function lbCard(){
 const CAPY = (()=>{ try { return JSON.parse(document.getElementById('capy').textContent); } catch(e){ return {}; } })();
 function capy(p, sz, cls){ return `<span class="capy ${cls||''}" style="width:${sz}px;height:${sz}px">${CAPY[p]||CAPY.happy||''}</span>`; }
 function moodPose(){ const h = new Date().getHours(); if (h >= 22 || h < 6) return 'sleep'; const t = planTasks(); if (t.every(x=>x.ok)) return 'cheer'; if (streak() >= 7) return 'wow'; return ['orange','happy','book','tea','music','love'][new Date().getDate() % 6]; }
+
+/* ---------- trò chơi luyện gõ pinyin ---------- */
+let G = null;
+const GTOUCH = () => window.matchMedia && matchMedia('(pointer:coarse)').matches;
+function normPy(s){ return (s||'').toLowerCase().replace(/[üǖǘǚǜ]/g,'v').normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^a-z]/g,''); }
+function gOpt(){ if (!S.game) S.game = {deck:'cur', kind:'mix', hint:1, snd:1, best:0}; return S.game; }
+function gLessons(deck){ const b = bookOf(S.book), n = curN(); return deck === 'cur' ? [curL()] : deck === 'upto' ? b.lessons.filter(L=>L.n<=n) : b.lessons; }
+function gItems(deck, kind){
+  const seen = new Set(), out = [], ws = [];
+  if (deck === 'mine') ALL.forEach(w => { if (card(w.id)) ws.push(w); }); else gLessons(deck).forEach(L => lessonWords(L).forEach(w => ws.push(w)));
+  const add = (h, py, k, m, id) => { if (!k || seen.has(h)) return; seen.add(h); out.push({h, py, k, m, id}); };
+  ws.forEach(w => {
+    if (kind !== 'col') add(w.h, w.p, normPy(w.s.join('')), mv(w), w.id);
+    if (kind !== 'word') (w.col||[]).forEach(c => add(c[0], c[1].map(x=>x[1]).filter(Boolean).join(' '), normPy(c[1].map(x=>x[1]).join('')), c[2]));
+  });
+  return out;
+}
+function viewGameSetup(){
+  const o = gOpt(), n = gItems(o.deck, o.kind).length, mine = ALL.some(w=>card(w.id));
+  const decks = [['cur', tr('Bài đang học','Current lesson')], ['upto', tr('Từ bài 1 đến bài này','Lessons 1 to current')], ['all', tr('Cả lộ trình','Whole path')+' '+BOOKNAME[S.book]]].concat(mine ? [['mine', tr('Từ tôi đã học','Words I have learned')]] : []);
+  return header() + `<div class="narrow">
+  <div class="card" style="text-align:center;background:linear-gradient(160deg,#1b1640,#2a1a55);color:#fff;border:0">${capy('wow',96,'bob')}
+    <h2 style="margin:4px 0">${tr('Luyện gõ','Typing game')}</h2>
+    <p style="margin:0;opacity:.8;font-size:14.5px">${tr('Gõ pinyin của từ đang rơi để bắn hạ. Bắn trúng là nổ ra nghĩa của từ.','Type the pinyin of falling words to shoot them. Each hit bursts into its meaning.')}</p>
+    ${o.best ? `<div class="chip" style="margin-top:10px;background:rgba(255,255,255,.14);color:#fff">🏆 ${tr('Kỷ lục','Best')}: ${o.best}</div>` : ''}</div>
+  <div class="sec"><h2>${tr('Bộ từ','Deck')}</h2></div>
+  <div class="card">${decks.map(([k,l])=>`<button class="pick ${o.deck===k?'on':''}" data-gdeck="${k}" style="margin-top:6px;padding:10px 12px"><span><b>${l}</b></span></button>`).join('')}</div>
+  <div class="card set" style="margin-top:10px">
+    <div class="it" style="flex-wrap:wrap;gap:8px"><span>${tr('Nội dung','Content')}</span><div class="seg">${[['word',tr('Từ','Words')],['col',tr('Cụm từ','Phrases')],['mix',tr('Trộn cả hai','Both')]].map(([k,l])=>`<button class="${o.kind===k?'on':''}" data-gkind="${k}">${l}</button>`).join('')}</div></div>
+    <div class="it"><span>${tr('Hiện pinyin gợi ý','Show pinyin hint')}<br><small style="color:var(--muted)">${tr('Tắt để tự nhớ cách đọc — khó hơn, điểm ×1,5','Turn off to recall the reading yourself — harder, ×1.5 score')}</small></span><div class="seg"><button class="${o.hint?'on':''}" data-ghint="1">${tr('Bật','On')}</button><button class="${!o.hint?'on':''}" data-ghint="0">${tr('Tắt','Off')}</button></div></div>
+    <div class="it"><span>${tr('Đọc to khi bắn trúng','Say the word on hit')}</span><div class="seg"><button class="${o.snd?'on':''}" data-gsnd="1">${tr('Bật','On')}</button><button class="${!o.snd?'on':''}" data-gsnd="0">${tr('Tắt','Off')}</button></div></div>
+  </div>
+  <button class="btn" style="margin-top:14px;${n?'':'opacity:.4;pointer-events:none'}" data-gstart>▶ ${tr('Bắt đầu','Start')} · ${Math.min(n, 80)} ${tr('mục tiêu','targets')}</button>
+  <p style="color:var(--muted);font-size:13px;text-align:center;line-height:1.5">${tr('Gõ không cần dấu thanh, ü gõ là v. Từ ngắn rơi trước, dài dần theo từng mốc; tốc độ tự chỉnh theo tay bạn. Trên điện thoại có bàn phím riêng của trò chơi.','Type without tone marks; ü is typed as v. Short words come first and get longer each stage; speed adapts to you. On phones the game has its own keyboard.')}</p></div>`;
+}
+function gStart(){
+  const o = gOpt(), touch = GTOUCH();
+  let items = shuffle(gItems(o.deck, o.kind));
+  const cap = innerWidth < 500 ? 16 : 26; items = items.filter(x => x.k.length <= cap);
+  if (!items.length) return;
+  items = items.slice(0, 80).sort((a,b) => Math.floor(a.k.length/3) - Math.floor(b.k.length/3));
+  gExit(true);
+  const el = document.createElement('div'); el.className = 'gm'; el.id = 'gm';
+  el.innerHTML = `<div class="ghud"><span class="gpill" id="gscore">🏆 0</span><span class="gpill" id="gstage"></span><span class="gpill" id="ghearts"></span></div>
+    <div class="gside"><button data-gx title="${tr('Thoát','Exit')}">✕</button><button data-gpause id="gpbtn">❚❚</button><button data-ghtog id="ghbtn" class="${o.hint?'on':''}">拼</button><button data-gstog id="gsbtn" class="${o.snd?'on':''}">♪</button></div>
+    <div class="gsky" id="gsky"><div class="gline"></div></div>
+    <div class="gdock"><div class="gbuf" id="gbuf"></div><div class="gship" id="gship">${capy('happy',58)}</div></div>
+    ${touch ? `<div class="gkb" id="gkb">${['qwertyuiop','asdfghjkl','zxcvbnm'].map((r,i)=>`<div class="gkr">${[...r].map(c=>`<button data-gk="${c}">${c}</button>`).join('')}${i===2?'<button data-gk="back" class="gkw">⌫</button>':''}</div>`).join('')}</div>` : ''}
+    <div class="gover" id="gover" style="display:none"></div>`;
+  document.body.appendChild(el); document.body.style.overflow = 'hidden';
+  G = {el, sky: el.querySelector('#gsky'), q: items, total: items.length, act: [], tgt: null, pos: 0, score: 0, combo: 0, maxCombo: 0, hearts: 3, hits: 0, errs: 0, keys: 0, miss: [], fast: 0,
+       mul: 1, last: performance.now(), spawnAt: 0, paused: false, over: false, hint: !!o.hint, snd: !!o.snd, touch, raf: 0, uid: 0};
+  gHud(); G.raf = requestAnimationFrame(gTick);
+}
+function gHud(){ if (!G) return; const st = Math.min(Math.floor(G.hits/10)+1, Math.ceil(G.total/10)); $('#gscore').textContent = '🏆 ' + G.score + (G.combo >= 3 ? '  ×' + G.combo : ''); $('#gstage').textContent = '⚑ ' + tr('Mốc','Stage') + ' ' + st + '/' + Math.ceil(G.total/10) + ' · ' + G.hits + '/' + G.total; $('#ghearts').textContent = '❤'.repeat(G.hearts) + '♡'.repeat(3-G.hearts); }
+function gSpawn(now){
+  const it = G.q.shift(); if (!it) return; const W = G.sky.clientWidth, H = G.sky.clientHeight;
+  const e = document.createElement('div'); e.className = 'gi'; e.innerHTML = `<div class="zh gih" style="font-size:${it.h.length>5?20:it.h.length>3?24:30}px">${esc(it.h)}</div><div class="gip"></div>`;
+  G.sky.appendChild(e); const w = e.offsetWidth, h = e.offsetHeight;
+  let x = 8, best = -1; for (let t = 0; t < 8; t++){ const cx = 8 + Math.random() * Math.max(1, W - w - 62); const d = Math.min(...G.act.filter(a=>a.y < h*1.6).map(a=>Math.abs(a.x + a.w/2 - cx - w/2)), 9999); if (d > best){ best = d; x = cx; } }
+  const T = (G.hint ? 8.5 : 11) + it.k.length * (G.touch ? 0.75 : 0.5);
+  const a = {id: ++G.uid, it, e, x, y: -h, w, h, v: (H + h) / T}; G.act.push(a); gPaint(a); G.spawnAt = now;
+}
+function gPaint(a){ const on = G.tgt === a, k = a.it.k, p = on ? G.pos : 0; a.e.classList.toggle('on', on);
+  a.e.querySelector('.gip').innerHTML = G.hint ? (on ? `<b>${k.slice(0,p)}</b>${k.slice(p)}` : esc(a.it.py)) : (on ? `<b>${k.slice(0,p)}</b>${'·'.repeat(k.length-p)}` : '·'.repeat(Math.min(k.length, 12))); }
+function gTick(now){
+  if (!G || G.over) return; G.raf = requestAnimationFrame(gTick);
+  const dt = Math.min(0.05, (now - G.last) / 1000); G.last = now; if (G.paused) return;
+  const H = G.sky.clientHeight, st = Math.floor(G.hits/10), max = Math.min((G.touch ? 2 : 3) + Math.floor(st/2), G.touch ? 4 : 6);
+  if (G.q.length && G.act.length < max && (!G.act.length || now - G.spawnAt > 2600 / G.mul)) gSpawn(now);
+  for (const a of G.act.slice()){ a.y += a.v * G.mul * dt; a.e.style.transform = `translate(${a.x}px,${a.y}px)`;
+    if (a.y + a.h >= H - 2){ gRemove(a); G.hearts--; G.combo = 0; G.fast = 0; G.mul = Math.max(0.6, G.mul * 0.88); G.miss.push(a.it); if (!a.again){ a.it.again = 1; G.q.push(Object.assign({}, a.it)); G.total = Math.max(G.total, G.hits + G.act.length + G.q.length); }
+      G.el.classList.add('hurt'); setTimeout(()=>G && G.el.classList.remove('hurt'), 350); gHud(); if (G.hearts <= 0) return gEnd(false); } }
+  if (!G.q.length && !G.act.length) gEnd(true);
+}
+function gRemove(a){ const i = G.act.indexOf(a); if (i >= 0) G.act.splice(i, 1); if (G.tgt === a){ G.tgt = null; G.pos = 0; gBuf(); } a.e.remove(); }
+function gBuf(){ const b = $('#gbuf'); if (!b) return; b.textContent = G.tgt ? G.tgt.it.k.slice(0, G.pos) : ''; if (G.touch && G.hint){ const nx = G.tgt ? G.tgt.it.k[G.pos] : null; G.el.querySelectorAll('.gkb button.nx').forEach(k=>k.classList.remove('nx')); if (nx){ const k = G.el.querySelector('[data-gk="'+nx+'"]'); if (k) k.classList.add('nx'); } } }
+function gKey(ch){
+  if (!G || G.over || G.paused) return;
+  if (ch === 'back'){ if (G.tgt){ const a = G.tgt; G.tgt = null; G.pos = 0; gPaint(a); gBuf(); } return; }
+  G.keys++;
+  const ok = (a, i) => a.it.k[i] === ch || (a.it.k[i] === 'v' && ch === 'u');
+  if (!G.tgt){ const c = G.act.filter(a => ok(a, 0)).sort((a,b) => b.y - a.y)[0]; if (!c){ G.errs++; G.combo = 0; const s = $('#gship'); s.classList.remove('shk'); void s.offsetWidth; s.classList.add('shk'); gHud(); return; } G.tgt = c; G.pos = 1; }
+  else if (ok(G.tgt, G.pos)) G.pos++;
+  else { G.errs++; G.combo = 0; const e = G.tgt.e; e.classList.remove('shk'); void e.offsetWidth; e.classList.add('shk'); gHud(); return; }
+  const a = G.tgt; if (G.pos >= a.it.k.length) gHit(a); else { gPaint(a); gBuf(); }
+}
+function gHit(a){
+  const H = G.sky.clientHeight, cx = a.x + a.w/2, cy = Math.max(10, a.y + a.h/2), n = a.it.k.length;
+  G.combo++; G.maxCombo = Math.max(G.maxCombo, G.combo); G.hits++;
+  G.score += Math.round((10 + n*2 + Math.min(G.combo, 20)) * (G.hint ? 1 : 1.5));
+  if (a.y < H * 0.35){ if (++G.fast >= 3){ G.fast = 0; G.mul = Math.min(2.2, G.mul * 1.07); } } else G.fast = 0;
+  // tia bắn
+  const ship = $('#gship').getBoundingClientRect(), sk = G.sky.getBoundingClientRect(), sx = ship.left + ship.width/2 - sk.left, sy = ship.top - sk.top + 6;
+  const dx = cx - sx, dy = cy - sy, len = Math.hypot(dx, dy), bm = document.createElement('div'); bm.className = 'gbeam'; bm.style.cssText = `left:${sx}px;top:${sy}px;width:${len}px;transform:rotate(${Math.atan2(dy,dx)}rad)`; G.sky.appendChild(bm); setTimeout(()=>bm.remove(), 220);
+  // mảnh vỡ + nghĩa
+  const cols = ['#FFC83D','#FF7A66','#7FA7FF','#5DD68A','#fff'];
+  for (let i = 0; i < 12; i++){ const p = document.createElement('i'); p.className = 'gpt'; const an = Math.random()*6.283, d = 30 + Math.random()*60; p.style.cssText = `left:${cx}px;top:${cy}px;background:${cols[i%5]};--dx:${Math.cos(an)*d}px;--dy:${Math.sin(an)*d}px`; G.sky.appendChild(p); setTimeout(()=>p.remove(), 620); }
+  const m = document.createElement('div'); m.className = 'gmean'; m.innerHTML = `<b class="zh">${esc(a.it.h)}</b> <small>${esc(a.it.py)}</small><span>${esc(a.it.m)}</span>`; G.sky.appendChild(m);
+  const mw = m.offsetWidth; m.style.left = Math.max(6, Math.min(G.sky.clientWidth - mw - 6, cx - mw/2)) + 'px'; m.style.top = Math.max(4, cy - 20) + 'px'; setTimeout(()=>m.remove(), 2100);
+  if (G.snd) try { speak(a.it.h); } catch(e){}
+  gRemove(a); gBuf();
+  if (G.hits % 10 === 0 && (G.q.length || G.act.length)){ G.mul = Math.min(2.2, G.mul * 1.05); const t = document.createElement('div'); t.className = 'gstage'; t.textContent = '⚑ ' + tr('Mốc','Stage') + ' ' + (G.hits/10 + 1); G.sky.appendChild(t); setTimeout(()=>t.remove(), 1500); }
+  gHud();
+}
+function gEnd(win){
+  if (!G || G.over) return; G.over = true; cancelAnimationFrame(G.raf); const o = gOpt();
+  const acc = G.keys ? Math.round((G.keys - G.errs) / G.keys * 100) : 0, rec = G.score > (o.best||0); if (rec) o.best = G.score;
+  const xp = Math.min(60, G.hits * 2); if (xp){ addXP(xp); const k = today(); S.days[k] = (S.days[k]||0) + 1; } save(); if (xp) afterStudy(); save();
+  const miss = [...new Map(G.miss.map(x=>[x.h, x])).values()];
+  const ov = $('#gover'); ov.style.display = 'flex';
+  ov.innerHTML = `<div class="gcard">${capy(win ? 'cheer' : G.hits >= 10 ? 'happy' : 'think', 110, 'bob')}
+    <h2>${win ? tr('Hoàn thành bộ từ!','Deck cleared!') : tr('Hết lượt rồi','Out of lives')}</h2>
+    <div class="gsc">${G.score}</div>${rec ? `<div class="chip fire">🏆 ${tr('Kỷ lục mới','New best')}</div>` : `<div style="color:var(--muted);font-size:13px">${tr('Kỷ lục','Best')}: ${o.best||0}</div>`}
+    <div class="mini3" style="margin:14px 0"><div><small>${tr('Bắn hạ','Hits')}</small><b>${G.hits}</b></div><div><small>${tr('Chính xác','Accuracy')}</small><b>${acc}%</b></div><div><small>Combo</small><b>×${G.maxCombo}</b></div></div>
+    ${xp ? `<span class="xpfly">+${xp} XP</span>` : ''}
+    ${miss.length ? `<div class="gmiss"><small>${tr('Từ bị lọt — xem lại nhé','Missed — worth a second look')}</small>${miss.slice(0,6).map(x=>`<div><button class="say" data-say="${esc(x.h)}" style="width:30px;height:30px">${SPK}</button><b class="zh">${esc(x.h)}</b> <i>${esc(x.py)}</i><span>${esc(x.m)}</span></div>`).join('')}</div>` : ''}
+    <button class="btn" data-gstart style="margin-top:14px">↻ ${tr('Chơi lại','Play again')}</button><button class="btn line" data-gx style="margin-top:8px">${tr('Thoát','Exit')}</button></div>`;
+}
+function gExit(silent){ if (G){ cancelAnimationFrame(G.raf); G.el.remove(); G = null; } const e = document.getElementById('gm'); if (e) e.remove(); document.body.style.overflow = ''; if (!silent) render(); }
+function gPause(p){ if (!G || G.over) return; G.paused = p; G.last = performance.now(); $('#gpbtn').textContent = p ? '▶' : '❚❚'; G.el.classList.toggle('paused', p); }
+document.addEventListener('keydown', e => { if (!G || G.over) return; if (e.metaKey || e.ctrlKey || e.altKey) return;
+  if (e.code === 'Escape'){ gPause(!G.paused); e.preventDefault(); return; } if (e.code === 'Backspace'){ gKey('back'); e.preventDefault(); return; }
+  const m = /^Key([A-Z])$/.exec(e.code || ''); if (m){ gKey(m[1].toLowerCase()); e.preventDefault(); } else if (e.code === 'Space') e.preventDefault(); }, true);
+document.addEventListener('pointerdown', e => { const k = e.target.closest && e.target.closest('[data-gk]'); if (k && G){ e.preventDefault(); gKey(k.dataset.gk); k.classList.add('dn'); setTimeout(()=>k.classList.remove('dn'), 90); } }, true);
+document.addEventListener('visibilitychange', () => { if (G && document.visibilityState === 'hidden') gPause(true); });
+window.addEventListener('hashchange', () => { if (G && route() !== 'go') gExit(true); });
+
 /* ---------- bài khóa ---------- */
 const TX = (()=>{ try { return JSON.parse(document.getElementById('texts').textContent); } catch(e){ return {}; } })();
 let txPlay = null; // {u, ti, li, role, stop}
@@ -977,6 +1143,7 @@ function render(){
   else if (r === 'bo-thu') app.innerHTML = viewRadicals();
   else if (r === 'thanh-tich') app.innerHTML = viewAchievements();
   else if (r === 'tai-khoan') app.innerHTML = viewAccount();
+  else if (r === 'go') app.innerHTML = viewGameSetup();
   else if (r.startsWith('tu-')){ const id = decodeURIComponent(r.slice(3)); const w = BYID[id]; const L = w && BOOKS.flatMap(b=>b.lessons).find(X => lessonWords(X).some(x=>x.id===id)); if (L){ tab = 'vocab'; openWord = id; history.replaceState(null,'','#bai-'+L.u); app.innerHTML = viewLesson(L.u); setTimeout(()=>{ const el = document.querySelector('[data-open="'+CSS.escape(id)+'"]'); if (el) el.scrollIntoView({block:'center'}); }, 60); } else { location.hash = '#home'; } }
   else app.innerHTML = viewHome();
   renderSync();
@@ -994,10 +1161,11 @@ const ICO = {
   rad:'<path d="M4 5h16M12 5v15M6 11h12M5 20h14"/>',
   win:'<path d="M8 4h8v5a4 4 0 0 1-8 0zM8 6H4v1a3 3 0 0 0 4 3M16 6h4v1a3 3 0 0 1-4 3M12 13v4M8 21h8M9 17h6"/>',
   sb:'<rect x="6" y="2" width="12" height="20" rx="3"/><path d="M10 7h4M9 12h6M11 16h2"/>',
+  game:'<path d="M12 3c3 2 5 5 5 9l-2 4H9l-2-4c0-4 2-7 5-9zM9 16l-2 4M15 16l2 4M12 16v5"/><circle cx="12" cy="10" r="1.6"/>',
   acc:'<circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/>',
   set:'<circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M4.9 19.1 7 17M17 7l2.1-2.1"/>' };
 function navHTML(){
-  const it = [['home','home',tr('Trang chủ','Home'),''],['on-tap','rev',tr('Ôn tập','Review'),''],['bo-thu','rad',tr('Bộ thủ','Radicals'),'desk'],['thanh-tich','win',tr('Thành tích','Progress'),''],['treo','sb',tr('Màn hình chờ','Standby'),''],['cai-dat','set',tr('Cài đặt','Settings'),'']].concat(CLOUD ? [['tai-khoan','acc',FB.user?tr('Tài khoản','Account'):tr('Đăng nhập','Sign in'),'desk']] : []);
+  const it = [['home','home',tr('Trang chủ','Home'),''],['on-tap','rev',tr('Ôn tập','Review'),''],['go','game',tr('Luyện gõ','Typing game'),'desk'],['bo-thu','rad',tr('Bộ thủ','Radicals'),'desk'],['thanh-tich','win',tr('Thành tích','Progress'),''],['treo','sb',tr('Màn hình chờ','Standby'),''],['cai-dat','set',tr('Cài đặt','Settings'),'']].concat(CLOUD ? [['tai-khoan','acc',FB.user?tr('Tài khoản','Account'):tr('Đăng nhập','Sign in'),'desk']] : []);
   const xp = S.xp||0, lv = levelOf(xp);
   return `<div class="side brandbox"><div class="logo cp">${capy('orange',38)}</div><div><b style="display:block;font-size:15px">${tr('Học tiếng Trung','Learn Chinese')}</b><small style="color:var(--muted);font-size:12px">新HSK教程 · HSK 1–3</small></div></div>
   <div class="wrap">${it.map(([h,ic,l,c])=>`<a href="#${h}" data-nav="${h}" class="${c}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${ICO[ic]}</svg>${l}${h==='on-tap'?'<span class="badge" id="navbadge" style="display:none"></span>':''}</a>`).join('')}</div>
@@ -1019,7 +1187,9 @@ function viewHome(){
     ['#bai-'+L.u+'/gram','var(--accent)','法', (L.grammar||[]).length+' '+tr('điểm','points'), tr('Ngữ pháp','Grammar'), tr('Mẫu câu của bài','Patterns in this lesson')],
     ['#quiz-'+L.u,'var(--t3)','测', '12 '+tr('câu','Qs'), tr('Trắc nghiệm','Quiz'), tr('Nghĩa, chữ, nghe, pinyin','Meaning, hanzi, audio, pinyin')],
     ['#bo-thu','var(--t1)','部', RADALL.length+' '+tr('bộ','radicals'), tr('Bộ thủ','Radicals'), tr('Hiểu cấu tạo chữ Hán','How characters are built')],
-    ['#bai-'+L.u+'/text','var(--t2)','课', (TX[L.u]||[]).length+' '+tr('bài','texts'), tr('Bài khóa','Texts'), tr('Hội thoại · pinyin · Việt · Anh','Dialogue · pinyin · VI · EN')] ];
+    ['#bai-'+L.u+'/text','var(--t2)','课', (TX[L.u]||[]).length+' '+tr('bài','texts'), tr('Bài khóa','Texts'), tr('Hội thoại · pinyin · Việt · Anh','Dialogue · pinyin · VI · EN')],
+    ['#go','#7A5CFF','打', tr('trò chơi','game'), tr('Luyện gõ','Typing game'), tr('Gõ pinyin bắn từ đang rơi','Type pinyin to shoot words')],
+    ['#treo','var(--muted)','屏', tr('rảnh tay','hands-free'), tr('Màn hình chờ','Standby'), tr('Từ tự đổi khi để bàn','Words rotate on your desk')] ];
   return header() + `
   <div class="dash-top">${capy(moodPose(), innerWidth>=900?110:86, 'dm bob')}
     <div class="r1"><span class="chip">${dl}</span><span class="chip fire">${FLAME} ${streak()} ${tr('ngày',streak()===1?'day':'days')}</span>${weekStrip()}${S.freeze?`<span class="chip" title="${tr('Thẻ giữ chuỗi: tự dùng khi bạn lỡ 1 ngày','Streak freeze: used automatically if you miss a day')}">🧊 ${S.freeze}</span>`:''}</div>
@@ -1412,6 +1582,16 @@ document.addEventListener('click', e => {
   if (d.char){ openChar = openChar === d.char ? null : d.char; const y = window.scrollY; render(); window.scrollTo(0,y); return; }
   if (d.tab){ tab = d.tab; openWord = null; $('#app').innerHTML = viewLesson(lu(route().slice(4))); markGram(lu(route().slice(4))); return; }
   if (d.ologin !== undefined){ S.onb = 1; S.lang = onb.lang || S.lang; save(); location.hash = '#tai-khoan'; render(); return; }
+  if (d.gdeck){ gOpt().deck = d.gdeck; save(); render(); return; }
+  if (d.gkind){ gOpt().kind = d.gkind; save(); render(); return; }
+  if (d.ghint && !G){ gOpt().hint = +d.ghint; save(); render(); return; }
+  if (d.gsnd && !G){ gOpt().snd = +d.gsnd; save(); render(); return; }
+  if (d.gstart !== undefined){ gStart(); return; }
+  if (d.gx !== undefined){ gExit(); return; }
+  if (d.gpause !== undefined){ gPause(!G.paused); return; }
+  if (d.ghtog !== undefined && G){ G.hint = !G.hint; gOpt().hint = G.hint?1:0; t.classList.toggle('on', G.hint); G.act.forEach(gPaint); gBuf(); return; }
+  if (d.gstog !== undefined && G){ G.snd = !G.snd; gOpt().snd = G.snd?1:0; t.classList.toggle('on', G.snd); return; }
+  if (d.gk){ return; }
   if (d.nobanner !== undefined){ S.nobanner = today(); save(); render(); return; }
   if (d.fbgoogle !== undefined){ fbGoogle(); return; }
   if (d.fbemail !== undefined){ fbEmail(); return; }
