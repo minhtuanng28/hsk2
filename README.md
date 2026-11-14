@@ -1,11 +1,13 @@
 # Học tiếng Trung · 新HSK教程 HSK 1 + 2 + 3
 
-App flashcard học theo bài (835 từ, 3 lộ trình HSK 1–3), chạy trên iPhone như một app (Safari → Chia sẻ → Thêm vào MH chính), dùng được cả khi không có mạng.
+App học tiếng Trung theo bài (835 từ, 48 bài, 3 lộ trình HSK 1–3) chạy trên điện thoại và máy tính, dùng được cả khi không có mạng.
 
-- Mở app: https://minhtuanng28.github.io/hsk2/
-- Ôn tập lặp lại ngắt quãng, nhắc 9:30 & 21:30 (file .ics).
-- Mỗi từ: pinyin theo thanh điệu, nghĩa Việt + Anh, Hán Việt, phân tích bộ thủ, cấu tạo từ, cụm từ hay dùng, 3 câu ví dụ.
-- Phát âm: ghi âm người bản xứ → giọng Google (khi có mạng) → giọng tiếng Trung của iPhone.
-- `words.json` + `widget-hsk.js`: widget màn hình khoá 3 thứ tiếng cho app Scriptable (tham số `hsk3,30` = HSK3, đổi từ mỗi 30 phút).
+- Mở app: https://minhtuanng28.github.io/hsk2/ — trên iPhone: Safari → Chia sẻ → Thêm vào MH chính.
+- Flashcard ôn tập lặp lại ngắt quãng, trắc nghiệm, kế hoạch học mỗi ngày, chuỗi ngày, XP, huy hiệu.
+- Mỗi từ: pinyin tô màu thanh điệu, nghĩa Việt + Anh, Hán Việt, phân tích bộ thủ, cấu tạo từ, cụm từ hay dùng, câu ví dụ.
+- Bài khóa song ngữ (hội thoại + đoạn văn) có pinyin, tiếng Việt, tiếng Anh, nghe cả bài và nhập vai.
+- Phát âm: ghi âm người bản xứ → giọng Google (khi có mạng) → giọng tiếng Trung của máy.
+- Đăng nhập Google / email (Firebase) để đồng bộ tiến độ giữa các thiết bị và lên bảng xếp hạng.
+- `widget-hsk.js` + `words.json` + `capy-*.png`: widget màn hình khoá và màn hình chính cho app Scriptable, có bé capybara.
 
-Ghi âm: bộ HSK của Yue Tan (Shtooka, CC BY-SA) qua audio-cmn. Phân tích chữ: Make Me a Hanzi.
+Ghi âm: bộ HSK của Yue Tan (Shtooka, CC BY-SA) qua audio-cmn. Phân tích chữ: Make Me a Hanzi. Bài khóa và hình capybara được soạn/vẽ riêng cho app.
