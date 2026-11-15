@@ -228,17 +228,22 @@ nav.bottom .badge{position:absolute;top:4px;left:calc(50% + 6px);background:var(
 .gstage{position:absolute;left:50%;top:38%;transform:translateX(-50%);font-size:26px;font-weight:800;color:#FFC83D;text-shadow:0 0 20px rgba(255,200,61,.6);animation:gmean 1.5s forwards;pointer-events:none;white-space:nowrap}
 .gdock{position:relative;display:flex;flex-direction:column;align-items:center;margin-top:-34px;z-index:2;pointer-events:none}
 .gbuf{min-height:22px;font:700 17px ui-monospace,Menlo,monospace;letter-spacing:2px;color:#FFC83D;background:rgba(10,8,30,.55);border-radius:8px;padding:0 10px}.gbuf:empty{visibility:hidden}
+.gin{pointer-events:auto;width:min(260px,70vw);text-align:center;font:700 17px ui-monospace,Menlo,monospace;font-size:max(16px,1em);letter-spacing:2px;color:#FFC83D;caret-color:#FFC83D;background:rgba(10,8,30,.6);border:1.5px solid rgba(255,200,61,.55);border-radius:10px;padding:6px 10px;outline:none;-webkit-user-select:text;user-select:text}
+.gin::placeholder{color:rgba(255,255,255,.5);letter-spacing:0;font:600 14px system-ui,sans-serif}
+.gm.os .gbuf{display:none}.gm.os .gdock{margin-top:-58px}
+.gkhint{pointer-events:auto;margin-top:4px;font-size:12px;opacity:.75;background:none;color:#fff}
 .gship{filter:drop-shadow(0 0 12px rgba(127,212,255,.7))}
 .gkb{padding:6px 3px calc(6px + env(safe-area-inset-bottom));background:rgba(8,6,24,.9);border-top:1px solid rgba(255,255,255,.1)}
 .gkr{display:flex;justify-content:center;gap:5px;margin-bottom:6px}.gkr:last-child{margin-bottom:0}
 .gkb button{flex:1 1 0;max-width:42px;height:44px;border-radius:8px;background:#3a3560;color:#fff;font-size:18px;font-weight:600;text-transform:lowercase;touch-action:manipulation}
 .gkb button.gkw{max-width:60px;flex:1.5 1 0;background:#2a2648}.gkb button.dn{background:#8C7BFF;transform:scale(1.08)}.gkb button.nx{box-shadow:inset 0 0 0 2px #FFC83D}
+@media (min-width:700px){.gkb{padding:10px 12px calc(10px + env(safe-area-inset-bottom))}.gkr{gap:8px;margin-bottom:8px}.gkb button{max-width:66px;height:58px;font-size:23px;border-radius:12px}.gkb button.gkw{max-width:96px}}
 .gm.paused .gsky{filter:blur(3px) brightness(.6)}
 .gover{position:absolute;inset:0;background:rgba(10,8,30,.78);z-index:5;align-items:center;justify-content:center;padding:16px;overflow:auto}
 .gcard{background:var(--card);color:var(--ink);border-radius:24px;padding:20px;width:min(420px,100%);text-align:center;max-height:100%;overflow:auto}
 .gcard h2{margin:4px 0}.gsc{font-size:44px;font-weight:800;color:var(--primary);line-height:1.1}
 .gmiss{text-align:left;margin-top:12px;border-top:1px dashed var(--line);padding-top:8px}.gmiss small{color:var(--muted)}.gmiss div{display:flex;gap:8px;align-items:center;padding:4px 0;font-size:14px}.gmiss i{color:var(--muted);font-size:12.5px}.gmiss span{margin-left:auto;text-align:right;color:var(--muted);font-size:13px}
-@media (min-width:900px){.gship .capy{width:84px !important;height:84px !important}.gdock{margin-top:-48px}.gi .gih{font-size:34px !important}.gip{font-size:18px}.gmean{font-size:15px}.gmean b{font-size:22px}.gmean span{font-size:17px}.gside{right:16px}}
+@media (min-width:700px){.gship .capy{width:84px !important;height:84px !important}.gdock{margin-top:-48px}.gi .gih{font-size:34px !important}.gip{font-size:18px}.gmean{font-size:15px}.gmean b{font-size:22px}.gmean span{font-size:17px}.gside{right:16px}}
 /* ---------- capybara ---------- */
 .capy{display:inline-block;line-height:0;flex:0 0 auto}.capy svg{width:100%;height:100%}
 .dash-top .capy.dm{position:absolute;right:14px;top:6px}
@@ -246,6 +251,7 @@ nav.bottom .badge{position:absolute;top:4px;left:calc(50% + 6px);background:var(
 .logo.cp{background:linear-gradient(160deg,#FFE7C2,#FFD1A1);padding:0;overflow:hidden}.logo.cp .capy{margin-top:3px}
 @keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}.capy.bob{animation:bob 2.6s ease-in-out infinite}
 @media (max-width:899px){.dash-top h1{padding-right:84px}}
+}
 /* ---------- xem trước widget ---------- */
 .hwprev{display:flex;gap:12px;flex-wrap:wrap;background:linear-gradient(160deg,#9DB4CF,#C8B6E2);border-radius:18px;padding:14px;margin:6px 0 4px}
 .hw{background:#FFF7EA;border-radius:20px;padding:11px 12px;box-shadow:0 6px 16px rgba(0,0,0,.14);display:flex;flex-direction:column;gap:5px;color:#2B2118}
@@ -349,6 +355,15 @@ nav.bottom a.desk{display:none}
   .grades{bottom:14px}
 }
 header.top .streak,header.top>div:last-child{white-space:nowrap}
+@media (min-width:640px) and (max-width:899px){
+  #app{max-width:760px;padding:22px 28px 120px}
+  nav.bottom .wrap{max-width:760px}
+  nav.bottom a{font-size:13px}
+  .tiles{grid-template-columns:repeat(4,1fr);gap:12px}
+  .tile{min-height:140px}
+  .lessons{display:grid;grid-template-columns:1fr 1fr;gap:0 12px}
+  .dash-top h1{font-size:26px}
+  .flash,.studyhead,.grades,.opts,.card.q,.done,.narrow{max-width:640px;margin-left:auto;margin-right:auto}
 </style>
 </head>
 <body>
@@ -862,29 +877,49 @@ function viewGameSetup(){
   <div class="card set" style="margin-top:10px">
     <div class="it" style="flex-wrap:wrap;gap:8px"><span>${tr('Nội dung','Content')}</span><div class="seg">${[['word',tr('Từ','Words')],['col',tr('Cụm từ','Phrases')],['mix',tr('Trộn cả hai','Both')]].map(([k,l])=>`<button class="${o.kind===k?'on':''}" data-gkind="${k}">${l}</button>`).join('')}</div></div>
     <div class="it"><span>${tr('Hiện pinyin gợi ý','Show pinyin hint')}<br><small style="color:var(--muted)">${tr('Tắt để tự nhớ cách đọc — khó hơn, điểm ×1,5','Turn off to recall the reading yourself — harder, ×1.5 score')}</small></span><div class="seg"><button class="${o.hint?'on':''}" data-ghint="1">${tr('Bật','On')}</button><button class="${!o.hint?'on':''}" data-ghint="0">${tr('Tắt','Off')}</button></div></div>
+    ${GTOUCH() ? `<div class="it" style="flex-wrap:wrap;gap:8px"><span>${tr('Bàn phím','Keyboard')}<br><small style="color:var(--muted)">${gKbNote(o.kb||'app')}</small></span><div class="seg">${[['app',tr('Của trò chơi','Game')],['os',tr('Của máy','Device')]].concat(innerWidth >= 700 ? [['hw',tr('Bàn phím rời','External')]] : []).map(([k,l])=>`<button class="${(o.kb||'app')===k?'on':''}" data-gkbm="${k}">${l}</button>`).join('')}</div></div>` : ''}
     <div class="it"><span>${tr('Đọc to khi bắn trúng','Say the word on hit')}</span><div class="seg"><button class="${o.snd?'on':''}" data-gsnd="1">${tr('Bật','On')}</button><button class="${!o.snd?'on':''}" data-gsnd="0">${tr('Tắt','Off')}</button></div></div>
   </div>
   <button class="btn" style="margin-top:14px;${n?'':'opacity:.4;pointer-events:none'}" data-gstart>▶ ${tr('Bắt đầu','Start')} · ${Math.min(n, 80)} ${tr('mục tiêu','targets')}</button>
-  <p style="color:var(--muted);font-size:13px;text-align:center;line-height:1.5">${tr('Gõ không cần dấu thanh, ü gõ là v. Từ ngắn rơi trước, dài dần theo từng mốc; tốc độ tự chỉnh theo tay bạn. Trên điện thoại có bàn phím riêng của trò chơi.','Type without tone marks; ü is typed as v. Short words come first and get longer each stage; speed adapts to you. On phones the game has its own keyboard.')}</p></div>`;
+  <p style="color:var(--muted);font-size:13px;text-align:center;line-height:1.5">${tr('Gõ không cần dấu thanh, ü gõ là v. Từ ngắn rơi trước, dài dần theo từng mốc; tốc độ tự chỉnh theo tay bạn. ' + (GTOUCH() ? '' : 'Gõ trực tiếp bằng bàn phím máy tính, Esc để tạm dừng.'),'Type without tone marks; ü is typed as v. Short words come first and get longer each stage; speed adapts to you. On phones the game has its own keyboard.')}</p></div>`;
 }
+function gKbNote(m){ return m === 'os' ? tr('Bàn phím điện thoại/iPad của bạn, đã tắt gợi ý từ và tự sửa','Your phone/iPad keyboard, with suggestions and autocorrect off') : m === 'hw' ? tr('iPad gắn bàn phím rời: ẩn bàn phím trên màn hình, rộng chỗ chơi hơn','iPad with a keyboard attached: no on-screen keys, more room to play') : tr('Phím to, sáng phím kế tiếp khi bật gợi ý','Big keys, next key lights up when hints are on'); }
 function gStart(){
-  const o = gOpt(), touch = GTOUCH();
+  const o = gOpt(), touch = GTOUCH(), kb = touch ? (o.kb === 'hw' && innerWidth < 700 ? 'app' : (o.kb || 'app')) : 'hw';
   let items = shuffle(gItems(o.deck, o.kind));
   const cap = innerWidth < 500 ? 16 : 26; items = items.filter(x => x.k.length <= cap);
   if (!items.length) return;
   items = items.slice(0, 80).sort((a,b) => Math.floor(a.k.length/3) - Math.floor(b.k.length/3));
   gExit(true);
-  const el = document.createElement('div'); el.className = 'gm'; el.id = 'gm';
+  const el = document.createElement('div'); el.className = 'gm' + (kb === 'os' ? ' os' : ''); el.id = 'gm';
   el.innerHTML = `<div class="ghud"><span class="gpill" id="gscore">🏆 0</span><span class="gpill" id="gstage"></span><span class="gpill" id="ghearts"></span></div>
     <div class="gside"><button data-gx title="${tr('Thoát','Exit')}">✕</button><button data-gpause id="gpbtn">❚❚</button><button data-ghtog id="ghbtn" class="${o.hint?'on':''}">拼</button><button data-gstog id="gsbtn" class="${o.snd?'on':''}">♪</button></div>
     <div class="gsky" id="gsky"><div class="gline"></div></div>
-    <div class="gdock"><div class="gbuf" id="gbuf"></div><div class="gship" id="gship">${capy('happy',58)}</div></div>
-    ${touch ? `<div class="gkb" id="gkb">${['qwertyuiop','asdfghjkl','zxcvbnm'].map((r,i)=>`<div class="gkr">${[...r].map(c=>`<button data-gk="${c}">${c}</button>`).join('')}${i===2?'<button data-gk="back" class="gkw">⌫</button>':''}</div>`).join('')}</div>` : ''}
+    <div class="gdock"><div class="gbuf" id="gbuf"></div>${kb === 'os' ? `<input id="gin" class="gin" type="text" inputmode="text" autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false" enterkeyhint="done" data-1p-ignore data-lpignore="true" name="g${Date.now()%1e5}" aria-label="${tr('Gõ pinyin','Type pinyin')}" placeholder="${tr('Chạm để gõ pinyin','Tap to type pinyin')}">` : ''}<div class="gship" id="gship">${capy('happy',58)}</div></div>
+    ${kb === 'app' ? `<div class="gkb" id="gkb">${['qwertyuiop','asdfghjkl','zxcvbnm'].map((r,i)=>`<div class="gkr">${[...r].map(c=>`<button data-gk="${c}">${c}</button>`).join('')}${i===2?'<button data-gk="back" class="gkw">⌫</button>':''}</div>`).join('')}</div>` : ''}
     <div class="gover" id="gover" style="display:none"></div>`;
   document.body.appendChild(el); document.body.style.overflow = 'hidden';
   G = {el, sky: el.querySelector('#gsky'), q: items, total: items.length, act: [], tgt: null, pos: 0, score: 0, combo: 0, maxCombo: 0, hearts: 3, hits: 0, errs: 0, keys: 0, miss: [], fast: 0,
-       mul: 1, last: performance.now(), spawnAt: 0, paused: false, over: false, hint: !!o.hint, snd: !!o.snd, touch, raf: 0, uid: 0};
+       mul: 1, last: performance.now(), spawnAt: 0, paused: false, over: false, hint: !!o.hint, snd: !!o.snd, touch, kb, raf: 0, uid: 0, iv: '', comp: false, H: 0};
   gHud(); G.raf = requestAnimationFrame(gTick);
+  if (kb === 'os'){ const i = el.querySelector('#gin'); i.addEventListener('input', gInp); i.addEventListener('compositionstart', ()=>{ if (G) G.comp = true; }); i.addEventListener('compositionend', ()=>{ if (G){ G.comp = false; gInp({target:i}); } }); i.focus({preventScroll:true}); }
+  gVV();
+}
+/* bàn phím của máy: đọc phần chữ mới gõ vào ô, không phụ thuộc keydown (Android/iOS) */
+function gInp(e){
+  const i = e.target; if (!G || G.over){ i.value = ''; return; }
+  const v = i.value.toLowerCase(), pv = G.iv;
+  if (G.paused){ i.value = pv; return; }
+  if (v.startsWith(pv)){ for (const c of normPy(v.slice(pv.length).replace(/ü/g,'v'))) gKey(c); }
+  else if (G.tgt && pv.startsWith(v) && normPy(v).length){ G.pos = Math.min(G.pos, normPy(v).length); gPaint(G.tgt); gBuf(); }
+  else gKey('back');
+  G.iv = v;
+  if (!G.comp && G){ const buf = G.tgt ? G.tgt.it.k.slice(0, G.pos) : ''; if (i.value !== buf){ i.value = buf; } G.iv = buf; }
+}
+function gVV(){
+  if (!G) return; const vv = window.visualViewport; if (!vv) return;
+  const fit = () => { if (!G) return; G.el.style.top = vv.offsetTop + 'px'; G.el.style.bottom = 'auto'; G.el.style.height = vv.height + 'px'; };
+  fit(); if (!G.vvOn){ G.vvOn = true; vv.addEventListener('resize', fit); vv.addEventListener('scroll', fit); G.vvOff = () => { vv.removeEventListener('resize', fit); vv.removeEventListener('scroll', fit); }; }
 }
 function gHud(){ if (!G) return; const st = Math.min(Math.floor(G.hits/10)+1, Math.ceil(G.total/10)); $('#gscore').textContent = '🏆 ' + G.score + (G.combo >= 3 ? '  ×' + G.combo : ''); $('#gstage').textContent = '⚑ ' + tr('Mốc','Stage') + ' ' + st + '/' + Math.ceil(G.total/10) + ' · ' + G.hits + '/' + G.total; $('#ghearts').textContent = '❤'.repeat(G.hearts) + '♡'.repeat(3-G.hearts); }
 function gSpawn(now){
@@ -900,7 +935,8 @@ function gPaint(a){ const on = G.tgt === a, k = a.it.k, p = on ? G.pos : 0; a.e.
 function gTick(now){
   if (!G || G.over) return; G.raf = requestAnimationFrame(gTick);
   const dt = Math.min(0.05, (now - G.last) / 1000); G.last = now; if (G.paused) return;
-  const H = G.sky.clientHeight, st = Math.floor(G.hits/10), max = Math.min((G.touch ? 2 : 3) + Math.floor(st/2), G.touch ? 4 : 6);
+  const H = G.sky.clientHeight; if (G.H && H && Math.abs(H - G.H) > 2){ const r = H / G.H; G.act.forEach(a => { a.y = (a.y + a.h) * r - a.h; a.v *= r; }); } G.H = H;
+  const st = Math.floor(G.hits/10), max = Math.min((G.touch ? 2 : 3) + Math.floor(st/2), G.touch ? 4 : 6);
   if (G.q.length && G.act.length < max && (!G.act.length || now - G.spawnAt > 2600 / G.mul)) gSpawn(now);
   for (const a of G.act.slice()){ a.y += a.v * G.mul * dt; a.e.style.transform = `translate(${a.x}px,${a.y}px)`;
     if (a.y + a.h >= H - 2){ gRemove(a); G.hearts--; G.combo = 0; G.fast = 0; G.mul = Math.max(0.6, G.mul * 0.88); G.miss.push(a.it); if (!a.again){ a.it.again = 1; G.q.push(Object.assign({}, a.it)); G.total = Math.max(G.total, G.hits + G.act.length + G.q.length); }
@@ -938,7 +974,7 @@ function gHit(a){
   gHud();
 }
 function gEnd(win){
-  if (!G || G.over) return; G.over = true; cancelAnimationFrame(G.raf); const o = gOpt();
+  if (!G || G.over) return; G.over = true; cancelAnimationFrame(G.raf); const o = gOpt(); const gi = $('#gin'); if (gi) gi.blur();
   const acc = G.keys ? Math.round((G.keys - G.errs) / G.keys * 100) : 0, rec = G.score > (o.best||0); if (rec) o.best = G.score;
   const xp = Math.min(60, G.hits * 2); if (xp){ addXP(xp); const k = today(); S.days[k] = (S.days[k]||0) + 1; } save(); if (xp) afterStudy(); save();
   const miss = [...new Map(G.miss.map(x=>[x.h, x])).values()];
@@ -951,12 +987,13 @@ function gEnd(win){
     ${miss.length ? `<div class="gmiss"><small>${tr('Từ bị lọt — xem lại nhé','Missed — worth a second look')}</small>${miss.slice(0,6).map(x=>`<div><button class="say" data-say="${esc(x.h)}" style="width:30px;height:30px">${SPK}</button><b class="zh">${esc(x.h)}</b> <i>${esc(x.py)}</i><span>${esc(x.m)}</span></div>`).join('')}</div>` : ''}
     <button class="btn" data-gstart style="margin-top:14px">↻ ${tr('Chơi lại','Play again')}</button><button class="btn line" data-gx style="margin-top:8px">${tr('Thoát','Exit')}</button></div>`;
 }
-function gExit(silent){ if (G){ cancelAnimationFrame(G.raf); G.el.remove(); G = null; } const e = document.getElementById('gm'); if (e) e.remove(); document.body.style.overflow = ''; if (!silent) render(); }
-function gPause(p){ if (!G || G.over) return; G.paused = p; G.last = performance.now(); $('#gpbtn').textContent = p ? '▶' : '❚❚'; G.el.classList.toggle('paused', p); }
+function gExit(silent){ if (G){ cancelAnimationFrame(G.raf); if (G.vvOff) G.vvOff(); G.el.remove(); G = null; } const e = document.getElementById('gm'); if (e) e.remove(); document.body.style.overflow = ''; if (!silent) render(); }
+function gPause(p){ if (!G || G.over) return; G.paused = p; G.last = performance.now(); $('#gpbtn').textContent = p ? '▶' : '❚❚'; G.el.classList.toggle('paused', p); const gi = $('#gin'); if (gi && !p) gi.focus({preventScroll:true}); }
 document.addEventListener('keydown', e => { if (!G || G.over) return; if (e.metaKey || e.ctrlKey || e.altKey) return;
-  if (e.code === 'Escape'){ gPause(!G.paused); e.preventDefault(); return; } if (e.code === 'Backspace'){ gKey('back'); e.preventDefault(); return; }
+  if (e.code === 'Escape' || e.key === 'Escape'){ gPause(!G.paused); e.preventDefault(); return; }
+  if (e.target && e.target.id === 'gin'){ if (e.key === 'Enter') e.preventDefault(); return; } if (e.code === 'Backspace'){ gKey('back'); e.preventDefault(); return; }
   const m = /^Key([A-Z])$/.exec(e.code || ''); if (m){ gKey(m[1].toLowerCase()); e.preventDefault(); } else if (e.code === 'Space') e.preventDefault(); }, true);
-document.addEventListener('pointerdown', e => { const k = e.target.closest && e.target.closest('[data-gk]'); if (k && G){ e.preventDefault(); gKey(k.dataset.gk); k.classList.add('dn'); setTimeout(()=>k.classList.remove('dn'), 90); } }, true);
+document.addEventListener('pointerdown', e => { if (G && G.kb === 'os' && !G.over && e.target.closest && e.target.closest('#gsky,.gdock')){ const gi = $('#gin'); if (gi && document.activeElement !== gi){ e.preventDefault(); gi.focus({preventScroll:true}); } } const k = e.target.closest && e.target.closest('[data-gk]'); if (k && G){ e.preventDefault(); gKey(k.dataset.gk); k.classList.add('dn'); setTimeout(()=>k.classList.remove('dn'), 90); } }, true);
 document.addEventListener('visibilitychange', () => { if (G && document.visibilityState === 'hidden') gPause(true); });
 window.addEventListener('hashchange', () => { if (G && route() !== 'go') gExit(true); });
 
@@ -1593,6 +1630,7 @@ document.addEventListener('click', e => {
   if (d.gdeck){ gOpt().deck = d.gdeck; save(); render(); return; }
   if (d.gkind){ gOpt().kind = d.gkind; save(); render(); return; }
   if (d.ghint && !G){ gOpt().hint = +d.ghint; save(); render(); return; }
+  if (d.gkbm && !G){ gOpt().kb = d.gkbm; save(); render(); return; }
   if (d.gsnd && !G){ gOpt().snd = +d.gsnd; save(); render(); return; }
   if (d.gstart !== undefined){ gStart(); return; }
   if (d.gx !== undefined){ gExit(); return; }
