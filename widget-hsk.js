@@ -8,7 +8,7 @@ const DATA = BASE + "words.json";
 
 const P = (args.widgetParameter || "all,30").toLowerCase().replace(/\s/g, "").split(",");
 let book = "all", lo = 1, hi = 99;
-const m = (P[0] || "").match(/^(hsk1|hsk2|hsk3|all)(?::(\d+)(?:-(\d+))?)?$/);
+const m = (P[0] || "").match(/^(hsk1|hsk2|hsk3|hsk4|all)(?::(\d+)(?:-(\d+))?)?$/);
 if (m) { book = m[1]; if (m[2]) { lo = +m[2]; hi = +(m[3] || m[2]); } }
 const mins = Math.max(5, parseInt(P[1]) || 30);
 const pos = Math.max(1, parseInt(P[2]) || 1);
@@ -50,7 +50,7 @@ const dyn = (a, b) => Color.dynamic(new Color(a), new Color(b));
 const BG = dyn("#FFF7EA", "#2A231E"), CARD = dyn("#FFFFFF", "#3A312A"), INK = dyn("#2B2118", "#F5ECE2"), MUTED = dyn("#8C7B6B", "#B9A898");
 const ACC = dyn("#E8743B", "#FFA36B"), PRI = dyn("#5B4BC4", "#A9A0FF"), LINE = dyn("#EFE3D2", "#4A4038");
 const TONE = { "1": dyn("#E5533D", "#FF7A66"), "2": dyn("#E8A317", "#FFC24D"), "3": dyn("#2E9D57", "#5DD68A"), "4": dyn("#3A6FD8", "#7FA7FF"), "5": dyn("#8C8C8C", "#B0B0B0") };
-const BOOKN = { hsk1: "HSK 1", hsk2: "HSK 2", hsk3: "HSK 3" };
+const BOOKN = { hsk1: "HSK 1", hsk2: "HSK 2", hsk3: "HSK 3", hsk4: "HSK 4" };
 
 function hanzi(stack, x, size) { // tô màu từng chữ theo thanh điệu
   const row = stack.addStack(); row.layoutHorizontally(); row.bottomAlignContent();

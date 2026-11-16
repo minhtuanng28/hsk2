@@ -1,6 +1,6 @@
-# Học tiếng Trung · 新HSK教程 HSK 1 + 2 + 3
+# Học tiếng Trung · 新HSK教程 HSK 1 + 2 + 3 + 4
 
-App học tiếng Trung theo bài (1084 từ: 835 từ trong sách + 249 từ mở rộng chuẩn HSK 3.0, 48 bài, 3 lộ trình HSK 1–3) chạy trên điện thoại và máy tính, dùng được cả khi không có mạng.
+App học tiếng Trung theo bài (1894 từ: 1645 từ trong sách + 249 từ mở rộng chuẩn HSK 3.0, 68 bài, 4 lộ trình HSK 1–4) chạy trên điện thoại và máy tính, dùng được cả khi không có mạng.
 
 - Mở app: https://minhtuanng28.github.io/hsk2/ — trên iPhone: Safari → Chia sẻ → Thêm vào MH chính.
 - Flashcard ôn tập lặp lại ngắt quãng, trắc nghiệm, kế hoạch học mỗi ngày, chuỗi ngày, XP, huy hiệu.
