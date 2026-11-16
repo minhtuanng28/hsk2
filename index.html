@@ -1718,6 +1718,10 @@ function icsDownload(){
   const stamp = new Date().toISOString().replace(/[-:]/g,'').slice(0,15) + 'Z', ttl = tr('Ôn tiếng Trung 10 phút','Chinese review · 10 min');
   const ev = (k, hm) => { const [h, m] = (hm||'09:30').split(':'); return ['BEGIN:VEVENT','UID:hsk-'+k+'-'+Date.now()+'@hsk-app','DTSTAMP:'+stamp,'DTSTART:'+ymd+'T'+h+m+'00','DURATION:PT10M','RRULE:FREQ=DAILY','SUMMARY:'+ttl,'DESCRIPTION:'+url,'URL:'+url,'BEGIN:VALARM','ACTION:DISPLAY','DESCRIPTION:'+ttl,'TRIGGER:PT0M','END:VALARM','END:VEVENT'].join('\r\n'); };
   const txt = ['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//HSK app//VI','CALSCALE:GREGORIAN', ev('a', S.rmA||'09:30'), ev('b', S.rmB||'21:30'), 'END:VCALENDAR'].join('\r\n');
+  if (!CLOUD && window.claude && window.claude.use){ window.claude.use('downloads').then(dl => { if (dl) return dl.save({filename: 'nhac-on-tap-hsk.ics', data: txt}); return icsBlob(txt); }).catch(()=>{}); return; }
+  icsBlob(txt);
+}
+function icsBlob(txt){
   const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([txt], {type: 'text/calendar;charset=utf-8'})); a.download = 'nhac-on-tap-hsk.ics'; document.body.appendChild(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 4000);
 }
 /* ---------- flashcard session ---------- */
