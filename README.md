@@ -1,4 +1,4 @@
-# Học tiếng Trung · 新HSK教程 HSK 1 + 2 + 3 + 4
+# Học tiếng Trung · HSK 3.0 · HSK 1 + 2 + 3 + 4 (quyển thượng, quyển hạ)
 
 App học tiếng Trung theo bài (1894 từ: 1645 từ trong sách + 249 từ mở rộng chuẩn HSK 3.0, 68 bài, 4 lộ trình HSK 1–4) chạy trên điện thoại và máy tính, dùng được cả khi không có mạng.
 
