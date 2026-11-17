@@ -135,7 +135,8 @@ function speak(text, lang = 'en', rate, onend){
 /* ---------- chữ chạm được + sổ từ ---------- */
 function norm(w){ return w.toLowerCase().replace(/[’']/g, "'").replace(/^[^a-z0-9]+|[^a-z0-9]+$/g, ''); }
 function glossOf(k, gl){ gl = gl || {}; const tries = [k, k.replace(/s$/, ''), k.replace(/es$/, ''), k.replace(/ed$/, ''), k.replace(/ing$/, ''), k.replace(/d$/, '')];
-  for (const t of tries){ if (gl[t]) return gl[t]; const w = WORDS.find(x => x.en === t); if (w) return w.vi; } return ''; }
+  for (const t of tries){ if (gl[t]) return gl[t]; const w = WORDS.find(x => x.en === t); if (w) return w.vi; }
+  if (k.length >= 4){ const ph = Object.keys(gl).find(p => p.includes(' ') || p.includes('-') ? p.split(/[ -]/).some(x => tries.includes(x)) : false); if (ph) return ph + ': ' + gl[ph]; } return ''; }
 function tappable(text, gl, ctxId){
   return esc(text).replace(/[A-Za-z][A-Za-z’'-]*/g, m => { const k = norm(m); if (k.length < 2) return m;
     return `<span class="tw ${S.nb[k] ? 'sv' : ''} ${gl && glossOf(k, gl) ? 'gl' : ''}" data-tw="${esc(k)}" data-ctx="${esc(ctxId || '')}">${m}</span>`; });
@@ -241,7 +242,8 @@ function viewRead(r){
   <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px"><div class="seg"><button class="${!R.tr ? 'on' : ''}" data-rtr="0">Chỉ tiếng Anh</button><button class="${R.tr ? 'on' : ''}" data-rtr="1">Kèm bản dịch</button></div>
     <a class="btn ghost" href="#dict-r-${esc(r.id)}">🎧 Nghe chép bài này</a></div>
   <div class="card">${r.paras.map((p, i) => `<p class="para">${tappable(p.en, r.gloss, r.id)}${R.tr && p.vi ? `<span class="tr">${esc(p.vi)}</span>` : ''}</p>`).join('')}
-    <p class="note">Từ gạch chấm có sẵn nghĩa. Chạm vào từ bất kỳ để xem và lưu vào Sổ từ; từ đã lưu được tô vàng.</p></div>
+    <p class="note">Từ gạch chấm có sẵn nghĩa. Chạm vào từ bất kỳ để xem và lưu vào Sổ từ; từ đã lưu được tô vàng.</p>
+    ${r.gloss && Object.keys(r.gloss).length ? `<button class="btn ghost" data-saveall="${esc(r.id)}">+ Lưu cả ${Object.keys(r.gloss).length} từ khóa của bài vào Sổ từ</button>` : ''}</div>
   ${(r.q || []).length ? `<h2>Câu hỏi</h2><p class="sub">${types}</p><div class="card" style="padding:4px 16px">${qs}</div>
     ${R.checked ? `<div class="card done"><div class="em">${R.score}/${r.q.length}</div><p class="sub">Xem giải thích dưới từng câu.</p><button class="btn ghost" data-rretry>Làm lại</button></div>` : `<button class="btn block" data-rcheck>Chấm điểm</button>`}` : `<p class="note">Bài này chưa có câu hỏi. Gửi tài liệu cho Claude trong chat để tạo gói bài học đầy đủ câu hỏi và bản dịch.</p>`}`;
 }
@@ -405,7 +407,7 @@ function render(){
 }
 window.addEventListener('hashchange', () => { if (!route().startsWith('fc-')) F = null; if (!route().startsWith('dict-')) Dc = null; impMsg = ''; window.scrollTo(0, 0); render(); });
 document.addEventListener('click', e => {
-  const t = e.target.closest('[data-say],[data-sayzh],[data-tw],[data-nbsave],[data-nbdel],[data-shclose],[data-tier],[data-zh],[data-utab],[data-flip],[data-g],[data-qa],[data-rtr],[data-rcheck],[data-rretry],[data-dplay],[data-dslow],[data-dprev],[data-dskip],[data-dmode],[data-dcheck],[data-dhint],[data-dshow],[data-dretry],[data-dnext],[data-mstart],[data-mc],[data-impread],[data-impyt],[data-delpack]');
+  const t = e.target.closest('[data-say],[data-sayzh],[data-tw],[data-saveall],[data-nbsave],[data-nbdel],[data-shclose],[data-tier],[data-zh],[data-utab],[data-flip],[data-g],[data-qa],[data-rtr],[data-rcheck],[data-rretry],[data-dplay],[data-dslow],[data-dprev],[data-dskip],[data-dmode],[data-dcheck],[data-dhint],[data-dshow],[data-dretry],[data-dnext],[data-mstart],[data-mc],[data-impread],[data-impyt],[data-delpack]');
   if (!t) return; const d = t.dataset;
   if (d.say !== undefined){ e.stopPropagation(); return speak(d.say); }
   if (d.sayzh !== undefined){ e.stopPropagation(); return speak(d.sayzh, 'zh'); }
@@ -413,6 +415,7 @@ document.addEventListener('click', e => {
   if (d.nbsave){ const m = ($('#shm') || {}).value || ''; S.nb[d.nbsave] = {m: m.trim(), t: (S.nb[d.nbsave] || {}).t || Date.now(), ctx: d.ctx || (S.nb[d.nbsave] || {}).ctx || ''}; save(); closeSheet(); document.querySelectorAll('.tw').forEach(x => { if (x.dataset.tw === d.nbsave) x.classList.add('sv'); }); return; }
   if (d.nbdel){ delete S.nb[d.nbdel]; delete S.cards['nb:' + d.nbdel]; delete S.weak['nb:' + d.nbdel]; save(); if (route() === 'so') render(); else { closeSheet(); document.querySelectorAll('.tw').forEach(x => { if (x.dataset.tw === d.nbdel) x.classList.remove('sv'); }); } return; }
   if (d.shclose !== undefined) return closeSheet();
+  if (d.saveall){ const r = reads().find(x => x.id === d.saveall); let n = 0; for (const [k, m] of Object.entries(r.gloss || {})) if (!S.nb[k]){ S.nb[k] = {m, t: Date.now(), ctx: r.title}; n++; } save(); t.textContent = n ? '✓ Đã lưu ' + n + ' từ vào Sổ từ' : '✓ Các từ đã có trong Sổ từ'; t.disabled = true; return; }
   if (d.tier){ S.tier = +d.tier; save(); return render(); }
   if (d.zh !== undefined){ S.zh = +d.zh; save(); return render(); }
   if (d.utab){ uTab = d.utab; return render(); }
