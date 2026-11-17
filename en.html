@@ -52,6 +52,7 @@ h1{font-size:23px;margin:0 0 4px}h2{font-size:17px;margin:20px 4px 8px}.sub{colo
 .q{padding:12px 0;border-bottom:1px solid var(--line)}.q:last-child{border:0}.q p{margin:0 0 8px;font-weight:600}.q .opts{display:flex;flex-wrap:wrap;gap:8px}
 .q .o{border:1.5px solid var(--line);background:var(--card);border-radius:12px;padding:7px 12px;color:var(--ink);text-align:left}.q .o.on{border-color:var(--primary);background:var(--primary-2)}.q .o.ok{border-color:var(--good);background:color-mix(in srgb,var(--good) 18%,var(--card))}.q .o.no{border-color:var(--bad);background:color-mix(in srgb,var(--bad) 15%,var(--card))}
 .q input,.inp{font:inherit;padding:9px 12px;border-radius:12px;border:1.5px solid var(--line);background:var(--bg);color:var(--ink);width:100%}.q input{max-width:240px}.q input.ok{border-color:var(--good)}.q input.no{border-color:var(--bad)}
+.figs summary{cursor:pointer;font-weight:700}.figs table{width:100%;border-collapse:collapse;margin-top:8px;font-size:14px}.figs td{padding:7px 6px;border-bottom:1px solid var(--line);vertical-align:top}.figs td:nth-child(2){text-align:right;width:48%}.figs td:nth-child(2) span{display:block;font-size:12.5px;color:var(--muted)}.figs td small{display:block;color:var(--muted);font-size:11px}.figs td span.up{color:var(--good)}.figs td span.dn{color:var(--bad)}.figs tr.fseg td{background:var(--soft);font-weight:800;font-size:12.5px;text-transform:uppercase;letter-spacing:.3px;color:var(--primary)}
 .why{font-size:13.5px;color:var(--muted);margin-top:6px}
 textarea.inp{min-height:96px;resize:vertical}
 .sheet{position:fixed;left:0;right:0;bottom:0;background:var(--card);border-top:1px solid var(--line);border-radius:20px 20px 0 0;padding:16px;box-shadow:0 -10px 30px rgba(0,0,0,.18);z-index:50;max-width:860px;margin:0 auto}
@@ -133,6 +134,7 @@ function speak(text, lang = 'en', rate, onend){
 }
 
 /* ---------- chữ chạm được + sổ từ ---------- */
+function normA(w){ return norm(w).replace(/,/g, ''); }
 function norm(w){ return w.toLowerCase().replace(/[’']/g, "'").replace(/^[^a-z0-9]+|[^a-z0-9]+$/g, ''); }
 function glossOf(k, gl){ gl = gl || {}; const tries = [k, k.replace(/s$/, ''), k.replace(/es$/, ''), k.replace(/ed$/, ''), k.replace(/ing$/, ''), k.replace(/d$/, '')];
   for (const t of tries){ if (gl[t]) return gl[t]; const w = WORDS.find(x => x.en === t); if (w) return w.vi; }
@@ -232,10 +234,10 @@ function viewRead(r){
   if (!R || R.id !== r.id) R = {id: r.id, ans: {}, checked: false, tr: false};
   sheetGl = r.gloss || {};
   const qs = (r.q || []).map((q, i) => { const a = R.ans[i]; let body, ok = null;
-    if (R.checked) ok = q.t === 'gap' ? norm(a || '') === norm(q.a) : a === q.a;
+    if (R.checked) ok = q.t === 'gap' ? normA(a || '') === normA(q.a) : a === q.a;
     if (q.t === 'tfng') body = `<div class="opts">${[['T', 'True'], ['F', 'False'], ['NG', 'Not Given']].map(([k, l]) => `<button class="o ${a === k ? 'on' : ''} ${R.checked ? (k === q.a ? 'ok' : a === k ? 'no' : '') : ''}" data-qa="${i}|${k}">${l}</button>`).join('')}</div>`;
     else if (q.t === 'mcq') body = `<div class="opts" style="flex-direction:column">${q.opts.map((o, k) => `<button class="o ${a === k ? 'on' : ''} ${R.checked ? (k === q.a ? 'ok' : a === k ? 'no' : '') : ''}" data-qa="${i}|${k}">${'ABCD'[k]}. ${esc(o)}</button>`).join('')}</div>`;
-    else body = `<input data-qi="${i}" class="${R.checked ? (ok ? 'ok' : 'no') : ''}" placeholder="một từ trong bài" value="${esc(a || '')}" autocapitalize="off" autocomplete="off" spellcheck="false">${R.checked && !ok ? ` <b style="color:var(--good)">${esc(q.a)}</b>` : ''}`;
+    else body = `<input data-qi="${i}" class="${R.checked ? (ok ? 'ok' : 'no') : ''}" placeholder="từ hoặc số trong bài" value="${esc(a || '')}" autocapitalize="off" autocomplete="off" spellcheck="false">${R.checked && !ok ? ` <b style="color:var(--good)">${esc(q.a)}</b>` : ''}`;
     return `<div class="q"><p>${i + 1}. ${esc(q.q)}</p>${body}${R.checked && q.why ? `<div class="why">${ok ? '✓' : '✗'} ${esc(q.why)}</div>` : ''}</div>`; }).join('');
   const types = [...new Set((r.q || []).map(q => q.t))].map(t => ({tfng: 'True / False / Not Given', mcq: 'Multiple choice', gap: 'Sentence completion'}[t])).join(' · ');
   return `<a class="back" href="#doc">‹ Đọc hiểu</a><h1>${esc(r.title)}</h1><p class="sub">${esc(r.vi || '')}${r.source ? ' · ' + esc(r.source) : ''}</p>
@@ -244,8 +246,35 @@ function viewRead(r){
   <div class="card">${r.paras.map((p, i) => `<p class="para">${tappable(p.en, r.gloss, r.id)}${R.tr && p.vi ? `<span class="tr">${esc(p.vi)}</span>` : ''}</p>`).join('')}
     <p class="note">Từ gạch chấm có sẵn nghĩa. Chạm vào từ bất kỳ để xem và lưu vào Sổ từ; từ đã lưu được tô vàng.</p>
     ${r.gloss && Object.keys(r.gloss).length ? `<button class="btn ghost" data-saveall="${esc(r.id)}">+ Lưu cả ${Object.keys(r.gloss).length} từ khóa của bài vào Sổ từ</button>` : ''}</div>
+  ${(r.figs || []).length ? viewFigs(r) : ''}
   ${(r.q || []).length ? `<h2>Câu hỏi</h2><p class="sub">${types}</p><div class="card" style="padding:4px 16px">${qs}</div>
     ${R.checked ? `<div class="card done"><div class="em">${R.score}/${r.q.length}</div><p class="sub">Xem giải thích dưới từng câu.</p><button class="btn ghost" data-rretry>Làm lại</button></div>` : `<button class="btn block" data-rcheck>Chấm điểm</button>`}` : `<p class="note">Bài này chưa có câu hỏi. Gửi tài liệu cho Claude trong chat để tạo gói bài học đầy đủ câu hỏi và bản dịch.</p>`}`;
+}
+
+/* ---------- bảng số liệu + đố số ---------- */
+let FQ = null;
+function viewFigs(r){
+  const segs = [...new Set(r.figs.map(f => f[0]))];
+  const tbl = segs.map(s => `<tr class="fseg"><td colspan="2">${esc(s)}</td></tr>` + r.figs.filter(f => f[0] === s).map(f => `<tr><td>${esc(f[1])}</td><td><b>${esc(f[2])}</b>${f[3] ? `<span class="${/^[-−↓]/.test(f[3]) ? 'dn' : /^[+↑]/.test(f[3]) ? 'up' : ''}">${esc(f[3])}</span>` : ''}${f[4] ? `<small>${esc(f[4])}</small>` : ''}</td></tr>`).join('')).join('');
+  let quiz = '';
+  if (FQ && FQ.id === r.id){
+    if (FQ.i >= FQ.q.length) quiz = `<div class="card done"><div class="em">${FQ.ok}/${FQ.q.length}</div><p class="sub">số liệu nhớ đúng</p><button class="btn" data-fqstart="${esc(r.id)}">Đố lượt khác</button></div>`;
+    else { const q = FQ.q[FQ.i], f = r.figs[q.k];
+      quiz = `<div class="card"><div class="sh" style="margin:0 0 8px"><div class="prog"><i style="width:${FQ.i / FQ.q.length * 100}%"></i></div><b>${FQ.i + 1}/${FQ.q.length}</b></div>
+      <div class="note">${esc(f[0])}</div><p style="font-weight:700;font-size:17px;margin:4px 0 10px">${esc(f[1])}?</p>
+      <div class="q" style="border:0;padding:0"><div class="opts" style="flex-direction:column">${q.o.map((k, j) => `<button class="o ${q.p != null ? (k === q.k ? 'ok' : j === q.p ? 'no' : '') : ''}" data-fqa="${j}">${esc(r.figs[k][2])}</button>`).join('')}</div></div>
+      ${q.p != null ? `<div class="why">${esc(f[1])}: <b>${esc(f[2])}</b> ${esc(f[3] || '')} ${f[4] ? '· ' + esc(f[4]) : ''}</div><button class="btn block" style="margin-top:10px" data-fqnext>Tiếp →</button>` : ''}</div>`; }
+  }
+  return `<h2>Số liệu chính</h2><p class="sub">${r.figs.length} chỉ số. Đọc bảng, rồi đố nhanh để nhớ số.</p>
+  ${quiz || `<button class="btn ghost" data-fqstart="${esc(r.id)}" style="margin-bottom:10px">🎯 Đố nhanh số liệu (10 câu)</button>`}
+  <details class="card figs" ${FQ && FQ.id === r.id ? '' : 'open'}><summary>Bảng số liệu</summary><table>${tbl}</table></details>`;
+}
+function startFq(r){
+  const unitOf = s => (s.match(/%|ppts?|US\$|VND|sqm|m²|ha|units?|rooms|tỷ|bn|million|trillion|quadrillion|visitors/i) || [''])[0].toLowerCase();
+  const idx = shuffle(r.figs.map((f, i) => i)).slice(0, 10);
+  FQ = {id: r.id, i: 0, ok: 0, q: idx.map(k => { const u = unitOf(r.figs[k][2]);
+    let pool = r.figs.map((f, i) => i).filter(i => i !== k && r.figs[i][2] !== r.figs[k][2]); const same = pool.filter(i => unitOf(r.figs[i][2]) === u);
+    const pick = shuffle(same.length >= 3 ? same : pool).slice(0, 3); return {k, o: shuffle([k, ...pick]), p: null}; })};
 }
 
 /* ---------- nghe chép chính tả ---------- */
@@ -405,9 +434,9 @@ function render(){
   else if (r === 'nhap') app.innerHTML = viewImport();
   else app.innerHTML = viewHome();
 }
-window.addEventListener('hashchange', () => { if (!route().startsWith('fc-')) F = null; if (!route().startsWith('dict-')) Dc = null; impMsg = ''; window.scrollTo(0, 0); render(); });
+window.addEventListener('hashchange', () => { FQ = null; if (!route().startsWith('fc-')) F = null; if (!route().startsWith('dict-')) Dc = null; impMsg = ''; window.scrollTo(0, 0); render(); });
 document.addEventListener('click', e => {
-  const t = e.target.closest('[data-say],[data-sayzh],[data-tw],[data-saveall],[data-nbsave],[data-nbdel],[data-shclose],[data-tier],[data-zh],[data-utab],[data-flip],[data-g],[data-qa],[data-rtr],[data-rcheck],[data-rretry],[data-dplay],[data-dslow],[data-dprev],[data-dskip],[data-dmode],[data-dcheck],[data-dhint],[data-dshow],[data-dretry],[data-dnext],[data-mstart],[data-mc],[data-impread],[data-impyt],[data-delpack]');
+  const t = e.target.closest('[data-say],[data-sayzh],[data-tw],[data-saveall],[data-fqstart],[data-fqa],[data-fqnext],[data-nbsave],[data-nbdel],[data-shclose],[data-tier],[data-zh],[data-utab],[data-flip],[data-g],[data-qa],[data-rtr],[data-rcheck],[data-rretry],[data-dplay],[data-dslow],[data-dprev],[data-dskip],[data-dmode],[data-dcheck],[data-dhint],[data-dshow],[data-dretry],[data-dnext],[data-mstart],[data-mc],[data-impread],[data-impyt],[data-delpack]');
   if (!t) return; const d = t.dataset;
   if (d.say !== undefined){ e.stopPropagation(); return speak(d.say); }
   if (d.sayzh !== undefined){ e.stopPropagation(); return speak(d.sayzh, 'zh'); }
@@ -423,8 +452,11 @@ document.addEventListener('click', e => {
   if (d.g !== undefined && F){ const id = F.q[F.i], g = +d.g; grade(id, g); F.n++; if (g === 0){ F.again++; F.q.push(id); } F.i++; F.flip = false; return render(); }
   if (d.qa){ if (R.checked) return; const [i, k] = d.qa.split('|'); R.ans[i] = /^\d+$/.test(k) ? +k : k; document.querySelectorAll('[data-qi]').forEach(x => R.ans[x.dataset.qi] = x.value); const y = window.scrollY; render(); window.scrollTo(0, y); return; }
   if (d.rtr !== undefined){ R.tr = d.rtr === '1'; document.querySelectorAll('[data-qi]').forEach(x => R.ans[x.dataset.qi] = x.value); return render(); }
-  if (d.rcheck !== undefined){ document.querySelectorAll('[data-qi]').forEach(x => R.ans[x.dataset.qi] = x.value); const r = reads().find(y => y.id === R.id); R.checked = true; R.score = r.q.filter((q, i) => q.t === 'gap' ? norm(R.ans[i] || '') === norm(q.a) : R.ans[i] === q.a).length; S.done[r.id] = R.score + '/' + r.q.length; bump(r.q.length); save(); const y = window.scrollY; render(); window.scrollTo(0, y); return; }
+  if (d.rcheck !== undefined){ document.querySelectorAll('[data-qi]').forEach(x => R.ans[x.dataset.qi] = x.value); const r = reads().find(y => y.id === R.id); R.checked = true; R.score = r.q.filter((q, i) => q.t === 'gap' ? normA(R.ans[i] || '') === normA(q.a) : R.ans[i] === q.a).length; S.done[r.id] = R.score + '/' + r.q.length; bump(r.q.length); save(); const y = window.scrollY; render(); window.scrollTo(0, y); return; }
   if (d.rretry !== undefined){ R = null; return render(); }
+  if (d.fqstart){ document.querySelectorAll('[data-qi]').forEach(x => R && (R.ans[x.dataset.qi] = x.value)); startFq(reads().find(x => x.id === d.fqstart)); const y = window.scrollY; render(); window.scrollTo(0, y); return; }
+  if (d.fqa !== undefined && FQ){ const q = FQ.q[FQ.i]; if (q.p != null) return; q.p = +d.fqa; if (q.o[q.p] === q.k){ FQ.ok++; bump(); save(); } document.querySelectorAll('[data-qi]').forEach(x => R && (R.ans[x.dataset.qi] = x.value)); const y = window.scrollY; render(); window.scrollTo(0, y); return; }
+  if (d.fqnext !== undefined && FQ){ FQ.i++; document.querySelectorAll('[data-qi]').forEach(x => R && (R.ans[x.dataset.qi] = x.value)); const y = window.scrollY; render(); window.scrollTo(0, y); return; }
   if (Dc){
     if (d.dplay !== undefined) return playLine(false);
     if (d.dslow !== undefined) return playLine(true);
