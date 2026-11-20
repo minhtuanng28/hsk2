@@ -4,6 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#0E6B5C">
+<meta name="hsk-en-app" content="1">
 <title>Business English · B2+ · Bất động sản, Marketing, Tài chính, Kinh tế</title>
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
@@ -62,6 +63,7 @@ textarea.inp{min-height:96px;resize:vertical}
 .ctl{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:8px 0}.ctl .sp{width:44px;height:44px;font-size:18px}
 .yt{position:relative;padding-top:56.25%;border-radius:14px;overflow:hidden;background:#000;margin-bottom:10px}.yt>div,.yt iframe{position:absolute;inset:0;width:100%;height:100%}
 .res{font-weight:800;margin:8px 0}.res.ok{color:var(--good)}.res.no{color:var(--bad)}
+.nbx{border-bottom:1px solid var(--line);padding-bottom:6px}.nbx:last-child{border:0}.nbx .nbrow{border:0}.nbmeta{font-size:13px;color:var(--muted);padding:0 0 4px}.nbmeta span{margin-right:6px}.nbctx{font-style:italic;margin-top:3px}.nbnote{color:var(--ink);margin-top:3px}.nbsrc{font-size:12px;display:inline-block;margin-top:3px;text-decoration:none}
 .nbrow{display:flex;gap:8px;align-items:center;padding:9px 0;border-bottom:1px solid var(--line)}.nbrow:last-child{border:0}.nbrow b{min-width:110px}.nbrow input{flex:1;min-width:0}.nbrow button{border:0;background:transparent;color:var(--muted);font-size:16px}
 .mgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;padding:10px;border-radius:22px;background:linear-gradient(135deg,color-mix(in srgb,var(--primary) 80%,#fff),var(--primary))}
 .mcard{min-height:100px;border-radius:14px;border:0;border-bottom:4px solid rgba(0,0,0,.22);padding:8px 6px;font-weight:700;font-size:15px;background:#fff;color:#161A27;transition:transform .12s,opacity .3s}
@@ -104,7 +106,7 @@ function reads(){ return [...DATA.reads, ...S.packs.filter(p => p.type === 'read
 function listens(){ return S.packs.filter(p => p.type === 'listening'); }
 
 /* ---------- thẻ: cả từ giáo trình lẫn từ trong sổ ---------- */
-function nbWord(k){ const n = S.nb[k]; return n && {id: 'nb:' + k, en: k, vi: n.m || '', nb: 1, ex: n.ctx || ''}; }
+function nbWord(k){ const n = S.nb[k]; return n && {id: 'nb:' + k, en: n.w || k, vi: n.m || '', nb: 1, ex: n.ctx || '', note: n.note || '', zh: n.lang === 'zh' ? '' : n.zh || '', py: n.lang === 'zh' ? '' : n.py || '', pos: n.ipa || n.pos || '', lang: n.lang || 'en'}; }
 function getW(id){ return id.startsWith('nb:') ? nbWord(id.slice(3)) : WBY[id]; }
 /* S.cards[id] = [khoảng cách (giờ), đến hạn, số lần quên] */
 function nextIv(c, g){ const iv = c ? c[0] : 0; return g === 0 ? 0 : g === 1 ? Math.max(6, Math.round(iv * 1.2)) : g === 2 ? (iv ? Math.round(iv * 2.5) : 12) : (iv ? Math.round(iv * 3.5) : 48); }
@@ -217,7 +219,8 @@ function viewFc(){
   const back = `<div class="big">${esc(w.en)}</div>${w.pos ? `<div class="note">${esc(w.pos)}</div>` : ''}<div style="font-size:19px;font-weight:700">${esc(w.vi)}</div>
     ${w.zh && S.zh ? `<div><span class="zhl" style="font-size:20px">${esc(w.zh)}</span> <span class="py">${esc(w.py)}</span> <button class="sp" style="display:inline-grid;width:30px;height:30px;font-family:var(--zh)" data-sayzh="${esc(w.zh)}">中</button></div>` : ''}
     ${w.co ? `<div class="note">${esc(w.co)}</div>` : ''}${w.ex ? `<div style="margin-top:6px">${esc(w.ex)}${w.exvi ? `<div class="note">${esc(w.exvi)}</div>` : ''}</div>` : ''}
-    <button class="sp" data-say="${esc(w.en)}">🔊</button>`;
+    ${w.note ? `<div class="note" style="margin-top:6px;border-left:3px solid #F4622A;padding-left:8px;text-align:left">📝 ${esc(w.note)}</div>` : ''}
+    <button class="sp" ${w.lang === 'zh' ? `data-sayzh="${esc(w.en)}"` : `data-say="${esc(w.en)}"`}>🔊</button>`;
   return `<div class="sh"><a class="x" href="#home">✕</a><div class="prog"><i style="width:${f.i / f.q.length * 100}%"></i></div><b>${f.i + 1}/${f.q.length}</b></div>
   <div class="card flash" data-flip>${f.flip ? back : `<div class="big">${esc(w.en)}</div>${w.pos ? `<div class="note">${esc(w.pos)}</div>` : ''}<div class="hint">Nhớ nghĩa và cách dùng, rồi chạm để lật</div>`}</div>
   ${f.flip ? `<div class="grades">${['Cần ôn', 'Khó', 'Nhớ', 'Dễ'].map((l, g) => `<button class="g${g}" data-g="${g}">${l}<small>${fmtIv(nextIv(c, g))}</small></button>`).join('')}</div>` : ''}`;
@@ -366,12 +369,17 @@ function viewNb(){
   return header() + `<h1>Sổ từ</h1><p class="sub">Từ bạn chạm lưu khi đọc và nghe. Ghi nghĩa xong là dùng được cho thẻ ôn và trò nối từ.</p>
   <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px"><a class="btn" href="#fc-nb">▶ Ôn bằng thẻ</a><a class="btn ghost" href="#noi-tu">🧩 Nối từ</a></div>
   ${wk.length ? `<div class="card" style="border-left:5px solid #F97316"><b>Từ cần ôn (${wk.length})</b><div class="note">Bấm "Cần ôn" khi lật thẻ thì từ vào đây; nhớ 2 lần liên tiếp thì tự rời.</div><div class="trow">${wk.slice(0, 20).map(id => `<span>${esc(getW(id).en)} ×${S.weak[id][0]}</span>`).join('')}</div><a class="btn" href="#fc-weak">▶ Ôn ngay</a></div>` : ''}
-  <div class="card" style="padding:4px 16px">${ks.length ? ks.map(k => `<div class="nbrow"><b>${esc(k)}</b><input class="inp" data-nbm="${esc(k)}" value="${esc(S.nb[k].m || '')}" placeholder="ghi nghĩa…"><button data-say="${esc(k)}">🔊</button><button data-nbdel="${esc(k)}">✕</button></div>`).join('') : '<p class="note" style="padding:10px 0">Sổ còn trống. Mở một bài đọc và chạm vào từ bạn chưa biết.</p>'}</div>`;
+  ${EXT.on ? '' : `<div class="card note" style="border-left:5px solid var(--primary)">💡 Cài tiện ích Chrome <b>Sổ từ HSK·EN</b> để lưu từ hay gặp trên bất kỳ trang web nào thẳng vào đây.</div>`}
+  ${EXT.n ? `<div class="card" style="border-left:5px solid var(--good)">✓ Vừa nhận ${EXT.n} từ mới từ tiện ích Chrome.</div>` : ''}
+  <div class="card" style="padding:4px 16px">${ks.length ? ks.map(k => { const n = S.nb[k], w = n.w || k, zh = n.lang === 'zh';
+    return `<div class="nbx"><div class="nbrow"><b class="${zh ? 'zhl' : ''}">${esc(w)}</b><input class="inp" data-nbm="${esc(k)}" value="${esc(n.m || '')}" placeholder="ghi nghĩa…"><button ${zh ? `data-sayzh="${esc(w)}"` : `data-say="${esc(w)}"`}>🔊</button><button data-nbdel="${esc(k)}">✕</button></div>
+    ${n.ipa || n.zh || n.py || n.ctx || n.note || n.url ? `<div class="nbmeta">${n.ipa ? `<span>${esc(n.ipa)}</span>` : ''}${!zh && n.zh ? `<span class="zhl">${esc(n.zh)}</span> <span class="py">${esc(n.py || '')}</span>` : ''}${zh && n.py ? `<span class="py">${esc(n.py)}</span>${n.en ? ` · EN: ${esc(n.en)}` : ''}` : ''}
+      ${n.ctx ? `<div class="nbctx">“${esc(n.ctx)}”</div>` : ''}${n.note ? `<div class="nbnote">📝 ${esc(n.note)}</div>` : ''}${n.url ? `<a href="${esc(n.url)}" target="_blank" rel="noopener" class="nbsrc">${esc(n.title || (n.url.split('/')[2] || 'nguồn'))} ↗</a>` : ''}</div>` : ''}</div>`; }).join('') : '<p class="note" style="padding:10px 0">Sổ còn trống. Mở một bài đọc và chạm vào từ bạn chưa biết.</p>'}</div>`;
 }
 
 /* ---------- nối từ ---------- */
 let M = null;
-function matchPool(){ const a = Object.keys(S.nb).filter(k => S.nb[k].m).map(k => [k, S.nb[k].m]); const b = WORDS.filter(w => S.cards[w.id]).map(w => [w.en, w.vi]);
+function matchPool(){ const a = Object.keys(S.nb).filter(k => S.nb[k].m).map(k => [S.nb[k].w || k, S.nb[k].m]); const b = WORDS.filter(w => S.cards[w.id]).map(w => [w.en, w.vi]);
   let p = [...a, ...shuffle(b)]; if (p.length < 6) p = p.concat(shuffle(WORDS.filter(w => !S.cards[w.id]).map(w => [w.en, w.vi]))); const seen = new Set(); return p.filter(x => !seen.has(x[0]) && seen.add(x[0])); }
 function startMatch(){ const p = matchPool().slice(0, 18); const pri = p.slice(0, Object.keys(S.nb).length); const rest = shuffle(p.slice(pri.length)); const all = [...shuffle(pri), ...rest];
   const rounds = []; for (let i = 0; i + 6 <= all.length; i += 6) rounds.push(all.slice(i, i + 6)); if (M) clearInterval(M.iv);
@@ -418,6 +426,27 @@ function viewImport(){
     ${S.packs.length ? `<div style="margin-top:10px">${S.packs.map(p => `<div class="nbrow"><b style="flex:1">${p.type === 'reading' ? '📖' : '🎧'} ${esc(p.title)}</b><button data-delpack="${esc(p.id)}">✕</button></div>`).join('')}</div>` : ''}</div>`;
 }
 
+/* ---------- nhận từ từ tiện ích Chrome ---------- */
+const EXT = {on: false, n: 0};
+window.addEventListener('message', e => {
+  if (e.source !== window || !e.data || e.data.source !== 'hsk-ext') return;
+  if (!EXT.on){ EXT.on = true; if (route() === 'so') render(); }
+  if (e.data.type !== 'words' || !Array.isArray(e.data.words)) return;
+  const keys = []; let added = 0;
+  for (const x of e.data.words){
+    if (!x || !x.k || typeof x.w !== 'string') continue;
+    const k = String(x.k).slice(0, 120), old = S.nb[k];
+    const pick = ['w','m','ctx','note','url','title','lang','ipa','zh','py','en'];
+    const v = {}; for (const f of pick) if (x[f] != null) v[f] = String(x[f]).slice(0, f === 'ctx' || f === 'note' ? 600 : 300);
+    if (!old) added++;
+    S.nb[k] = Object.assign({}, old || {}, v, {t: old ? old.t : (x.t0 || x.t || Date.now()), ext: 1});
+    if (old && old.m && !x.m) S.nb[k].m = old.m;
+    keys.push(x.k);
+  }
+  if (keys.length){ EXT.n += added; save(); window.postMessage({source: 'hsk-app', type: 'ack', keys}, '*'); const r = route(); if (r === 'so' || r === 'home') render(); }
+});
+window.postMessage({source: 'hsk-app', type: 'hello'}, '*');
+
 /* ---------- render + sự kiện ---------- */
 function render(){
   const r = route(), app = $('#app'); nav(r); closeSheet(); sheetGl = null;
@@ -442,7 +471,7 @@ document.addEventListener('click', e => {
   if (d.say !== undefined){ e.stopPropagation(); return speak(d.say); }
   if (d.sayzh !== undefined){ e.stopPropagation(); return speak(d.sayzh, 'zh'); }
   if (d.tw){ e.stopPropagation(); const p = t.closest('.para,.ex,.en,.dtext'); const ctx = p ? ((p.textContent || '').match(/[^.!?]+[.!?]*/g) || []).find(s => s.toLowerCase().includes(d.tw)) || '' : ''; speak(d.tw); return openSheet(d.tw, ctx.slice(0, 200)); }
-  if (d.nbsave){ const m = ($('#shm') || {}).value || ''; S.nb[d.nbsave] = {m: m.trim(), t: (S.nb[d.nbsave] || {}).t || Date.now(), ctx: d.ctx || (S.nb[d.nbsave] || {}).ctx || ''}; save(); closeSheet(); document.querySelectorAll('.tw').forEach(x => { if (x.dataset.tw === d.nbsave) x.classList.add('sv'); }); return; }
+  if (d.nbsave){ const m = ($('#shm') || {}).value || ''; S.nb[d.nbsave] = Object.assign({}, S.nb[d.nbsave] || {}, {m: m.trim(), t: (S.nb[d.nbsave] || {}).t || Date.now(), ctx: d.ctx || (S.nb[d.nbsave] || {}).ctx || ''}); save(); closeSheet(); document.querySelectorAll('.tw').forEach(x => { if (x.dataset.tw === d.nbsave) x.classList.add('sv'); }); return; }
   if (d.nbdel){ delete S.nb[d.nbdel]; delete S.cards['nb:' + d.nbdel]; delete S.weak['nb:' + d.nbdel]; save(); if (route() === 'so') render(); else { closeSheet(); document.querySelectorAll('.tw').forEach(x => { if (x.dataset.tw === d.nbdel) x.classList.remove('sv'); }); } return; }
   if (d.shclose !== undefined) return closeSheet();
   if (d.saveall){ const r = reads().find(x => x.id === d.saveall); let n = 0; for (const [k, m] of Object.entries(r.gloss || {})) if (!S.nb[k]){ S.nb[k] = {m, t: Date.now(), ctx: r.title}; n++; } save(); t.textContent = n ? '✓ Đã lưu ' + n + ' từ vào Sổ từ' : '✓ Các từ đã có trong Sổ từ'; t.disabled = true; return; }
