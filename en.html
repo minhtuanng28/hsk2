@@ -63,6 +63,7 @@ textarea.inp{min-height:96px;resize:vertical}
 .ctl{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:8px 0}.ctl .sp{width:44px;height:44px;font-size:18px}
 .yt{position:relative;padding-top:56.25%;border-radius:14px;overflow:hidden;background:#000;margin-bottom:10px}.yt>div,.yt iframe{position:absolute;inset:0;width:100%;height:100%}
 .res{font-weight:800;margin:8px 0}.res.ok{color:var(--good)}.res.no{color:var(--bad)}
+.acct{display:inline-flex;align-items:center;gap:5px;font-size:12.5px;font-weight:700;text-decoration:none;color:var(--muted);border:1px solid var(--line);background:var(--card);border-radius:999px;padding:5px 10px}.acct.in{color:var(--good)}@media(max-width:480px){.acct span{display:none}}
 .nbx{border-bottom:1px solid var(--line);padding-bottom:6px}.nbx:last-child{border:0}.nbx .nbrow{border:0}.nbmeta{font-size:13px;color:var(--muted);padding:0 0 4px}.nbmeta span{margin-right:6px}.nbctx{font-style:italic;margin-top:3px}.nbnote{color:var(--ink);margin-top:3px}.nbsrc{font-size:12px;display:inline-block;margin-top:3px;text-decoration:none}
 .nbrow{display:flex;gap:8px;align-items:center;padding:9px 0;border-bottom:1px solid var(--line)}.nbrow:last-child{border:0}.nbrow b{min-width:110px}.nbrow input{flex:1;min-width:0}.nbrow button{border:0;background:transparent;color:var(--muted);font-size:16px}
 .mgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;padding:10px;border-radius:22px;background:linear-gradient(135deg,color-mix(in srgb,var(--primary) 80%,#fff),var(--primary))}
@@ -96,9 +97,9 @@ const WBY = Object.fromEntries(WORDS.map(w => [w.id, w]));
 
 /* ---------- state ---------- */
 const KEY = 'en-v1';
-let S = {cards: {}, weak: {}, nb: {}, packs: [], done: {}, tier: 1, days: {}, zh: 1, rate: 1, best: 0};
+let S = {cards: {}, weak: {}, nb: {}, packs: [], done: {}, tier: 1, days: {}, zh: 1, rate: 1, best: 0, del: {}, delp: {}};
 try { Object.assign(S, JSON.parse(localStorage.getItem(KEY) || '{}')); } catch (e) {}
-function save(){ try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {} }
+function save(){ try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {} if (typeof fbSchedule === 'function') fbSchedule(); }
 function today(t = Date.now()){ const d = new Date(t); return d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate(); }
 function bump(n = 1){ S.days[today()] = (S.days[today()] || 0) + n; }
 function shuffle(a){ a = a.slice(); for (let i = a.length - 1; i > 0; i--){ const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
@@ -160,7 +161,7 @@ function closeSheet(){ $('#sheet').innerHTML = ''; }
 
 /* ---------- khung ---------- */
 function header(){ return `<header class="top"><div class="brand"><div class="logo">EN</div><div><b>Business English · B2+</b><small>${WORDS.length} từ · ${UNITS.reduce((n, u) => n + u.sents.length, 0)} mẫu câu · ${UNITS.length} bài · ${reads().length} bài đọc</small></div></div>
-  <div class="lsw"><a href="index.html">中文</a><span>English</span></div></header>`; }
+  <div style="display:flex;gap:8px;align-items:center;flex:none">${acctChip()}<div class="lsw"><a href="index.html">中文</a><span>English</span></div></div></header>`; }
 function nav(r){ const it = [['home', '🏠', 'Trang chủ'], ['fc-due', '🗂', 'Ôn tập'], ['doc', '📖', 'Đọc'], ['nghe', '🎧', 'Nghe'], ['so', '📒', 'Sổ từ']];
   $('#nav').innerHTML = it.map(([h, i, l]) => `<a href="#${h}" class="${r === h || (h !== 'home' && r.startsWith(h)) ? 'on' : ''}"><span>${i}</span>${l}</a>`).join(''); }
 function route(){ return decodeURIComponent(location.hash.slice(1)) || 'home'; }
@@ -411,7 +412,7 @@ function parseTranscript(txt){
   return lines.filter(l => l.en && /[A-Za-z]/.test(l.en));
 }
 function addPack(p){ if (!p || !p.type || !p.id) throw new Error('Gói thiếu type hoặc id'); if (p.type === 'reading' && !Array.isArray(p.paras)) throw new Error('Gói bài đọc thiếu paras'); if (p.type === 'listening' && (!p.yt || !Array.isArray(p.lines))) throw new Error('Gói bài nghe thiếu yt hoặc lines');
-  p.pack = 1; S.packs = S.packs.filter(x => x.id !== p.id); S.packs.push(p); save(); }
+  p.pack = 1; p.t = Date.now(); if (S.delp) delete S.delp[p.id]; S.packs = S.packs.filter(x => x.id !== p.id); S.packs.push(p); save(); }
 let impMsg = '';
 function viewImport(){
   return header() + `<h1>Nhập tài liệu</h1><p class="sub">Tài liệu bạn nhập chỉ lưu trên máy này, không đưa lên web công khai.</p>
@@ -427,25 +428,134 @@ function viewImport(){
 }
 
 /* ---------- nhận từ từ tiện ích Chrome ---------- */
-const EXT = {on: false, n: 0};
-window.addEventListener('message', e => {
-  if (e.source !== window || !e.data || e.data.source !== 'hsk-ext') return;
-  if (!EXT.on){ EXT.on = true; if (route() === 'so') render(); }
-  if (e.data.type !== 'words' || !Array.isArray(e.data.words)) return;
+const EXT = {on: false, n: 0, linked: ''};
+function extMerge(list){
   const keys = []; let added = 0;
-  for (const x of e.data.words){
+  for (const x of list){
     if (!x || !x.k || typeof x.w !== 'string') continue;
     const k = String(x.k).slice(0, 120), old = S.nb[k];
+    if (!old && (S.del[k] || 0) > (x.t || 0)) { keys.push(x.k); continue; }
     const pick = ['w','m','ctx','note','url','title','lang','ipa','zh','py','en'];
     const v = {}; for (const f of pick) if (x[f] != null) v[f] = String(x[f]).slice(0, f === 'ctx' || f === 'note' ? 600 : 300);
     if (!old) added++;
-    S.nb[k] = Object.assign({}, old || {}, v, {t: old ? old.t : (x.t0 || x.t || Date.now()), ext: 1});
+    S.nb[k] = Object.assign({}, old || {}, v, {t: old ? old.t : (x.t0 || x.t || Date.now()), u: Math.max(x.t || 0, old ? old.u || 0 : 0) || Date.now(), ext: 1});
     if (old && old.m && !x.m) S.nb[k].m = old.m;
     keys.push(x.k);
   }
+  return {keys, added};
+}
+
+window.addEventListener('message', e => {
+  if (e.source !== window || !e.data || e.data.source !== 'hsk-ext') return;
+  if (!EXT.on){ EXT.on = true; if (route() === 'so' || route() === 'ket-noi') render(); }
+  if (e.data.type === 'linked'){ EXT.linked = e.data.uid || ''; EXT.err = e.data.err || ''; if (route() === 'ket-noi') render(); return; }
+  if (e.data.type !== 'words' || !Array.isArray(e.data.words)) return;
+  const {keys, added} = extMerge(e.data.words);
   if (keys.length){ EXT.n += added; save(); window.postMessage({source: 'hsk-app', type: 'ack', keys}, '*'); const r = route(); if (r === 'so' || r === 'home') render(); }
 });
 window.postMessage({source: 'hsk-app', type: 'hello'}, '*');
+
+/* ---------- tài khoản và đồng bộ (dùng chung tài khoản với app tiếng Trung) ----------
+   Ghi vào tài liệu users/{uid} của app tiếng Trung, ở các trường riêng (ghi gộp, không đụng dữ liệu HSK):
+   en: tiến độ + Sổ từ (JSON), enPacks: gói tài liệu (JSON), enInbox: từ do tiện ích Chrome gửi thẳng lên (map). */
+const FBV = '13.3.0';
+const FBCFG = {apiKey:"AIzaSyCzG2TNB2fwUSUDycsxQ8a2D1GaWzVHl28", authDomain:"hsk-app-f5201.firebaseapp.com", projectId:"hsk-app-f5201", storageBucket:"hsk-app-f5201.firebasestorage.app", messagingSenderId:"278418991443", appId:"1:278418991443:web:9cb95ad3a99e01b7ae59a6"};
+const FB = {ready: false, loading: false, user: null, st: 'off', last: 0, err: '', pullAt: 0, packSig: ''};
+let fbA = null, fbF = null, fbAuth = null, fbDb = null, fbPushT = null, fbPushing = false, fbAgain = false, acctMsg = '';
+const FB_BASE = window.__FB_BASE || ('https://www.gstatic.com/firebasejs/' + FBV + '/');
+const CAN_SYNC = /^https:/.test(location.protocol) || !!window.__FB_BASE;
+async function fbInit(){
+  if (!CAN_SYNC || FB.ready || FB.loading) return; FB.loading = true;
+  try {
+    const [app, auth, fs] = await Promise.all([import(FB_BASE + 'firebase-app.js'), import(FB_BASE + 'firebase-auth.js'), import(FB_BASE + 'firebase-firestore.js')]);
+    fbA = auth; fbF = fs; const a = app.initializeApp(FBCFG); fbAuth = auth.getAuth(a); fbDb = fs.getFirestore(a);
+    try { fbAuth.languageCode = 'vi'; } catch (e) {}
+    FB.ready = true; FB.st = 'out';
+    auth.onAuthStateChanged(fbAuth, async u => { FB.user = u; FB.st = u ? 'sync' : 'out'; fbUI(); if (u) await fbPull(); });
+  } catch (e){ FB.st = 'err'; FB.err = String(e && e.message || e); }
+  FB.loading = false; fbUI();
+}
+function syncPart(){ const o = {}; for (const k of ['cards','weak','nb','done','days','best','tier','dom','zh','rate','del','delp']) if (S[k] !== undefined) o[k] = S[k]; return o; }
+/* gộp hai bản: không mất từ nào, xóa thì nhớ dấu xóa */
+function mergeEN(a, b){
+  const o = Object.assign({}, a, b);
+  const later = (x, y) => (!x ? y : !y ? x : ((y.u || y.t || 0) > (x.u || x.t || 0) ? y : x));
+  o.del = Object.assign({}, a.del || {}); for (const [k, t] of Object.entries(b.del || {})) o.del[k] = Math.max(o.del[k] || 0, t);
+  o.delp = Object.assign({}, a.delp || {}); for (const [k, t] of Object.entries(b.delp || {})) o.delp[k] = Math.max(o.delp[k] || 0, t);
+  o.nb = {}; for (const k of new Set([...Object.keys(a.nb || {}), ...Object.keys(b.nb || {})])){ const v = later((a.nb || {})[k], (b.nb || {})[k]); if ((o.del[k] || 0) < (v.u || v.t || 0)) o.nb[k] = v; }
+  o.cards = Object.assign({}, a.cards || {}); for (const [id, c] of Object.entries(b.cards || {})){ const x = o.cards[id]; if (!x || c[0] > x[0] || (c[0] === x[0] && c[1] > x[1])) o.cards[id] = c; }
+  for (const id of Object.keys(o.cards)) if (id.startsWith('nb:') && !o.nb[id.slice(3)]) delete o.cards[id];
+  o.weak = Object.assign({}, a.weak || {}); for (const [id, w] of Object.entries(b.weak || {})){ const x = o.weak[id]; if (!x || w[0] > x[0] || (w[0] === x[0] && w[1] > x[1])) o.weak[id] = w; }
+  o.done = Object.assign({}, a.done || {}, b.done || {});
+  o.days = Object.assign({}, a.days || {}); for (const [d, n] of Object.entries(b.days || {})) o.days[d] = Math.max(o.days[d] || 0, n);
+  o.best = Math.max(a.best || 0, b.best || 0);
+  return o;
+}
+function mergePacks(a, b, delp){ const m = {}; for (const p of [...(a || []), ...(b || [])]) if (p && p.id && !((delp || {})[p.id] > (p.t || 0))) m[p.id] = m[p.id] && (m[p.id].t || 0) > (p.t || 0) ? m[p.id] : p; return Object.values(m); }
+function packSig(){ return S.packs.map(p => p.id + ':' + (p.t || 0)).sort().join('|') + '#' + Object.keys(S.delp || {}).length; }
+async function fbPull(){
+  if (!FB.user || !fbF) return; FB.pullAt = Date.now();
+  try {
+    FB.st = 'sync'; fbUI();
+    const snap = await fbF.getDoc(fbF.doc(fbDb, 'users', FB.user.uid)); const d = snap.exists() ? snap.data() : {};
+    let cloud = {}; try { cloud = d.en ? JSON.parse(d.en) : {}; } catch (e) {}
+    let cpacks = []; try { cpacks = d.enPacks ? JSON.parse(d.enPacks) : []; } catch (e) {}
+    const m = mergeEN(syncPart(), cloud); Object.assign(S, m);
+    S.packs = mergePacks(S.packs, cpacks, S.delp);
+    const inbox = d.enInbox || {}, got = [];
+    for (const [hk, raw] of Object.entries(inbox)){ try { const x = JSON.parse(raw); extMerge([x]); got.push(hk); } catch (e) { got.push(hk); } }
+    try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {}
+    FB.packSig = cpacks.length ? packSig() : '';
+    await fbPush(true);
+    if (got.length){ const del = {}; for (const k of got) del[k] = fbF.deleteField(); await fbF.setDoc(fbF.doc(fbDb, 'users', FB.user.uid), {enInbox: del}, {merge: true}); EXT.n += got.length; }
+    FB.st = 'ok'; FB.last = Date.now(); fbUI(); const r = route(); if (!/^(dict-|fc-|noi-tu)/.test(r)) render();
+  } catch (e){ FB.st = 'err'; FB.err = String(e && e.message || e); fbUI(); }
+}
+function fbSchedule(){ if (!FB.user) return; clearTimeout(fbPushT); fbPushT = setTimeout(() => fbPush(), 2500); }
+async function fbPush(now){
+  if (!FB.user || !fbF) return; if (fbPushing){ fbAgain = true; return; } fbPushing = true;
+  try {
+    const data = {en: JSON.stringify(syncPart()), enUpdated: fbF.serverTimestamp()};
+    const sig = packSig(); if (sig !== FB.packSig){ data.enPacks = JSON.stringify(S.packs); FB.packSig = sig; }
+    await fbF.setDoc(fbF.doc(fbDb, 'users', FB.user.uid), data, {merge: true});
+    FB.st = 'ok'; FB.last = Date.now();
+  } catch (e){ FB.st = 'err'; FB.err = String(e && e.message || e); }
+  fbPushing = false; fbUI(); if (fbAgain){ fbAgain = false; fbSchedule(); }
+}
+document.addEventListener('visibilitychange', () => { if (!FB.user) return; if (document.visibilityState === 'hidden'){ clearTimeout(fbPushT); fbPush(); } else if (Date.now() - FB.pullAt > 30e3) fbPull(); });
+function fbErr(e){ const c = (e && e.code) || ''; return ({'auth/invalid-credential': 'Sai email hoặc mật khẩu.', 'auth/wrong-password': 'Sai mật khẩu.', 'auth/user-not-found': 'Chưa có tài khoản với email này.', 'auth/email-already-in-use': 'Email này đã có tài khoản, hãy đăng nhập.', 'auth/weak-password': 'Mật khẩu cần ít nhất 6 ký tự.', 'auth/invalid-email': 'Email không hợp lệ.', 'auth/popup-closed-by-user': 'Bạn đã đóng cửa sổ đăng nhập.', 'auth/network-request-failed': 'Mất mạng, thử lại sau.'})[c] || ('Không đăng nhập được: ' + (c || (e && e.message) || e)); }
+function fbUI(){ const el = document.getElementById('acct'); if (el) el.outerHTML = acctChip(); if (route() === 'tai-khoan' || route() === 'ket-noi') render(); }
+function acctChip(){
+  if (!CAN_SYNC) return '<span id="acct"></span>';
+  const u = FB.user, ic = FB.st === 'err' ? '⚠' : FB.st === 'sync' ? '⟳' : u ? '☁️' : '👤';
+  return `<a id="acct" class="acct ${u ? 'in' : ''}" href="#tai-khoan" title="${u ? 'Tài khoản: ' + esc(u.email || '') : 'Đăng nhập để đồng bộ'}">${ic}<span>${u ? (FB.st === 'ok' ? 'Đã đồng bộ' : FB.st === 'sync' ? 'Đang đồng bộ' : 'Lỗi đồng bộ') : 'Đăng nhập'}</span></a>`;
+}
+function loginForm(){
+  return `<button class="btn block" data-fbg>Đăng nhập bằng Google</button>
+    <p class="note" style="text-align:center;margin:10px 0">hoặc dùng email</p>
+    <input class="inp" id="fbe" type="email" placeholder="Email" autocomplete="email" style="margin-bottom:8px"><input class="inp" id="fbp" type="password" placeholder="Mật khẩu (ít nhất 6 ký tự)" autocomplete="current-password">
+    <div style="display:flex;gap:8px;margin-top:10px"><button class="btn" style="flex:1" data-fbin>Đăng nhập</button><button class="btn ghost" style="flex:1" data-fbup>Tạo tài khoản</button></div>
+    ${acctMsg ? `<p style="color:var(--bad);font-size:14px">${esc(acctMsg)}</p>` : ''}`;
+}
+function viewAccount(){
+  if (!CAN_SYNC) return header() + `<div class="card">Bản mở từ máy tính (file) không đồng bộ được. Hãy dùng bản web: <a href="https://minhtuanng28.github.io/hsk2/en.html">minhtuanng28.github.io/hsk2/en.html</a></div>`;
+  if (!FB.ready){ fbInit(); return header() + `<div class="card">${FB.st === 'err' ? 'Không tải được phần đăng nhập, kiểm tra mạng rồi mở lại.' : 'Đang tải…'}</div>`; }
+  const u = FB.user;
+  if (!u) return header() + `<h1>Tài khoản</h1><p class="sub">Dùng chung tài khoản với app tiếng Trung. Đã đăng nhập bên đó thì ở đây tự đăng nhập.</p><div class="card">${loginForm()}</div>`;
+  return header() + `<h1>Tài khoản</h1><div class="card"><b>${esc(u.displayName || u.email || '')}</b><div class="note">${esc(u.email || '')}</div>
+    <p style="margin:10px 0 0">${FB.st === 'ok' ? '✓ Đã đồng bộ lúc ' + new Date(FB.last).toLocaleTimeString('vi-VN', {hour: '2-digit', minute: '2-digit'}) : FB.st === 'err' ? '⚠ ' + esc(FB.err) : 'Đang đồng bộ…'}</p>
+    <p class="note">Đồng bộ: Sổ từ, thẻ ôn, điểm bài đọc, gói tài liệu đã nhập. Tài liệu chỉ nằm trong tài khoản của bạn.</p>
+    <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn ghost" data-fbsync>Đồng bộ ngay</button><a class="btn ghost" href="#ket-noi">Kết nối tiện ích Chrome</a><button class="btn line" data-fbout>Đăng xuất</button></div></div>`;
+}
+function viewConnect(){
+  if (!FB.ready){ fbInit(); return header() + `<div class="card">Đang tải…</div>`; }
+  const u = FB.user;
+  if (!EXT.on) return header() + `<h1>Kết nối tiện ích</h1><div class="card">Không thấy tiện ích <b>Sổ từ HSK·EN</b> trên trình duyệt này. Cài tiện ích trên Chrome máy tính rồi mở lại trang này.</div>`;
+  if (!u) return header() + `<h1>Kết nối tiện ích</h1><p class="sub">Đăng nhập trước, rồi cho phép tiện ích dùng tài khoản này để lưu từ thẳng lên tài khoản.</p><div class="card">${loginForm()}</div>`;
+  return header() + `<h1>Kết nối tiện ích</h1><div class="card"><p>Cho phép tiện ích <b>Sổ từ HSK·EN</b> lưu từ thẳng vào tài khoản <b>${esc(u.email || u.displayName || '')}</b>?</p>
+    <p class="note">Tiện ích chỉ ghi vào hộp nhận từ của Sổ từ. Ngắt kết nối bất cứ lúc nào trong cửa sổ tiện ích.</p>
+    ${EXT.linked === u.uid ? '<p style="color:var(--good);font-weight:700">✓ Tiện ích đã kết nối với tài khoản này.</p>' : `<button class="btn block" data-extlink>Kết nối</button>${EXT.err ? `<p style="color:var(--bad);font-size:14px">Chưa kết nối được: ${esc(EXT.err)}</p>` : ''}`}</div>`;
+}
 
 /* ---------- render + sự kiện ---------- */
 function render(){
@@ -462,21 +572,28 @@ function render(){
   else if (r === 'so') app.innerHTML = viewNb();
   else if (r === 'noi-tu') app.innerHTML = viewMatch();
   else if (r === 'nhap') app.innerHTML = viewImport();
+  else if (r === 'tai-khoan') app.innerHTML = viewAccount();
+  else if (r === 'ket-noi') app.innerHTML = viewConnect();
   else app.innerHTML = viewHome();
 }
 window.addEventListener('hashchange', () => { FQ = null; if (!route().startsWith('fc-')) F = null; if (!route().startsWith('dict-')) Dc = null; impMsg = ''; window.scrollTo(0, 0); render(); });
 document.addEventListener('click', e => {
-  const t = e.target.closest('[data-dom],[data-say],[data-sayzh],[data-tw],[data-saveall],[data-fqstart],[data-fqa],[data-fqnext],[data-nbsave],[data-nbdel],[data-shclose],[data-tier],[data-zh],[data-utab],[data-flip],[data-g],[data-qa],[data-rtr],[data-rcheck],[data-rretry],[data-dplay],[data-dslow],[data-dprev],[data-dskip],[data-dmode],[data-dcheck],[data-dhint],[data-dshow],[data-dretry],[data-dnext],[data-mstart],[data-mc],[data-impread],[data-impyt],[data-delpack]');
+  const t = e.target.closest('[data-fbg],[data-fbin],[data-fbup],[data-fbout],[data-fbsync],[data-extlink],[data-dom],[data-say],[data-sayzh],[data-tw],[data-saveall],[data-fqstart],[data-fqa],[data-fqnext],[data-nbsave],[data-nbdel],[data-shclose],[data-tier],[data-zh],[data-utab],[data-flip],[data-g],[data-qa],[data-rtr],[data-rcheck],[data-rretry],[data-dplay],[data-dslow],[data-dprev],[data-dskip],[data-dmode],[data-dcheck],[data-dhint],[data-dshow],[data-dretry],[data-dnext],[data-mstart],[data-mc],[data-impread],[data-impyt],[data-delpack]');
   if (!t) return; const d = t.dataset;
   if (d.say !== undefined){ e.stopPropagation(); return speak(d.say); }
   if (d.sayzh !== undefined){ e.stopPropagation(); return speak(d.sayzh, 'zh'); }
   if (d.tw){ e.stopPropagation(); const p = t.closest('.para,.ex,.en,.dtext'); const ctx = p ? ((p.textContent || '').match(/[^.!?]+[.!?]*/g) || []).find(s => s.toLowerCase().includes(d.tw)) || '' : ''; speak(d.tw); return openSheet(d.tw, ctx.slice(0, 200)); }
-  if (d.nbsave){ const m = ($('#shm') || {}).value || ''; S.nb[d.nbsave] = Object.assign({}, S.nb[d.nbsave] || {}, {m: m.trim(), t: (S.nb[d.nbsave] || {}).t || Date.now(), ctx: d.ctx || (S.nb[d.nbsave] || {}).ctx || ''}); save(); closeSheet(); document.querySelectorAll('.tw').forEach(x => { if (x.dataset.tw === d.nbsave) x.classList.add('sv'); }); return; }
-  if (d.nbdel){ delete S.nb[d.nbdel]; delete S.cards['nb:' + d.nbdel]; delete S.weak['nb:' + d.nbdel]; save(); if (route() === 'so') render(); else { closeSheet(); document.querySelectorAll('.tw').forEach(x => { if (x.dataset.tw === d.nbdel) x.classList.remove('sv'); }); } return; }
+  if (d.nbsave){ const m = ($('#shm') || {}).value || ''; S.nb[d.nbsave] = Object.assign({}, S.nb[d.nbsave] || {}, {m: m.trim(), u: Date.now(), t: (S.nb[d.nbsave] || {}).t || Date.now(), ctx: d.ctx || (S.nb[d.nbsave] || {}).ctx || ''}); save(); closeSheet(); document.querySelectorAll('.tw').forEach(x => { if (x.dataset.tw === d.nbsave) x.classList.add('sv'); }); return; }
+  if (d.nbdel){ S.del[d.nbdel] = Date.now(); delete S.nb[d.nbdel]; delete S.cards['nb:' + d.nbdel]; delete S.weak['nb:' + d.nbdel]; save(); if (route() === 'so') render(); else { closeSheet(); document.querySelectorAll('.tw').forEach(x => { if (x.dataset.tw === d.nbdel) x.classList.remove('sv'); }); } return; }
   if (d.shclose !== undefined) return closeSheet();
-  if (d.saveall){ const r = reads().find(x => x.id === d.saveall); let n = 0; for (const [k, m] of Object.entries(r.gloss || {})) if (!S.nb[k]){ S.nb[k] = {m, t: Date.now(), ctx: r.title}; n++; } save(); t.textContent = n ? '✓ Đã lưu ' + n + ' từ vào Sổ từ' : '✓ Các từ đã có trong Sổ từ'; t.disabled = true; return; }
+  if (d.saveall){ const r = reads().find(x => x.id === d.saveall); let n = 0; for (const [k, m] of Object.entries(r.gloss || {})) if (!S.nb[k]){ S.nb[k] = {m, t: Date.now(), u: Date.now(), ctx: r.title}; n++; } save(); t.textContent = n ? '✓ Đã lưu ' + n + ' từ vào Sổ từ' : '✓ Các từ đã có trong Sổ từ'; t.disabled = true; return; }
   if (d.tier){ S.tier = +d.tier; save(); return render(); }
   if (d.dom){ S.dom = d.dom; save(); return render(); }
+  if (d.fbg !== undefined){ fbA.signInWithPopup(fbAuth, new fbA.GoogleAuthProvider()).then(() => { acctMsg = ''; }).catch(err => { acctMsg = fbErr(err); render(); }); return; }
+  if (d.fbin !== undefined || d.fbup !== undefined){ const em = ($('#fbe').value || '').trim(), pw = $('#fbp').value || ''; (d.fbup !== undefined ? fbA.createUserWithEmailAndPassword(fbAuth, em, pw) : fbA.signInWithEmailAndPassword(fbAuth, em, pw)).then(() => { acctMsg = ''; }).catch(err => { acctMsg = fbErr(err); render(); }); return; }
+  if (d.fbout !== undefined){ fbA.signOut(fbAuth); return; }
+  if (d.fbsync !== undefined){ fbPull(); return; }
+  if (d.extlink !== undefined && FB.user){ const u = FB.user; window.postMessage({source: 'hsk-app', type: 'session', uid: u.uid, email: u.email || u.displayName || '', rt: u.refreshToken, key: FBCFG.apiKey, project: FBCFG.projectId}, location.origin === 'null' ? '*' : location.origin); return; }
   if (d.zh !== undefined){ S.zh = +d.zh; save(); return render(); }
   if (d.utab){ uTab = d.utab; return render(); }
   if (d.flip !== undefined && F && !F.flip){ F.flip = true; render(); const w = getW(F.q[F.i]); if (w) speak(w.en); return; }
@@ -505,13 +622,14 @@ document.addEventListener('click', e => {
     const id = 'p' + Date.now(); addPack({type: 'reading', id, title: ($('#itit').value || '').trim() || 'Bài đọc ' + new Date().toLocaleDateString('vi'), paras: txt.split(/\n\s*\n|\n/).map(x => x.trim()).filter(x => x.length > 1).map(en => ({en})), q: []}); location.hash = 'doc-' + id; return; }
   if (d.impyt !== undefined){ const id = ytId($('#yurl').value || ''), lines = parseTranscript($('#ysub').value || ''); if (!id){ impMsg = 'Link YouTube không hợp lệ.'; return render(); } if (lines.length < 2){ impMsg = 'Không đọc được phụ đề. Phụ đề cần có mốc thời gian (0:06 hoặc định dạng .srt).'; return render(); }
     const pid = 'y' + id; addPack({type: 'listening', id: pid, title: ($('#ytit').value || '').trim() || 'Video ' + id, yt: id, lines}); location.hash = 'dict-l-' + pid; return; }
-  if (d.delpack){ S.packs = S.packs.filter(p => p.id !== d.delpack); save(); return render(); }
+  if (d.delpack){ S.delp[d.delpack] = Date.now(); S.packs = S.packs.filter(p => p.id !== d.delpack); save(); return render(); }
 });
 document.addEventListener('change', e => { const t = e.target;
-  if (t.dataset && t.dataset.nbm){ const k = t.dataset.nbm; if (S.nb[k]){ S.nb[k].m = t.value.trim(); save(); } }
+  if (t.dataset && t.dataset.nbm){ const k = t.dataset.nbm; if (S.nb[k]){ S.nb[k].m = t.value.trim(); S.nb[k].u = Date.now(); save(); } }
   if (t.id === 'ipack' && t.files.length){ let ok = 0, bad = 0, n = t.files.length; [...t.files].forEach(f => { const fr = new FileReader(); fr.onload = () => { try { const j = JSON.parse(fr.result); (Array.isArray(j) ? j : [j]).forEach(addPack); ok++; } catch (err) { bad++; } if (ok + bad === n){ impMsg = 'Đã nhập ' + ok + ' gói' + (bad ? ', ' + bad + ' file lỗi định dạng' : '') + '.'; render(); } }; fr.readAsText(f); }); } });
 document.addEventListener('keydown', e => { if (!Dc) return; if (e.key === 'Enter' && (e.target.id === 'dinp' || (e.target.dataset && e.target.dataset.cz !== undefined))){ e.preventDefault(); const st = dState(); if (st.done){ if (Dc.i + 1 < Dc.items.length){ Dc.i++; viewKeepYT(true); } } else dCheck(); }
   if (e.key === 'Control' && !e.repeat) playLine(false); });
+if (CAN_SYNC) setTimeout(fbInit, 200);
 if ('serviceWorker' in navigator && location.protocol === 'https:') navigator.serviceWorker.register('sw.js').catch(() => {});
 render();
 </script>

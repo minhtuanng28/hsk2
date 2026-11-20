@@ -868,7 +868,7 @@ function fbSchedule(){ if (!FB.user) return; clearTimeout(fbPushT); fbPushT = se
 async function fbPush(force){
   if (!FB.user || !fbF) return; if (fbPushing){ fbAgain = true; return; } fbPushing = true;
   try {
-    await fbF.setDoc(fbF.doc(fbDb, 'users', FB.user.uid), {s: JSON.stringify(S), v: 1, updated: fbF.serverTimestamp()});
+    await fbF.setDoc(fbF.doc(fbDb, 'users', FB.user.uid), {s: JSON.stringify(S), v: 1, updated: fbF.serverTimestamp()}, {merge: true});
     FB.st = 'ok'; FB.last = Date.now();
     const b = {name: (S.name || (FB.user.displayName||'').split(' ').slice(-1)[0] || tr('Bạn học','Learner')).slice(0,24), xp: S.xp||0, wxp: weekXP(), streak: streak(), learned: learnedCount(), book: S.book||'hsk1'};
     const sig = JSON.stringify(b) + (S.board === false);
