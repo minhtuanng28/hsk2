@@ -509,7 +509,7 @@ renderer.setPixelRatio(Math.min(devicePixelRatio,MOBILE?1.6:2));
 renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;
 const scene=new THREE.Scene();
 const cam=new THREE.OrthographicCamera(-10,10,10,-10,-200,200);
-const CAM_OFF=new THREE.Vector3(18,21,18);
+const CAM_OFF=new THREE.Vector3(0,24,20);
 let zoom=MOBILE?.78:1;
 function resize(){const w=innerWidth,h=innerHeight;renderer.setSize(w,h,false);const v=(w<700?11.5:10.5)/zoom,a=w/h;cam.left=-v*a;cam.right=v*a;cam.top=v;cam.bottom=-v;cam.updateProjectionMatrix()}
 resize();addEventListener('resize',resize);
@@ -776,7 +776,7 @@ canvas.addEventListener('pointermove',e=>{if(!ptrs.has(e.pointerId))return;ptrs.
 canvas.addEventListener('pointerup',e=>{if(down&&ptrs.size===1&&Math.hypot(e.clientX-down[0],e.clientY-down[1])<10)onTap(e.clientX,e.clientY);ptrs.delete(e.pointerId);if(ptrs.size<2)pinch=0;down=null});
 canvas.addEventListener('pointercancel',e=>{ptrs.delete(e.pointerId);down=null;pinch=0});
 canvas.addEventListener('wheel',e=>{e.preventDefault();setZoom(zoom*(e.deltaY<0?1.1:.9))},{passive:false});
-function setZoom(z){zoom=clamp(z,.5,2.4);resize()}
+function setZoom(z){zoom=clamp(z,.4,2.4);resize()}
 // joystick
 {const j=$('#joy'),kn=j.querySelector('i');let jid=null;
  const mv=e=>{const r=j.getBoundingClientRect(),cx=r.left+r.width/2,cy=r.top+r.height/2;let dx=e.clientX-cx,dy=e.clientY-cy;const d=Math.hypot(dx,dy),mx=r.width/2-12;if(d>mx){dx=dx/d*mx;dy=dy/d*mx}kn.style.transform=`translate(${dx}px,${dy}px)`;joyV.x=dx/mx;joyV.y=dy/mx;walk=null};
@@ -789,7 +789,7 @@ function goRoom(id){teleport(id);setTimeout(()=>openRoom(id),260)}
 
 /* loop */
 const tgt=new THREE.Vector3(P.x,0,P.z);let last=performance.now(),walkT=0,tick=0;
-const UP=new THREE.Vector3(-1,0,-1).normalize(),RT=new THREE.Vector3(1,0,-1).normalize();
+const UP=new THREE.Vector3(0,0,-1),RT=new THREE.Vector3(1,0,0);
 const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
 function frame(now){
  const dt=Math.min(.05,(now-last)/1000);last=now;
