@@ -1,1 +1,84 @@
-{"name":"Học viện của Tuấn","short_name":"Học viện","start_url":"./","scope":"./","display":"standalone","orientation":"any","background_color":"#7fbf4d","theme_color":"#e8553a","icons":[{"src":"icon-192.png","sizes":"192x192","type":"image/png"},{"src":"icon-512.png","sizes":"512x512","type":"image/png","purpose":"any maskable"}]}
+{
+ "id": "./",
+ "name": "Học viện của Tuấn",
+ "short_name": "Học viện",
+ "description": "Học viện 3D: lộ trình Marketing Engineering, tiếng Trung, bàn làm việc MKT, CRM và Pomodoro.",
+ "start_url": "./?source=app",
+ "scope": "./",
+ "display": "standalone",
+ "orientation": "any",
+ "background_color": "#1c110b",
+ "theme_color": "#2b1a12",
+ "icons": [
+  {
+   "src": "icon-192.png",
+   "sizes": "192x192",
+   "type": "image/png",
+   "purpose": "any"
+  },
+  {
+   "src": "icon-512.png",
+   "sizes": "512x512",
+   "type": "image/png",
+   "purpose": "any"
+  },
+  {
+   "src": "icon-maskable-192.png",
+   "sizes": "192x192",
+   "type": "image/png",
+   "purpose": "maskable"
+  },
+  {
+   "src": "icon-maskable-512.png",
+   "sizes": "512x512",
+   "type": "image/png",
+   "purpose": "maskable"
+  }
+ ],
+ "shortcuts": [
+  {
+   "name": "Pomodoro",
+   "short_name": "Pomodoro",
+   "url": "./?room=tower",
+   "icons": [
+    {
+     "src": "icon-192.png",
+     "sizes": "192x192"
+    }
+   ]
+  },
+  {
+   "name": "Phòng tiếng Trung",
+   "short_name": "Tiếng Trung",
+   "url": "./?room=zh",
+   "icons": [
+    {
+     "src": "icon-192.png",
+     "sizes": "192x192"
+    }
+   ]
+  },
+  {
+   "name": "CRM",
+   "short_name": "CRM",
+   "url": "./?room=crm",
+   "icons": [
+    {
+     "src": "icon-192.png",
+     "sizes": "192x192"
+    }
+   ]
+  },
+  {
+   "name": "Bàn làm việc MKT",
+   "short_name": "Làm việc",
+   "url": "./?room=work",
+   "icons": [
+    {
+     "src": "icon-192.png",
+     "sizes": "192x192"
+    }
+   ]
+  }
+ ]
+}
