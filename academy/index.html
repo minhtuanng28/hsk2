@@ -58,6 +58,24 @@ body.popen #hud-tr{right:min(450px,calc(100vw - 60px))}
 .ib svg{width:19px;height:19px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
 .ib:focus-visible,.btn:focus-visible,button:focus-visible{outline:2px solid var(--acc2);outline-offset:2px}
 #savebadge{font-size:10.5px;color:#fff;background:rgba(0,0,0,.35);padding:2px 8px;border-radius:20px;white-space:nowrap}
+.ib.act{background:var(--acc);color:#fff;border-color:transparent}
+#musicpop{position:fixed;right:calc(66px + var(--sr));top:calc(60px + var(--st));padding:14px;width:290px;display:none;z-index:30}
+#musicpop.on{display:block}
+#musicpop .mh{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+#musicpop p{margin:8px 0;font-size:12.5px;color:var(--mute);line-height:1.45}
+#musicpop .seg{display:flex;gap:4px;background:var(--line);padding:3px;border-radius:10px}
+#musicpop .seg button{flex:1;border:0;background:none;padding:7px 4px;border-radius:8px;font:600 12.5px inherit;cursor:pointer;color:inherit}
+#musicpop .seg button.on{background:var(--panel);box-shadow:0 1px 4px rgba(0,0,0,.15)}
+#musicpop .rw{display:block;font-size:13px;font-weight:600;margin-top:6px}#musicpop .rw input{width:100%;accent-color:var(--acc)}
+#musicpop .ck{display:flex;gap:8px;align-items:center;font-size:13px;margin-top:8px}
+#musicpop .row{display:flex;gap:6px}#musicpop .row .inp{flex:1;min-width:0}
+#musicpop .chips{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}#musicpop .chips button{border:1px solid var(--line);background:var(--panel);border-radius:99px;padding:5px 10px;font:600 12px inherit;cursor:pointer;color:inherit}
+#ytbox{position:fixed;left:calc(12px + var(--sl));bottom:calc(84px + var(--sb));width:min(300px,calc(100vw - 24px));padding:6px;display:none;z-index:25}
+#ytbox.on{display:block}#ytbox .ytf{aspect-ratio:16/9;border-radius:10px;overflow:hidden;background:#000}#ytbox iframe{width:100%;height:100%;border:0}
+#ytbox .x{position:absolute;top:-10px;right:-10px;width:26px;height:26px;border-radius:50%;border:1px solid var(--line);background:var(--panel);cursor:pointer;font-weight:700;color:inherit}
+#panel.wide{width:min(1040px,calc(100vw - 24px))}
+.crmframe{height:min(70vh,760px);border:1px solid var(--line);border-radius:12px;overflow:hidden;background:#fff;margin-top:10px}.crmframe iframe{width:100%;height:100%;border:0}
+.crmapp{display:flex;gap:8px;flex-wrap:wrap}
 #lightpop{position:fixed;right:calc(66px + var(--sr));top:calc(60px + var(--st));padding:14px;width:240px;display:none}
 #lightpop.on{display:block}
 #lightpop label{display:flex;gap:8px;align-items:center;font-size:14px;font-weight:600}
@@ -214,6 +232,7 @@ textarea{min-height:170px;resize:vertical;line-height:1.5;font-size:15px}
 <script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js"}}</script>
 </head>
 <body>
+<div id="ytbox" class="card"><div class="ytf"></div><button class="x" aria-label="Tắt nhạc">×</button></div>
 <div id="sky"></div><div id="stars"></div>
 <canvas id="c" tabindex="0" aria-label="Bản đồ học viện 3D"></canvas>
 <div id="labels"></div>
@@ -237,6 +256,8 @@ textarea{min-height:170px;resize:vertical;line-height:1.5;font-size:15px}
   <input type="range" id="simh" min="0" max="24" step="0.25" value="12" aria-label="Giờ mô phỏng">
   <p><span data-i="hour">Giờ mô phỏng</span>: <b id="simv">12:00</b></p>
  </div>
+ <button class="ib" id="b-music" data-t="music" title="Nhạc nền"><svg viewBox="0 0 24 24"><path d="M9 18V5l11-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="17" cy="16" r="3"/></svg></button>
+ <div id="musicpop" class="card"></div>
  <button class="ib" id="b-sched" data-t="schedule" title="Lịch tuần"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg></button>
  <button class="ib" id="b-certs" data-t="certs" title="Tủ chứng chỉ"><svg viewBox="0 0 24 24"><circle cx="12" cy="9" r="6"/><path d="M8.5 14 7 22l5-3 5 3-1.5-8"/></svg></button>
  <button class="ib" id="b-acct" data-t="acct" title="Tài khoản"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></button>
@@ -309,7 +330,7 @@ c_todo:'Cần làm',c_doing:'Đang làm',c_review:'Chờ duyệt',c_done:'Xong',
 ch:'Kênh',ps_idea:'Ý tưởng',ps_writing:'Đang viết',ps_review:'Chờ duyệt',ps_live:'Đã đăng',newPost:'Tiêu đề bài…',noPosts:'Chưa có bài nào trong lịch.',
 blank:'Trang trống',newPage:'Trang mới',back:'‹ Quay lại',edited:'Sửa lúc {t}',noPages:'Chưa có trang nào. Tạo từ mẫu bên trên.',
 findPh:'Gõ để tìm trong mọi phòng…',addAsCard:'+ Thêm thành việc',addAsPage:'+ Tạo trang',noRes:'Không thấy kết quả.',
-workSub:'Checklist campaign · việc · link nhanh',theme:'Đổi khung cảnh',th_campus:'Khuôn viên học viện',th_beach:'Đảo biển nắng vàng',th_library:'Thư viện ấm cúng',themeNow:'Đang dùng: {t}. Bấm để đổi, trang sẽ tải lại.',install:'Cài app ra màn hình',installWhy:'Cài thành app riêng trên máy tính: có biểu tượng ở Desktop/Dock, mở trong cửa sổ riêng, không cần mở trình duyệt.',installHow:'Nếu không thấy nút: Chrome/Edge → biểu tượng Cài đặt ở thanh địa chỉ (hoặc ⋮ → Lưu và chia sẻ → Cài đặt trang). Safari trên Mac → Tệp → Thêm vào Dock. iPhone/iPad → Chia sẻ → Thêm vào MH chính.',installed:'App đã được cài',clockT:'Đồng hồ trung tâm',clockS:'Giờ thực · Pomodoro',crmSub:'Lead · số liệu mỗi ngày · link CRM',crmLinks:'Link CRM',crmLinkHint:'Dán link web CRM cho sale và Google Sheet CRM để mở nhanh từ đây.',crmToday:'Số liệu hôm nay',crmMess:'Tin nhắn',crmLead:'SĐT / lead',crmGood:'Lead tốt',crmCost:'Chi phí (nghìn đ)',crm7:'7 ngày gần nhất',crmCPL:'CPL (nghìn đ)',crmDay:'Ngày',syncNote:'Dữ liệu học viện được cất chung trong tài khoản app HSK (không cần sửa Firebase).',lesson_s:'Bài học',doc_s:'Tài liệu',note_s:'Ghi chú',card_s:'Việc',post_s:'Bài đăng',page_s:'Trang',task_s:'Việc MKT'},
+workSub:'Checklist campaign · việc · link nhanh',theme:'Đổi khung cảnh',th_campus:'Khuôn viên học viện',th_beach:'Đảo biển nắng vàng',th_library:'Thư viện ấm cúng',music:'Nhạc nền',muPlay:'Phát',muStop:'Dừng',muGen:'Lofi tự tạo',muGenHint:'Nhạc lofi được chơi ngay trên máy, đổi theo khung cảnh đang dùng ({th}). Không cần mạng, không quảng cáo, chạy mãi không lặp y hệt.',muVol:'Âm lượng',muBeats:'Nhạc (piano, bass, trống nhẹ)',muAmb_rain:'Tiếng mưa + lửa lò sưởi',muAmb_waves:'Tiếng sóng biển',muAmb_birds:'Chim hót + gió nhẹ',muYtHint:'Dán link YouTube (video, playlist, livestream) hoặc Spotify. Trình phát nhỏ nằm ở góc trái màn hình.',muBadLink:'Link chưa đúng: dán link YouTube hoặc Spotify',muPomo:'Tự bật nhạc khi bắt đầu Pomodoro',crmOpen:'Mở CRM',crmInPanel:'Mở ngay trong quầy',crmShrink:'Thu nhỏ',crmUrl:'Đổi link CRM',crmEmbedHelp:'Khung trống hoặc báo lỗi? Google chặn nhúng mặc định. Trong Apps Script của CRM, ở hàm doGet thêm .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL) vào lệnh return HtmlService… rồi Deploy → Manage deployments → Edit → New version. Chưa sửa thì dùng nút Mở CRM.',themeNow:'Đang dùng: {t}. Bấm để đổi, trang sẽ tải lại.',install:'Cài app ra màn hình',installWhy:'Cài thành app riêng trên máy tính: có biểu tượng ở Desktop/Dock, mở trong cửa sổ riêng, không cần mở trình duyệt.',installHow:'Nếu không thấy nút: Chrome/Edge → biểu tượng Cài đặt ở thanh địa chỉ (hoặc ⋮ → Lưu và chia sẻ → Cài đặt trang). Safari trên Mac → Tệp → Thêm vào Dock. iPhone/iPad → Chia sẻ → Thêm vào MH chính.',installed:'App đã được cài',clockT:'Đồng hồ trung tâm',clockS:'Giờ thực · Pomodoro',crmSub:'Lead · số liệu mỗi ngày · link CRM',crmLinks:'Link CRM',crmLinkHint:'Dán link web CRM cho sale và Google Sheet CRM để mở nhanh từ đây.',crmToday:'Số liệu hôm nay',crmMess:'Tin nhắn',crmLead:'SĐT / lead',crmGood:'Lead tốt',crmCost:'Chi phí (nghìn đ)',crm7:'7 ngày gần nhất',crmCPL:'CPL (nghìn đ)',crmDay:'Ngày',syncNote:'Dữ liệu học viện được cất chung trong tài khoản app HSK (không cần sửa Firebase).',lesson_s:'Bài học',doc_s:'Tài liệu',note_s:'Ghi chú',card_s:'Việc',post_s:'Bài đăng',page_s:'Trang',task_s:'Việc MKT'},
 en:{brand:"Tuấn's Academy",today:'Today',week:'This week',streak:'Streak',total:'Total',
 now:'Now',next:'Next',left:'left',tomorrow:'tomorrow',enter:'Enter room',
 help:'WASD / arrow keys to walk · Click the ground or a building to go there · E to enter · Scroll to zoom',
@@ -343,7 +364,7 @@ c_todo:'To do',c_doing:'Doing',c_review:'Review',c_done:'Done',proj:'Project',ta
 ch:'Channel',ps_idea:'Idea',ps_writing:'Writing',ps_review:'Review',ps_live:'Live',newPost:'Post title…',noPosts:'No posts in the calendar yet.',
 blank:'Blank page',newPage:'New page',back:'‹ Back',edited:'Edited {t}',noPages:'No pages yet. Start from a template above.',
 findPh:'Type to search every room…',addAsCard:'+ Add as task',addAsPage:'+ Create page',noRes:'No results.',
-workSub:'Campaign checklist · tasks · quick links',theme:'Change scenery',th_campus:'Academy campus',th_beach:'Sunny beach island',th_library:'Cozy library',themeNow:'Now: {t}. Tap to switch; the page reloads.',install:'Install as an app',installWhy:'Install it as its own computer app: an icon on the Desktop/Dock, opens in its own window, no browser needed.',installHow:'No button? Chrome/Edge → the Install icon in the address bar (or ⋮ → Save and share → Install page). Safari on Mac → File → Add to Dock. iPhone/iPad → Share → Add to Home Screen.',installed:'App installed',clockT:'Central clock',clockS:'Real time · Pomodoro',crmSub:'Leads · daily numbers · CRM links',crmLinks:'CRM links',crmLinkHint:'Paste the sales CRM web link and the CRM Google Sheet to open them from here.',crmToday:'Today',crmMess:'Messages',crmLead:'Phones / leads',crmGood:'Good leads',crmCost:'Spend (k VND)',crm7:'Last 7 days',crmCPL:'CPL (k VND)',crmDay:'Day',syncNote:'Academy data is stored inside your HSK app account (no Firebase changes needed).',lesson_s:'Lesson',doc_s:'Material',note_s:'Notes',card_s:'Task',post_s:'Post',page_s:'Page',task_s:'MKT task'}};
+workSub:'Campaign checklist · tasks · quick links',theme:'Change scenery',th_campus:'Academy campus',th_beach:'Sunny beach island',th_library:'Cozy library',music:'Background music',muPlay:'Play',muStop:'Stop',muGen:'Built-in lofi',muGenHint:'Lofi generated live on your device, matched to the current scenery ({th}). No network, no ads, never repeats exactly.',muVol:'Volume',muBeats:'Music (piano, bass, soft drums)',muAmb_rain:'Rain + crackling fire',muAmb_waves:'Ocean waves',muAmb_birds:'Birdsong + light wind',muYtHint:'Paste a YouTube (video, playlist, live) or Spotify link. A small player sits in the bottom-left corner.',muBadLink:'That link did not work: paste a YouTube or Spotify link',muPomo:'Start music with the Pomodoro',crmOpen:'Open CRM',crmInPanel:'Open inside the desk',crmShrink:'Collapse',crmUrl:'Change CRM link',crmEmbedHelp:'Blank frame or an error? Google blocks embedding by default. In the CRM Apps Script doGet, add .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL) to the return HtmlService… line, then Deploy → Manage deployments → Edit → New version. Until then use Open CRM.',themeNow:'Now: {t}. Tap to switch; the page reloads.',install:'Install as an app',installWhy:'Install it as its own computer app: an icon on the Desktop/Dock, opens in its own window, no browser needed.',installHow:'No button? Chrome/Edge → the Install icon in the address bar (or ⋮ → Save and share → Install page). Safari on Mac → File → Add to Dock. iPhone/iPad → Share → Add to Home Screen.',installed:'App installed',clockT:'Central clock',clockS:'Real time · Pomodoro',crmSub:'Leads · daily numbers · CRM links',crmLinks:'CRM links',crmLinkHint:'Paste the sales CRM web link and the CRM Google Sheet to open them from here.',crmToday:'Today',crmMess:'Messages',crmLead:'Phones / leads',crmGood:'Good leads',crmCost:'Spend (k VND)',crm7:'Last 7 days',crmCPL:'CPL (k VND)',crmDay:'Day',syncNote:'Academy data is stored inside your HSK app account (no Firebase changes needed).',lesson_s:'Lesson',doc_s:'Material',note_s:'Notes',card_s:'Task',post_s:'Post',page_s:'Page',task_s:'MKT task'}};
 let L='vi';
 const t=(k,v)=>{let s=(I[L]&&I[L][k])??I.vi[k]??k;if(v)for(const x in v)s=s.replace('{'+x+'}',v[x]);return s};
 const tr=x=>x==null?'':typeof x==='string'?x:(x[L]??x.vi??'');
@@ -414,7 +435,7 @@ const toM=s=>{const[a,b]=s.split(':').map(Number);return a*60+b};
 function defaults(){
  const classes={};
  for(const id of ['me1','me2','me3','me4','zh'])classes[id]={lessons:(SEED[id]||[]).map((x,i)=>({id:id+'-l'+i,t:x[0],url:x[1],done:false})),docs:(SEED_DOCS[id]||[]).map((x,i)=>({id:id+'-d'+i,t:x[0],url:x[1],note:''})),certs:[],notes:'',gate:false};
- return {v:1,updatedAt:0,lang:'vi',settings:{focus:25,brk:5,lbrk:15,zhUrl:ZH_URL,realtime:true,simHour:12,notify:true,before:10,theme:'campus'},classes,crm:{links:[],log:{},notes:''},
+ return {v:1,updatedAt:0,lang:'vi',settings:{focus:25,brk:5,lbrk:15,zhUrl:ZH_URL,realtime:true,simHour:12,notify:true,before:10,theme:'campus',music:{on:false,vol:.55,mode:'gen',yt:'',beats:true,amb:true,pomo:false},crmUrl:'https://script.google.com/macros/s/AKfycbwAQLgzNAllPBin53K4o6kZ6h3pJRFrWxvEBePX1E3X411CcS8jpYWTyEl3DjtH5mU/exec',crmEmbed:false},classes,crm:{links:[],log:{},notes:''},
   work:{tasks:[{id:'w1',t:{vi:'Hoàn thiện báo cáo Meta Ads → Sheets (bài build Lớp 1)',en:'Finish the Meta Ads → Sheets report (Class 1 build)'},done:false},{id:'w2',t:{vi:'Cập nhật CRM fanpage cho sale',en:'Update the fanpage CRM for sales'},done:false}],
    links:[{id:'k1',t:'Meta Ads Manager',url:'https://adsmanager.facebook.com/'},{id:'k2',t:'Meta Business Suite',url:'https://business.facebook.com/'},{id:'k3',t:'Meta Ad Library',url:'https://www.facebook.com/ads/library/'},{id:'k4',t:'Google Sheets',url:'https://docs.google.com/spreadsheets/'}],checks:{},notes:''},
   plan:{cards:[],posts:[],pages:[]},totals:{},sessions:[]};
@@ -422,7 +443,7 @@ function defaults(){
 function merge(j){
  const d=defaults();if(!j||j.v!==1)return d;
  const s=Object.assign(d,j);
- s.settings=Object.assign(defaults().settings,j.settings||{});if(!s.settings.zhUrl)s.settings.zhUrl=ZH_URL;
+ s.settings=Object.assign(defaults().settings,j.settings||{});s.settings.music=Object.assign(defaults().settings.music,(j.settings||{}).music||{});if(!s.settings.zhUrl)s.settings.zhUrl=ZH_URL;
  s.classes={};for(const id of ['me1','me2','me3','me4','zh'])s.classes[id]=Object.assign(defaults().classes[id],(j.classes||{})[id]||{});
  s.work=Object.assign(defaults().work,j.work||{});
  s.plan=Object.assign({cards:[],posts:[],pages:[]},j.plan||{});
@@ -1242,7 +1263,7 @@ if(!BEACH){
 }
 flushIV();
 // drifting clouds
-for(let k=0;k<7;k++){const g=new THREE.Group();g.position.set(-28+k*9+rand()*4,9+rand()*3,-24+rand()*30);for(let i=0;i<4;i++){const m=new THREE.Mesh(new THREE.IcosahedronGeometry(1+rand()*.8,0),new THREE.MeshLambertMaterial({color:'#ffffff',flatShading:true,transparent:true,opacity:.92}));m.position.set(i*1.1-1.6,(rand()-.5)*.6,(rand()-.5)*.8);m.scale.y=.65;g.add(m)}scene.add(g);CLOUDS.push(g)}
+for(let k=0;k<9;k++){const g=new THREE.Group(),ca=k/9*Math.PI*2+rand()*.4,cr=BEACH?30+rand()*6:25+rand()*7;g.position.set(Math.cos(ca)*cr,(BEACH?4:-1.5)+rand()*2.2,Math.sin(ca)*cr);g.userData.a=ca;g.userData.r=cr;for(let i=0;i<4;i++){const m=new THREE.Mesh(new THREE.IcosahedronGeometry(1+rand()*.8,0),new THREE.MeshLambertMaterial({color:'#ffffff',flatShading:true,transparent:true,opacity:.92}));m.position.set(i*1.1-1.6,(rand()-.5)*.6,(rand()-.5)*.8);m.scale.y=.65;g.add(m)}scene.add(g);CLOUDS.push(g)}
 // chimney smoke puffs
 function smokeAt(x,y,z){for(let k=0;k<4;k++){const m=new THREE.Mesh(new THREE.IcosahedronGeometry(.18,0),new THREE.MeshLambertMaterial({color:'#e9e4dc',transparent:true,opacity:.6,depthWrite:false}));m.userData={x,y,z,ph:k/4};scene.add(m);SMOKE.push(m)}}
 for(const f of window.__smokeSrc||[])smokeAt(...f());
@@ -1487,7 +1508,7 @@ addEventListener('keydown',e=>{
  if((k==='k'&&(e.metaKey||e.ctrlKey))||k==='/'){e.preventDefault();openPanel({kind:'find',q:''});return}
  if(MOVEKEYS.includes(k)){keys.add(k);walk=null;e.preventDefault()}
  else if((k==='e'||k==='enter')&&near&&!panelState){openRoom(near.id);e.preventDefault()}
- else if(k==='escape'){closePanel();$('#lightpop').classList.remove('on')}
+ else if(k==='escape'){closePanel();$('#lightpop').classList.remove('on');$('#musicpop').classList.remove('on')}
 });
 addEventListener('keyup',e=>keys.delete(e.key.toLowerCase()));
 addEventListener('blur',()=>keys.clear());
@@ -1499,7 +1520,7 @@ function onTap(cx,cy){
 }
 function walkToRoom(id){const r=RM[id];walk={x:r.door[0],z:r.door[1],room:id,stuck:0};ring.position.set(r.door[0],.03,r.door[1]);ring.material.opacity=.9}
 const ptrs=new Map();let down=null,pinch=0;
-canvas.addEventListener('pointerdown',e=>{canvas.setPointerCapture(e.pointerId);ptrs.set(e.pointerId,[e.clientX,e.clientY]);$('#lightpop').classList.remove('on');if(ptrs.size===1)down=[e.clientX,e.clientY];else{down=null;const[a,b]=[...ptrs.values()];pinch=Math.hypot(a[0]-b[0],a[1]-b[1])}});
+canvas.addEventListener('pointerdown',e=>{canvas.setPointerCapture(e.pointerId);ptrs.set(e.pointerId,[e.clientX,e.clientY]);$('#lightpop').classList.remove('on');$('#musicpop').classList.remove('on');if(ptrs.size===1)down=[e.clientX,e.clientY];else{down=null;const[a,b]=[...ptrs.values()];pinch=Math.hypot(a[0]-b[0],a[1]-b[1])}});
 canvas.addEventListener('pointermove',e=>{if(!ptrs.has(e.pointerId))return;ptrs.set(e.pointerId,[e.clientX,e.clientY]);if(ptrs.size===2){const[a,b]=[...ptrs.values()],d=Math.hypot(a[0]-b[0],a[1]-b[1]);if(pinch)setZoom(zoom*d/pinch);pinch=d}});
 canvas.addEventListener('pointerup',e=>{if(down&&ptrs.size===1&&Math.hypot(e.clientX-down[0],e.clientY-down[1])<10)onTap(e.clientX,e.clientY);ptrs.delete(e.pointerId);if(ptrs.size<2)pinch=0;down=null});
 canvas.addEventListener('pointercancel',e=>{ptrs.delete(e.pointerId);down=null;pinch=0});
@@ -1551,7 +1572,7 @@ function frame(now){
  if(window.__cat)window.__cat.scale.y=1+Math.sin(now/700)*.04;
  if(window.__globe)window.__globe.rotation.y+=dt*.15;
  if(window.__dust&&!reduce){window.__dust.position.y=Math.sin(now/2600)*.15;window.__dust.rotation.y=Math.sin(now/5000)*.01}
- if(GW.clouds&&!reduce){for(const c of GW.clouds){c.position.x+=dt*.35;if(c.position.x>34)c.position.x=-34}for(const m of GW.smoke){const d=m.userData,t=((now/3200)+d.ph)%1;m.position.set(d.x+t*.6,d.y+t*2.2,d.z-t*.3);m.scale.setScalar(.6+t*1.6);m.material.opacity=.55*(1-t)}for(const [i,d] of GW.ducks.entries()){d.position.y=-.1+Math.sin(now/600+i)*.03;d.rotation.y+=dt*.12*(i?1:-1)}}
+ if(GW.clouds&&!reduce){for(const c of GW.clouds){c.userData.a+=dt*.008;c.position.x=Math.cos(c.userData.a)*c.userData.r;c.position.z=Math.sin(c.userData.a)*c.userData.r}for(const m of GW.smoke){const d=m.userData,t=((now/3200)+d.ph)%1;m.position.set(d.x+t*.6,d.y+t*2.2,d.z-t*.3);m.scale.setScalar(.6+t*1.6);m.material.opacity=.55*(1-t)}for(const [i,d] of GW.ducks.entries()){d.position.y=-.1+Math.sin(now/600+i)*.03;d.rotation.y+=dt*.12*(i?1:-1)}}
  if(window.__beam)window.__beam.rotation.y=now/1800;
  if(window.__spout)window.__spout.scale.y=1+Math.sin(now/180)*.12;
  if(window.__water&&tick%3===0)window.__water.emissiveIntensity=.12+Math.sin(now/900)*.06;
@@ -1626,6 +1647,92 @@ function calLink(b){
  return 'https://calendar.google.com/calendar/render?action=TEMPLATE&text='+encodeURIComponent(tr(b.t))+'&dates='+ymd+'T'+f(b.s)+'/'+ymd+'T'+f(b.e)+'&ctz=Asia/Ho_Chi_Minh&recur='+encodeURIComponent('RRULE:FREQ=WEEKLY;BYDAY='+by)+'&details='+encodeURIComponent(t('brand')+' · '+PAGES_URL);
 }
 
+/* ---------------- background music ---------------- */
+const MU={ctx:null,out:null,bus:null,amb:null,timer:null,next:0,step:0,bar:0,playing:false,ambNodes:[],yt:null};
+const mcfg=()=>S.settings.music;
+const THEME_MUSIC={library:{bpm:68,prog:[[50,57,60,64,69],[43,53,59,62,65],[48,55,59,62,64],[45,55,60,64,67]],scale:[62,64,65,67,69,72,74,76],kit:'brush',inst:'ep',amb:'rain'},
+ campus:{bpm:76,prog:[[41,57,60,64,65],[40,55,59,62,64],[38,57,60,62,65],[36,55,59,60,64]],scale:[60,62,64,67,69,72,74,76],kit:'lofi',inst:'ep',amb:'birds'},
+ beach:{bpm:84,prog:[[36,55,60,64,67],[45,55,60,64,69],[41,57,60,64,65],[43,55,59,62,65]],scale:[64,67,69,71,72,74,76,79],kit:'shaker',inst:'pluck',amb:'waves'}};
+const TM=()=>THEME_MUSIC[THEME0]||THEME_MUSIC.campus;
+const mtof=n=>440*Math.pow(2,(n-69)/12);
+function muInit(){if(MU.ctx)return;const C=new (window.AudioContext||window.webkitAudioContext)();MU.ctx=C;
+ MU.out=C.createGain();MU.out.gain.value=0;const comp=C.createDynamicsCompressor();comp.threshold.value=-18;comp.ratio.value=3;MU.out.connect(comp);comp.connect(C.destination);
+ const lp=C.createBiquadFilter();lp.type='lowpass';lp.frequency.value=THEME0==='beach'?5200:2600;lp.Q.value=.4;lp.connect(MU.out);MU.bus=C.createGain();MU.bus.gain.value=1;MU.bus.connect(lp);
+ MU.amb=C.createGain();MU.amb.gain.value=0;MU.amb.connect(MU.out);
+ const n=C.createBuffer(1,C.sampleRate*2,C.sampleRate),d=n.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=Math.random()*2-1;MU.noise=n;
+ const br=C.createBuffer(1,C.sampleRate*4,C.sampleRate),b=br.getChannelData(0);let last=0;for(let i=0;i<b.length;i++){last=(last+.02*(Math.random()*2-1))/1.02;b[i]=last*3.5}MU.brown=br}
+function nsrc(buf,loop){const s=MU.ctx.createBufferSource();s.buffer=buf||MU.noise;s.loop=!!loop;return s}
+function env(g,t,a,peak,dec,sus=0){g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(peak,t+a);g.gain.exponentialRampToValueAtTime(Math.max(.0001,sus||.0001),t+a+dec)}
+function voice(n,t,dur,vel,kind){const C=MU.ctx,f=mtof(n),g=C.createGain();g.connect(MU.bus);
+ if(kind==='pluck'){const o=C.createOscillator();o.type='triangle';o.frequency.value=f;const o2=C.createOscillator();o2.type='sine';o2.frequency.value=f*2;const g2=C.createGain();g2.gain.value=.25;o2.connect(g2);g2.connect(g);o.connect(g);env(g,t,.005,vel,.9);o.start(t);o2.start(t);o.stop(t+1.2);o2.stop(t+1.2);return}
+ if(kind==='bell'){const o=C.createOscillator();o.type='sine';o.frequency.value=f;o.connect(g);env(g,t,.01,vel,1.6);o.start(t);o.stop(t+1.8);const o3=C.createOscillator();o3.type='sine';o3.frequency.value=f*3.01;const g3=C.createGain();g3.gain.value=.12;o3.connect(g3);g3.connect(g);o3.start(t);o3.stop(t+.6);return}
+ if(kind==='bass'){const o=C.createOscillator();o.type='sine';o.frequency.value=f;o.connect(g);g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(vel,t+.02);g.gain.setTargetAtTime(0,t+dur*.7,.08);o.start(t);o.stop(t+dur+.4);return}
+ // electric-piano-ish pad
+ for(const [type,mul,det,amp] of [['sine',1,0,1],['triangle',1,6,.35],['sine',2,-4,.12]]){const o=C.createOscillator();o.type=type;o.frequency.value=f*mul;o.detune.value=det;const a=C.createGain();a.gain.value=amp;o.connect(a);a.connect(g);o.start(t);o.stop(t+dur+.6)}
+ const trem=C.createOscillator(),tg=C.createGain();trem.frequency.value=4.2;tg.gain.value=vel*.15;trem.connect(tg);tg.connect(g.gain);trem.start(t);trem.stop(t+dur+.6);
+ g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(vel,t+.03);g.gain.setTargetAtTime(vel*.45,t+.1,.4);g.gain.setTargetAtTime(0,t+dur,.18);
+}
+function drum(kind,t,vel){const C=MU.ctx;
+ if(kind==='kick'){const o=C.createOscillator(),g=C.createGain();o.frequency.setValueAtTime(120,t);o.frequency.exponentialRampToValueAtTime(42,t+.18);o.connect(g);g.connect(MU.bus);env(g,t,.004,vel,.32);o.start(t);o.stop(t+.4);return}
+ const s=nsrc(),f=C.createBiquadFilter(),g=C.createGain();s.connect(f);f.connect(g);g.connect(MU.bus);
+ if(kind==='snare'){f.type='bandpass';f.frequency.value=1800;f.Q.value=.8;env(g,t,.003,vel,.18)}
+ else if(kind==='hat'){f.type='highpass';f.frequency.value=7000;env(g,t,.002,vel,.05)}
+ else if(kind==='shaker'){f.type='bandpass';f.frequency.value=5200;f.Q.value=1.2;env(g,t,.02,vel,.09)}
+ else if(kind==='brush'){f.type='bandpass';f.frequency.value=3200;f.Q.value=.5;env(g,t,.04,vel,.25)}
+ s.start(t,Math.random()*1.5);s.stop(t+.4);
+}
+function conga(t,n,vel){const C=MU.ctx,o=C.createOscillator(),g=C.createGain();o.frequency.setValueAtTime(mtof(n)*1.06,t);o.frequency.exponentialRampToValueAtTime(mtof(n),t+.05);o.connect(g);g.connect(MU.bus);env(g,t,.003,vel,.22);o.start(t);o.stop(t+.3)}
+function muStep(t){const T=TM(),s=MU.step%16,ch=T.prog[MU.bar%4],sw=(s%2)?(60/T.bpm/4)*.18:0,tt=t+sw;
+ if(s===0){voice(ch[0],tt,60/T.bpm*3.6,.34,'bass');ch.slice(1).forEach((n,i)=>voice(n,tt+i*.018,60/T.bpm*3.4,.075,T.inst==='pluck'?'pluck':'ep'))}
+ if(s===8&&T.kit!=='brush')voice(ch[0]+(MU.bar%2?7:0),tt,60/T.bpm*1.6,.26,'bass');
+ if(T.inst==='pluck'&&[3,6,10,14].includes(s))ch.slice(1).forEach((n,i)=>voice(n+12*(i===3),tt+i*.012,.4,.045,'pluck'));
+ if(T.inst==='ep'&&s===10&&Math.random()<.6)ch.slice(2).forEach((n,i)=>voice(n,tt+i*.015,60/T.bpm*.9,.05,'ep'));
+ if(s%2===0&&Math.random()<(T.inst==='pluck'?.22:.18)){const n=T.scale[(Math.random()*T.scale.length)|0];voice(n+(T.inst==='pluck'?0:12),tt,.6,.07,'bell')}
+ if(T.kit==='lofi'){if(s===0||s===10||(s===7&&Math.random()<.3))drum('kick',tt,.55);if(s===4||s===12)drum('snare',tt,.16);if(s%2===0)drum('hat',tt,s%4?.03:.05)}
+ else if(T.kit==='brush'){if(s===0||s===9)drum('kick',tt,.3);if(s===4||s===12)drum('brush',tt,.06);if(s%4===2)drum('hat',tt,.015)}
+ else{if(s===0||s===8)drum('kick',tt,.38);if(s%2===0)drum('shaker',tt,s%4?.035:.06);if([3,6,11,14].includes(s))conga(tt,s===6?57:62,.18)}
+ MU.step++;if(MU.step%16===0)MU.bar++;
+}
+function muTick(){const C=MU.ctx,T=TM(),dt=60/T.bpm/4;while(MU.next<C.currentTime+.15){muStep(MU.next);MU.next+=dt}}
+function ambStart(){const C=MU.ctx,T=TM();ambStop();
+ if(T.amb==='rain'){const s=nsrc(null,true),f=C.createBiquadFilter(),g=C.createGain();f.type='lowpass';f.frequency.value=1400;g.gain.value=.16;s.connect(f);f.connect(g);g.connect(MU.amb);s.start();MU.ambNodes.push(s);
+  const crack=()=>{if(!MU.playing||T.amb!=='rain')return;const t=C.currentTime;for(let i=0;i<1+(Math.random()*3|0);i++){const n=nsrc(),hf=C.createBiquadFilter(),gg=C.createGain();hf.type='highpass';hf.frequency.value=2500;n.connect(hf);hf.connect(gg);gg.connect(MU.amb);env(gg,t+i*.05,.001,.18*Math.random(),.03);n.start(t+i*.05,Math.random());n.stop(t+i*.05+.06)}MU.ambT=setTimeout(crack,120+Math.random()*700)};crack()}
+ else if(T.amb==='waves'){const s=nsrc(MU.brown,true),f=C.createBiquadFilter(),g=C.createGain();f.type='lowpass';f.frequency.value=900;g.gain.value=.25;s.connect(f);f.connect(g);g.connect(MU.amb);const l=C.createOscillator(),lg=C.createGain();l.frequency.value=.09;lg.gain.value=.2;l.connect(lg);lg.connect(g.gain);l.start();s.start();MU.ambNodes.push(s,l)}
+ else{const s=nsrc(null,true),f=C.createBiquadFilter(),g=C.createGain();f.type='bandpass';f.frequency.value=500;f.Q.value=.6;g.gain.value=.05;s.connect(f);f.connect(g);g.connect(MU.amb);s.start();MU.ambNodes.push(s);
+  const bird=()=>{if(!MU.playing)return;const t=C.currentTime,o=C.createOscillator(),gg=C.createGain(),b=2400+Math.random()*1400;o.type='sine';for(let i=0;i<2+(Math.random()*3|0);i++){o.frequency.setValueAtTime(b,t+i*.13);o.frequency.exponentialRampToValueAtTime(b*1.45,t+i*.13+.08)}o.connect(gg);gg.connect(MU.amb);env(gg,t,.01,.06,.7);o.start(t);o.stop(t+.8);MU.ambT=setTimeout(bird,2500+Math.random()*6000)};MU.ambT=setTimeout(bird,1500)}
+}
+function ambStop(){clearTimeout(MU.ambT);for(const n of MU.ambNodes)try{n.stop()}catch(e){}MU.ambNodes=[]}
+function muApplyVol(){if(!MU.ctx)return;const c=mcfg(),t=MU.ctx.currentTime;MU.out.gain.setTargetAtTime(MU.playing&&c.mode==='gen'?c.vol*.9:0,t,.4);MU.bus.gain.setTargetAtTime(c.beats?1:0,t,.3);MU.amb.gain.setTargetAtTime(c.amb?1:0,t,.3)}
+function ytEmbed(u){u=(u||'').trim();let m;
+ if((m=u.match(/[?&]list=([\w-]+)/)))return `https://www.youtube.com/embed/videoseries?list=${m[1]}&autoplay=1`;
+ if((m=u.match(/(?:youtu\.be\/|v=|embed\/|live\/|shorts\/)([\w-]{11})/)))return `https://www.youtube.com/embed/${m[1]}?autoplay=1&loop=1&playlist=${m[1]}`;
+ if((m=u.match(/open\.spotify\.com\/(?:intl-\w+\/)?(playlist|album|track|show|episode)\/(\w+)/)))return `https://open.spotify.com/embed/${m[1]}/${m[2]}?utm_source=generator`;
+ if(/^[\w-]{11}$/.test(u))return `https://www.youtube.com/embed/${u}?autoplay=1&loop=1&playlist=${u}`;return null}
+function ytShow(on){const box2=$('#ytbox');if(!on){box2.classList.remove('on');box2.querySelector('.ytf').innerHTML='';return}
+ const src=ytEmbed(mcfg().yt);if(!src){toast(t('muBadLink'));return}box2.querySelector('.ytf').innerHTML=`<iframe src="${esc(src)}" allow="autoplay; encrypted-media; clipboard-write" allowfullscreen title="music"></iframe>`;box2.classList.add('on')}
+function muPlay(){const c=mcfg();if(c.mode==='yt'){muStopGen();ytShow(true);MU.playing=true;renderMusic();return}
+ ytShow(false);muInit();if(MU.ctx.state==='suspended')MU.ctx.resume();if(!MU.playing){MU.playing=true;MU.next=MU.ctx.currentTime+.1;MU.step=0;clearInterval(MU.timer);MU.timer=setInterval(muTick,40);ambStart()}muApplyVol();renderMusic()}
+function muStopGen(){if(!MU.ctx)return;clearInterval(MU.timer);MU.timer=null;ambStop();MU.out.gain.setTargetAtTime(0,MU.ctx.currentTime,.2)}
+function muStop(){muStopGen();ytShow(false);MU.playing=false;renderMusic()}
+function muToggle(){const c=mcfg();if(MU.playing){muStop();c.on=false}else{c.on=true;muPlay()}save()}
+function renderMusic(){const c=mcfg(),p=$('#musicpop');$('#b-music').classList.toggle('act',MU.playing);
+ p.innerHTML=`<div class="mh"><b>${t('music')}</b><button class="btn sm ${MU.playing?'':'pri'}" data-mu="toggle">${MU.playing?t('muStop'):t('muPlay')}</button></div>
+ <div class="seg"><button data-mu="mode" data-v="gen" class="${c.mode==='gen'?'on':''}">${t('muGen')}</button><button data-mu="mode" data-v="yt" class="${c.mode==='yt'?'on':''}">YouTube · Spotify</button></div>
+ ${c.mode==='gen'?`<p>${t('muGenHint',{th:t('th_'+THEME0)})}</p><label class="rw">${t('muVol')}<input type="range" min="0" max="1" step="0.05" value="${c.vol}" data-mu="vol"></label>
+ <label class="ck"><input type="checkbox" data-mu="beats" ${c.beats?'checked':''}> ${t('muBeats')}</label><label class="ck"><input type="checkbox" data-mu="amb" ${c.amb?'checked':''}> ${t('muAmb_'+TM().amb)}</label>`
+ :`<p>${t('muYtHint')}</p><div class="row"><input class="inp" id="mu-link" placeholder="youtube.com/… · open.spotify.com/…" value="${esc(c.yt||'')}" inputmode="url"><button class="btn sm pri" data-mu="link">OK</button></div>
+ <div class="chips">${[['Lofi Girl','https://www.youtube.com/watch?v=jfKfPfyJRdk'],['Synthwave','https://www.youtube.com/watch?v=4xDzrJKXOOY'],['Jazz café','https://www.youtube.com/watch?v=Dx5qFachd3A']].map(([n,u])=>`<button data-mu="preset" data-u="${u}">${n}</button>`).join('')}</div>`}
+ <label class="ck"><input type="checkbox" data-mu="pomo" ${c.pomo?'checked':''}> ${t('muPomo')}</label>`}
+$('#b-music').addEventListener('click',e=>{e.stopPropagation();renderMusic();$('#musicpop').classList.toggle('on');$('#lightpop').classList.remove('on')});
+$('#musicpop').addEventListener('click',e=>{e.stopPropagation();const b=e.target.closest('[data-mu]');if(!b)return;const c=mcfg(),k=b.dataset.mu;
+ if(k==='toggle')muToggle();else if(k==='mode'){c.mode=b.dataset.v;save();if(MU.playing){muStop();muPlay()}renderMusic()}
+ else if(k==='link'){c.yt=$('#mu-link').value.trim();c.mode='yt';save();if(ytEmbed(c.yt)){c.on=true;muPlay()}else toast(t('muBadLink'))}
+ else if(k==='preset'){c.yt=b.dataset.u;c.mode='yt';c.on=true;save();muPlay()}});
+$('#musicpop').addEventListener('input',e=>{const b=e.target.closest('[data-mu]');if(!b)return;const c=mcfg(),k=b.dataset.mu;if(k==='vol')c.vol=+b.value;else if(['beats','amb','pomo'].includes(k))c[k]=b.checked;muApplyVol();save()});
+$('#ytbox .x').addEventListener('click',()=>{muStop();mcfg().on=false;save()});
+// browsers only allow sound after a tap: resume a saved "on" state at the first interaction
+{const resume=()=>{removeEventListener('pointerdown',resume,true);removeEventListener('keydown',resume,true);if(mcfg().on&&!MU.playing)muPlay()};addEventListener('pointerdown',resume,true);addEventListener('keydown',resume,true)}
+
 /* ---------------- pomodoro ---------------- */
 const PK='tuan-academy-pomo';
 let PM;try{PM=JSON.parse(localStorage.getItem(PK))}catch(e){}
@@ -1650,7 +1757,7 @@ function pomoTick(){
  }
  renderPomo();
 }
-$('#pstart').addEventListener('click',()=>{ensureAudio();if(PM.running){PM.remain=premain();PM.running=false}else{PM.endAt=Date.now()+premain()*1000;PM.running=true;PM.remain=null;if(PM.mode==='focus')toast(t('started',{c:tr(RM[PM.cls].title)}))}savePM();renderPomo()});
+$('#pstart').addEventListener('click',()=>{ensureAudio();if(PM.running){PM.remain=premain();PM.running=false}else{PM.endAt=Date.now()+premain()*1000;PM.running=true;PM.remain=null;if(PM.mode==='focus'&&mcfg().pomo&&!MU.playing){mcfg().on=true;muPlay()}if(PM.mode==='focus')toast(t('started',{c:tr(RM[PM.cls].title)}))}savePM();renderPomo()});
 $('#preset').addEventListener('click',()=>{PM.running=false;PM.remain=null;savePM();renderPomo()});
 $('#pskip').addEventListener('click',()=>{PM.running=false;PM.remain=null;PM.mode=PM.mode==='focus'?'brk':'focus';savePM();renderPomo()});
 $('#pcls').addEventListener('change',e=>{PM.cls=e.target.value;savePM()});
@@ -1658,8 +1765,8 @@ $('#pcls').addEventListener('change',e=>{PM.cls=e.target.value;savePM()});
 /* ---------------- panel ---------------- */
 const panel=$('#panel');let panelState=null;
 function openRoom(id){const r=RM[id];if(r.kind==='board')openPanel({kind:'board'});else if(r.kind==='pomo')openPanel({kind:'pomo'});else if(r.kind==='plan')openPanel({kind:'plan',tab:'board'});else if(r.kind==='crm')openPanel({kind:'crm'});else if(r.kind==='cert')openPanel({kind:'certs'});else openPanel({kind:r.kind,id,tab:'syllabus'})}
-function openPanel(st){panelState=st;renderPanel();panel.classList.add('open');document.body.classList.add('popen');$('#prompt').classList.remove('on');walk=null;if(st.kind==='find')setTimeout(()=>{const i=$('#fq');if(i)i.focus()},60)}
-function closePanel(){if(!panelState)return;panelState=null;panel.classList.remove('open');document.body.classList.remove('popen');near=null;canvas.focus({preventScroll:true})}
+function openPanel(st){panelState=st;panel.classList.remove('wide');renderPanel();panel.classList.add('open');document.body.classList.add('popen');$('#prompt').classList.remove('on');walk=null;if(st.kind==='find')setTimeout(()=>{const i=$('#fq');if(i)i.focus()},60)}
+function closePanel(){if(!panelState)return;panel.classList.remove('wide');panelState=null;panel.classList.remove('open');document.body.classList.remove('popen');near=null;canvas.focus({preventScroll:true})}
 const head=(hex,k,title,sub)=>`<div class="grab"></div><header class="ph" style="--c:${hex}"><div class="pk">${esc(k)}</div><div><h2>${esc(title)}</h2><p>${sub}</p></div><button class="x" data-act="close" aria-label="${t('close')}">×</button></header>`;
 const linkOrText=(x,u)=>u?`<a href="${esc(u)}" target="_blank" rel="noopener">${esc(tr(x))}</a>`:esc(tr(x));
 function lessonsHTML(c){
@@ -1736,8 +1843,11 @@ function planPanel(){
 }
 function crmPanel(){
  const r=RM.crm,c=S.crm,today=dkey(new Date()),lg=c.log[today]||{},K=[['mess','crmMess'],['lead','crmLead'],['good','crmGood'],['cost','crmCost']];
- let h=head(r.hex,r.short,tr(r.title),t('crmSub'))+`<div class="pb" style="--c:${r.hex}">`;
- h+=`<div class="sec" style="margin-top:0"><h3>${t('crmLinks')}</h3>${c.links.length?`<ul class="list">${c.links.map(k=>`<li><div class="lt">${linkOrText(k.t,safeUrl(k.url))}</div><button class="del" data-act="delCrm" data-id="${k.id}" aria-label="${t('del')}">×</button></li>`).join('')}</ul>`:`<div class="empty">${t('crmLinkHint')}</div>`}
+ let h=head(r.hex,r.short,tr(r.title),t('crmSub'))+`<div class="pb" style="--c:${r.hex}">`;const cu=safeUrl(S.settings.crmUrl);panel.classList.toggle('wide',!!(S.settings.crmEmbed&&cu));
+ h+=`<div class="sec" style="margin-top:0"><h3>CRM Fanpage</h3><div class="crmapp">${cu?`<button class="btn pri" data-act="crmOpen">${t('crmOpen')} ↗</button><button class="btn" data-act="crmEmbed">${S.settings.crmEmbed?t('crmShrink'):t('crmInPanel')}</button>`:''}</div>
+ ${S.settings.crmEmbed&&cu?`<div class="crmframe"><iframe src="${esc(cu)}" title="CRM"></iframe></div><p class="hint" style="font-size:12px;color:var(--mute);margin:8px 0 0">${t('crmEmbedHelp')}</p>`:''}
+ <details style="margin-top:10px"><summary style="cursor:pointer;font-size:13px;color:var(--mute)">${t('crmUrl')}</summary><div class="add"><div class="row"><input name="cu" value="${esc(S.settings.crmUrl||'')}" inputmode="url"><button class="btn sm pri" data-act="crmUrlSave">OK</button></div></div></details></div>`;
+ h+=`<div class="sec"><h3>${t('crmLinks')}</h3>${c.links.length?`<ul class="list">${c.links.map(k=>`<li><div class="lt">${linkOrText(k.t,safeUrl(k.url))}</div><button class="del" data-act="delCrm" data-id="${k.id}" aria-label="${t('del')}">×</button></li>`).join('')}</ul>`:`<div class="empty">${t('crmLinkHint')}</div>`}
  <div class="add"><input name="t" placeholder="${t('title')}"><div class="row"><input name="u" placeholder="${t('link')}" inputmode="url"><button class="btn sm pri" data-act="addCrm">${t('add')}</button></div></div></div>`;
  h+=`<div class="sec"><h3>${t('crmToday')}</h3><div class="grid3" style="grid-template-columns:repeat(2,minmax(0,1fr))">${K.map(([k,l])=>`<label>${t(l)}<input class="inp" type="number" inputmode="numeric" min="0" data-act="crmv" data-k="${k}" value="${lg[k]??''}"></label>`).join('')}</div></div>`;
  const rows=[];for(let i=0;i<7;i++){const d=new Date();d.setDate(d.getDate()-i);const k=dkey(d),v=c.log[k]||{};rows.push([k,v])}
@@ -1857,6 +1967,9 @@ panel.addEventListener('click',e=>{
   case 'fgo':{const r=(st.res||[])[+b.dataset.i];if(r)openPanel(Object.assign({},r.go));break}
   case 'qCard':{const ti=(st.q||'').trim();if(!ti)return;S.plan.cards.push({id:uid(),t:ti,p:'',g:TAGS[0],due:'',col:'todo'});save();updateTags();openPanel({kind:'plan',tab:'board'});break}
   case 'qPage':{const ti=(st.q||'').trim();if(!ti)return;const pg=newPage('',ti);openPanel({kind:'plan',tab:'pages',page:pg.id});break}
+  case 'crmOpen':{const u=safeUrl(S.settings.crmUrl);if(u)window.open(u,'tuan-crm','width=1280,height=860');break}
+  case 'crmEmbed':S.settings.crmEmbed=!S.settings.crmEmbed;done();break;
+  case 'crmUrlSave':{const u=safeUrl(fval(b,'cu'));if(!u)return;S.settings.crmUrl=u;done();break}
   case 'addCrm':{const u=safeUrl(fval(b,'u'));if(!u)return;S.crm.links.push({id:uid(),t:fval(b,'t')||u,url:u});done();break}
   case 'delCrm':S.crm.links=S.crm.links.filter(x=>x.id!==id);done();break;
   case 'theme':S.settings.theme=b.dataset.v;save();try{localStorage.setItem(LS,JSON.stringify(S))}catch(x){}setTimeout(()=>location.reload(),350);break;
