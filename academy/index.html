@@ -1541,7 +1541,7 @@ const meTag=mkTag('me',new THREE.Vector3());
 /* ---------------- navigation grid + A* ---------------- */
 const NAV={};
 function navBuild(){const b=LIB?[X0,X1,Z0,Z1]:[-24,24,-24,24],cs=.4,nx=Math.ceil((b[1]-b[0])/cs),nz=Math.ceil((b[3]-b[2])/cs),g=new Uint8Array(nx*nz);
- for(let j=0;j<nz;j++)for(let i=0;i<nx;i++)g[i+j*nx]=walkable(b[0]+(i+.5)*cs,b[2]+(j+.5)*cs)?1:0;Object.assign(NAV,{b,cs,nx,nz,g})}
+ const e=.16;for(let j=0;j<nz;j++)for(let i=0;i<nx;i++){const x=b[0]+(i+.5)*cs,z=b[2]+(j+.5)*cs;g[i+j*nx]=walkable(x,z)&&walkable(x+e,z)&&walkable(x-e,z)&&walkable(x,z+e)&&walkable(x,z-e)?1:0}Object.assign(NAV,{b,cs,nx,nz,g})}
 function navFree(k,R=14){const {nx,nz,g}=NAV;if(g[k])return k;const i0=k%nx,j0=(k/nx)|0;for(let r=1;r<=R;r++){let best=-1,bd=1e9;for(let dj=-r;dj<=r;dj++)for(let di=-r;di<=r;di++){if(Math.max(Math.abs(di),Math.abs(dj))!==r)continue;const i=i0+di,j=j0+dj;if(i<0||j<0||i>=nx||j>=nz)continue;const q=i+j*nx;if(g[q]){const d=di*di+dj*dj;if(d<bd){bd=d;best=q}}}if(best>=0)return best}return -1}
 function navLOS(ax,az,bx,bz){const {b,cs,nx,g}=NAV,L=Math.hypot(bx-ax,bz-az),n=Math.ceil(L/(cs*.45));for(let k=1;k<n;k++){const x=ax+(bx-ax)*k/n,z=az+(bz-az)*k/n,i=Math.floor((x-b[0])/cs),j=Math.floor((z-b[2])/cs);if(!g[i+j*nx])return false}return true}
 function navPath(sx,sz,tx,tz){
@@ -1664,7 +1664,7 @@ function onTap(cx,cy){
  if(CAT.on&&ray.intersectObject(catG,true).length){catPet();return}
  const hs=ray.intersectObjects(pickables,false);if(hs.length){walkToRoom(hs[0].object.userData.room);return}
  if(ray.ray.intersectPlane(ground,hit)){if(SIT)standUp();
-  let best=null,bd=.9;for(const st of SEATS){if(st.room)continue;const d=Math.hypot(st.x-hit.x,st.z-hit.z);if(d<bd){bd=d;best=st}}
+  let best=null,bd=.6;for(const st of SEATS){if(st.room)continue;const d=Math.hypot(st.x-hit.x,st.z-hit.z);if(d<bd){bd=d;best=st}}
   if(best){if(!walkTo(best.ax,best.az,{seat:best}))sitAt(best);return}
   if(!walkTo(hit.x,hit.z)){walk={x:hit.x,z:hit.z,stuck:0};ring.position.set(hit.x,.03,hit.z);ring.material.opacity=.9}}
 }
@@ -2200,6 +2200,7 @@ setInterval(remindTick,20000);
 setInterval(()=>{drawClock();updateStats()},15000);
 setInterval(drawBoard,60000);
 if(document.fonts&&document.fonts.ready)document.fonts.ready.then(()=>{drawBoard()});
+window.__acad={get P(){return P},get walk(){return walk},get SIT(){return SIT},walkable,navPath,SEATS,NAV,get cat(){return CAT}};
 catInit();setTimeout(()=>{try{if(!NAV.g)navBuild()}catch(e){}},1200);
 requestAnimationFrame(frame);
 setTimeout(()=>$('#loading').classList.add('off'),300);
