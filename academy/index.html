@@ -546,7 +546,7 @@ function cornerD(x,z){const dx=Math.max(X0+CR-x,0,x-(X1-CR)),dz=Math.max(Z0+CR-z
 const onIsland=(x,z)=>x>X0&&x<X1&&z>Z0&&z<Z1&&cornerD(x,z)<=CR;
 const edgeD=(x,z)=>{const c=cornerD(x,z);return c>0?CR-c:Math.min(x-X0,X1-x,z-Z0,Z1-z)};
 const inR=(x,z,r)=>x>=r[0]&&x<r[1]&&z>=r[2]&&z<r[3];
-function cellType(x,z){if(BEACH&&!onIsland(x,z))return 'out';if(z>RIV[0]&&z<RIV[1])return(x>BRI[0]&&x<BRI[1])?'bridge':'water';if(inR(x,z,PLAZA))return 'plaza';if(PATHS.some(p=>inR(x,z,p)))return 'path';if(BEACH&&(edgeD(x,z)<2.8||(z>RIV[0]-1.4&&z<RIV[1]+1.4)))return 'sand';if(x>-12.5&&x<12.5&&z>-13.5&&z<-5)return 'court';return 'grass'}
+function cellType(x,z){if(BEACH&&!onIsland(x,z))return 'out';if(z>RIV[0]&&z<RIV[1])return(x>BRI[0]&&x<BRI[1])?'bridge':'water';if(inR(x,z,PLAZA))return 'plaza';if(PATHS.some(p=>inR(x,z,p)))return 'path';if(BEACH&&(edgeD(x,z)<3.8||z>RIV[0]-2))return 'sand';if(x>-12.5&&x<12.5&&z>-13.5&&z<-5)return 'court';return 'grass'}
 const PAL=BEACH?{grass:['#6cc24a','#63b843'],court:['#79cc52','#70c34b'],path:['#d9b27c','#cfa46e'],plaza:['#f6ead0','#efe0c0'],sand:['#f7ecc9','#f1e3b9']}:{grass:['#7fbf4d','#74b445'],court:['#8ccb57','#82c24f'],path:['#e8cb7a','#dfbf68'],plaza:['#ddd5c6','#d1c8b6']};
 {
  const cells=[];for(let x=X0;x<X1;x++)for(let z=Z0;z<Z1;z++){const cx=x+.5,cz=z+.5,ty=cellType(cx,cz);if(ty!=='water'&&ty!=='bridge'&&ty!=='out')cells.push([cx,cz,ty])}
@@ -738,13 +738,13 @@ const doorNear=(x,z,m)=>ROOMS.some(r=>Math.hypot(x-r.door[0],z-r.door[1])<m);
   if(spots.some(s=>Math.hypot(s[0]-x,s[1]-z)<1.6))continue;
   spots.push([x,z,.85+rand()*.45])}
 if(BEACH){
- const PS=[];for(const sx of [-1,1]){for(const zz of [4.9,8.1])PS.push([sx*2.4,zz,1]);PS.push([sx*5.2,-2.6,1.05],[sx*5.2,2.6,1.05],[sx*14,-14,1.1],[sx*17.5,-4,1],[sx*17.5,4,1],[sx*14,10.6,1.1],[sx*15,15.5,1])}
- let tr2=0;while(PS.length<64&&tr2<6000){tr2++;const x=X0+1+rand()*(X1-X0-2),z=Z0+1+rand()*(Z1-Z0-2);if(!onIsland(x,z)||edgeD(x,z)<.9)continue;const ty=cellType(x,z);if(ty!=='sand'&&ty!=='grass')continue;if(inBoxes(x,z,1.3)||doorNear(x,z,2.6)||nearPath(x,z,.9)&&ty!=='sand')continue;if(Math.abs(x)<17&&z>-14.5&&z<4)continue;if(z>RIV[0]-.6&&z<RIV[1]+.6)continue;if(Math.abs(x)<5.5&&z>12)continue;if(PS.some(s=>Math.hypot(s[0]-x,s[1]-z)<2.2))continue;PS.push([x,z,.9+rand()*.35])}
- const segs=4,fr=6,n=PS.length,tm=new THREE.InstancedMesh(bgeo(.26,.72,.26),new THREE.MeshLambertMaterial(),n*segs),fm=new THREE.InstancedMesh(bgeo(1.6,.07,.44),new THREE.MeshLambertMaterial(),n*fr),cm=new THREE.InstancedMesh(bgeo(.2,.2,.2),M('#6b4a2b'),n*3);
+ const PS=[];for(const sx of [-1,1]){PS.push([sx*2.6,8.2,.95],[sx*14,-14,1.1],[sx*17.6,-4,1],[sx*17.6,4,1],[sx*12.5,13.5,1.1],[sx*16,16,1])}
+ let tr2=0;while(PS.length<36&&tr2<6000){tr2++;const x=X0+1+rand()*(X1-X0-2),z=Z0+1+rand()*(Z1-Z0-2);if(!onIsland(x,z)||edgeD(x,z)<.9)continue;const ty=cellType(x,z);if(ty!=='sand'&&ty!=='grass')continue;if(inBoxes(x,z,1.3)||doorNear(x,z,2.6)||nearPath(x,z,.9)&&ty!=='sand')continue;if(Math.abs(x)<17&&z>-14.5&&z<9.5)continue;if(z>RIV[0]-.6&&z<RIV[1]+.6)continue;if(Math.abs(x)<6.5&&z>12)continue;if(PS.some(s=>Math.hypot(s[0]-x,s[1]-z)<2.8))continue;PS.push([x,z,.9+rand()*.35])}
+ const segs=4,fr=6,n=PS.length,tm=new THREE.InstancedMesh(bgeo(.26,.72,.26),new THREE.MeshLambertMaterial(),n*segs),fm=new THREE.InstancedMesh(bgeo(1.2,.07,.34),new THREE.MeshLambertMaterial(),n*fr),cm=new THREE.InstancedMesh(bgeo(.2,.2,.2),M('#6b4a2b'),n*3);
  const mm=new THREE.Matrix4(),t1=new THREE.Matrix4(),cc=new THREE.Color(),FG=['#3d9a3a','#4caf3f','#2f8a35'];
  PS.forEach(([x,z,s],i)=>{const a=rand()*Math.PI*2,lean=.13*s,dx=Math.cos(a),dz=Math.sin(a);let top=null;
   for(let k=0;k<segs;k++){const y=(.36+k*.68)*s,ox=dx*lean*k,oz=dz*lean*k;mm.makeTranslation(x+ox,y,z+oz).multiply(t1.makeScale(1-k*.06,s,1-k*.06));tm.setMatrixAt(i*segs+k,mm);cc.set(k%2?'#9b6b3d':'#86592f');tm.setColorAt(i*segs+k,cc);top=[x+ox,(.36+segs*.68)*s,z+oz]}
-  for(let k=0;k<fr;k++){const ang=k/fr*Math.PI*2+a;mm.makeTranslation(top[0],top[1],top[2]).multiply(t1.makeRotationY(ang)).multiply(new THREE.Matrix4().makeTranslation(.72*s,0,0)).multiply(new THREE.Matrix4().makeRotationZ(-.38)).multiply(new THREE.Matrix4().makeScale(s,1,s));fm.setMatrixAt(i*fr+k,mm);cc.set(FG[(i+k)%3]);fm.setColorAt(i*fr+k,cc)}
+  for(let k=0;k<fr;k++){const ang=k/fr*Math.PI*2+a;mm.makeTranslation(top[0],top[1],top[2]).multiply(t1.makeRotationY(ang)).multiply(new THREE.Matrix4().makeTranslation(.52*s,0,0)).multiply(new THREE.Matrix4().makeRotationZ(-.42)).multiply(new THREE.Matrix4().makeScale(s,1,s));fm.setMatrixAt(i*fr+k,mm);cc.set(FG[(i+k)%3]);fm.setColorAt(i*fr+k,cc)}
   for(let k=0;k<3;k++){const ang=k*2.1+a;mm.makeTranslation(top[0]+Math.cos(ang)*.2,top[1]-.2,top[2]+Math.sin(ang)*.2);cm.setMatrixAt(i*3+k,mm)}
   CIRCLES.push([x,z,.28])});
  for(const im of [tm,fm,cm]){im.castShadow=true;im.receiveShadow=true;scene.add(im)}
