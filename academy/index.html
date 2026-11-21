@@ -54,6 +54,7 @@ canvas#c{position:fixed;inset:0;width:100%;height:100%;display:block;touch-actio
 #hud-tr{position:fixed;right:calc(12px + var(--sr));top:calc(12px + var(--st));display:flex;flex-direction:column;gap:7px;align-items:flex-end;transition:right .3s}
 body.popen #hud-tr{right:min(450px,calc(100vw - 60px))}
 .ib{width:42px;height:42px;border-radius:13px;border:1px solid var(--line);background:var(--panel);display:grid;place-items:center;cursor:pointer;box-shadow:0 6px 18px rgba(10,20,40,.18);font-weight:800;font-size:12.5px;padding:0}
+.ib[hidden]{display:none}
 .ib svg{width:19px;height:19px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
 .ib:focus-visible,.btn:focus-visible,button:focus-visible{outline:2px solid var(--acc2);outline-offset:2px}
 #savebadge{font-size:10.5px;color:#fff;background:rgba(0,0,0,.35);padding:2px 8px;border-radius:20px;white-space:nowrap}
@@ -227,6 +228,8 @@ textarea{min-height:170px;resize:vertical;line-height:1.5;font-size:15px}
 <nav id="hud-tr" aria-label="Công cụ">
  <span id="savebadge">…</span>
  <button class="ib" id="b-find" data-t="find" title="Tìm"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4.5 4.5"/></svg></button>
+ <button class="ib" id="b-theme" data-t="theme" title="Đổi khung cảnh"><svg viewBox="0 0 24 24"><path d="M12 21V11"/><path d="M12 11c-2-3-6-3.5-8-2 2.5 0 5 .8 8 2zM12 11c2-3 6-3.5 8-2-2.5 0-5 .8-8 2zM12 11c-1-3.5 1-6 4-6.5-1.5 1.5-3 3.5-4 6.5zM12 11c1-3.5-1-6-4-6.5 1.5 1.5 3 3.5 4 6.5z"/><path d="M5 21h14"/></svg></button>
+ <button class="ib" id="b-inst" data-t="install" title="Cài app" hidden><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4M12 7v6M9.5 10.5 12 13l2.5-2.5"/></svg></button>
  <button class="ib" id="b-lang" title="Language">EN</button>
  <button class="ib" id="b-light" data-t="light" title="Ánh sáng"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9 7 7M17 17l2.1 2.1M4.9 19.1 7 17M17 7l2.1-2.1"/></svg></button>
  <div id="lightpop" class="card">
@@ -306,7 +309,7 @@ c_todo:'Cần làm',c_doing:'Đang làm',c_review:'Chờ duyệt',c_done:'Xong',
 ch:'Kênh',ps_idea:'Ý tưởng',ps_writing:'Đang viết',ps_review:'Chờ duyệt',ps_live:'Đã đăng',newPost:'Tiêu đề bài…',noPosts:'Chưa có bài nào trong lịch.',
 blank:'Trang trống',newPage:'Trang mới',back:'‹ Quay lại',edited:'Sửa lúc {t}',noPages:'Chưa có trang nào. Tạo từ mẫu bên trên.',
 findPh:'Gõ để tìm trong mọi phòng…',addAsCard:'+ Thêm thành việc',addAsPage:'+ Tạo trang',noRes:'Không thấy kết quả.',
-workSub:'Checklist campaign · việc · link nhanh',lesson_s:'Bài học',doc_s:'Tài liệu',note_s:'Ghi chú',card_s:'Việc',post_s:'Bài đăng',page_s:'Trang',task_s:'Việc MKT'},
+workSub:'Checklist campaign · việc · link nhanh',theme:'Đổi khung cảnh',th_campus:'Khuôn viên học viện',th_beach:'Đảo biển nắng vàng',themeNow:'Đang dùng: {t}. Bấm để đổi, trang sẽ tải lại.',install:'Cài app ra màn hình',installWhy:'Cài thành app riêng trên máy tính: có biểu tượng ở Desktop/Dock, mở trong cửa sổ riêng, không cần mở trình duyệt.',installHow:'Nếu không thấy nút: Chrome/Edge → biểu tượng Cài đặt ở thanh địa chỉ (hoặc ⋮ → Lưu và chia sẻ → Cài đặt trang). Safari trên Mac → Tệp → Thêm vào Dock. iPhone/iPad → Chia sẻ → Thêm vào MH chính.',installed:'App đã được cài',clockT:'Đồng hồ trung tâm',clockS:'Giờ thực · Pomodoro',crmSub:'Lead · số liệu mỗi ngày · link CRM',crmLinks:'Link CRM',crmLinkHint:'Dán link web CRM cho sale và Google Sheet CRM để mở nhanh từ đây.',crmToday:'Số liệu hôm nay',crmMess:'Tin nhắn',crmLead:'SĐT / lead',crmGood:'Lead tốt',crmCost:'Chi phí (nghìn đ)',crm7:'7 ngày gần nhất',crmCPL:'CPL (nghìn đ)',crmDay:'Ngày',syncNote:'Dữ liệu học viện được cất chung trong tài khoản app HSK (không cần sửa Firebase).',lesson_s:'Bài học',doc_s:'Tài liệu',note_s:'Ghi chú',card_s:'Việc',post_s:'Bài đăng',page_s:'Trang',task_s:'Việc MKT'},
 en:{brand:"Tuấn's Academy",today:'Today',week:'This week',streak:'Streak',total:'Total',
 now:'Now',next:'Next',left:'left',tomorrow:'tomorrow',enter:'Enter room',
 help:'WASD / arrow keys to walk · Click the ground or a building to go there · E to enter · Scroll to zoom',
@@ -340,7 +343,7 @@ c_todo:'To do',c_doing:'Doing',c_review:'Review',c_done:'Done',proj:'Project',ta
 ch:'Channel',ps_idea:'Idea',ps_writing:'Writing',ps_review:'Review',ps_live:'Live',newPost:'Post title…',noPosts:'No posts in the calendar yet.',
 blank:'Blank page',newPage:'New page',back:'‹ Back',edited:'Edited {t}',noPages:'No pages yet. Start from a template above.',
 findPh:'Type to search every room…',addAsCard:'+ Add as task',addAsPage:'+ Create page',noRes:'No results.',
-workSub:'Campaign checklist · tasks · quick links',lesson_s:'Lesson',doc_s:'Material',note_s:'Notes',card_s:'Task',post_s:'Post',page_s:'Page',task_s:'MKT task'}};
+workSub:'Campaign checklist · tasks · quick links',theme:'Change scenery',th_campus:'Academy campus',th_beach:'Sunny beach island',themeNow:'Now: {t}. Tap to switch; the page reloads.',install:'Install as an app',installWhy:'Install it as its own computer app: an icon on the Desktop/Dock, opens in its own window, no browser needed.',installHow:'No button? Chrome/Edge → the Install icon in the address bar (or ⋮ → Save and share → Install page). Safari on Mac → File → Add to Dock. iPhone/iPad → Share → Add to Home Screen.',installed:'App installed',clockT:'Central clock',clockS:'Real time · Pomodoro',crmSub:'Leads · daily numbers · CRM links',crmLinks:'CRM links',crmLinkHint:'Paste the sales CRM web link and the CRM Google Sheet to open them from here.',crmToday:'Today',crmMess:'Messages',crmLead:'Phones / leads',crmGood:'Good leads',crmCost:'Spend (k VND)',crm7:'Last 7 days',crmCPL:'CPL (k VND)',crmDay:'Day',syncNote:'Academy data is stored inside your HSK app account (no Firebase changes needed).',lesson_s:'Lesson',doc_s:'Material',note_s:'Notes',card_s:'Task',post_s:'Post',page_s:'Page',task_s:'MKT task'}};
 let L='vi';
 const t=(k,v)=>{let s=(I[L]&&I[L][k])??I.vi[k]??k;if(v)for(const x in v)s=s.replace('{'+x+'}',v[x]);return s};
 const tr=x=>x==null?'':typeof x==='string'?x:(x[L]??x.vi??'');
@@ -355,9 +358,13 @@ const ROOMS=[
  {id:'work',kind:'work',pos:[-13.5,0],rot:Math.PI/2,size:[6,5],hex:'#2f5fd0',short:'MKT',title:{vi:'Phòng làm việc MKT',en:'MKT workroom'},dates:{vi:'Thứ 2–6, 8:15–17:30',en:'Mon–Fri, 8:15–17:30'}},
  {id:'plan',kind:'plan',pos:[13.5,0],rot:-Math.PI/2,size:[6,5],hex:'#17a398',short:'KH',title:{vi:'Phòng kế hoạch',en:'Planning room'},dates:{vi:'Bảng việc · lịch nội dung',en:'Board · content calendar'}},
  {id:'zh',kind:'zh',pos:[0,16.4],rot:Math.PI,size:[4.6,4.6],hex:'#c8322a',short:'中',title:{vi:'Phòng tiếng Trung',en:'Chinese room'},dates:{vi:'Thứ 3 · 5 · 7, 20:15–21:45',en:'Tue · Thu · Sat, 20:15–21:45'}},
+ {id:'crm',kind:'crm',pos:[-8,6.5],rot:Math.PI/2,size:[4,3.6],hex:'#ff7a00',dark:'#c25a00',short:'CRM',title:{vi:'Phòng CRM',en:'CRM room'},dates:{vi:'Lead · số liệu ngày',en:'Leads · daily numbers'}},
+ {id:'cert',kind:'cert',pos:[8,6.5],rot:-Math.PI/2,size:[4,3.6],hex:'#c9a227',dark:'#8f7215',short:'★',title:{vi:'Tủ chứng chỉ',en:'Certificates hall'},dates:{vi:'Chứng chỉ đã đạt',en:'Earned certificates'}},
  {id:'tower',kind:'pomo',pos:[0,-1],rot:0,size:[2.6,2.6],hex:'#e8553a',short:'25',title:{vi:'Tháp Pomodoro',en:'Pomodoro Tower'},dates:{vi:'Giờ thực + bộ đếm tập trung',en:'Real time + focus timer'}},
  {id:'board',kind:'board',pos:[0,2.8],rot:0,size:[2.6,.4],hex:'#1d2a4d',short:'7',title:{vi:'Bảng lịch tuần',en:'Weekly plan board'},dates:{vi:'Lịch học + nhắc nhở',en:'Schedule + reminders'}}];
 const RM=Object.fromEntries(ROOMS.map(r=>[r.id,r]));
+const THEME0=(()=>{try{return (JSON.parse(localStorage.getItem('tuan-academy-v1')||'{}').settings||{}).theme==='beach'?'beach':'campus'}catch(e){return 'campus'}})(),BEACH=THEME0==='beach';
+if(BEACH){RM.tower.title={vi:'Đồng hồ trung tâm',en:'Central clock'};RM.tower.dates={vi:'Giờ thực · Pomodoro',en:'Real time · Pomodoro'};RM.tower.short='⏱';for(const id of ['me1','me2','me3','me4'])RM[id].dates2={vi:'Quầy nước',en:'Drinks bar'}}
 const DATA_ROOMS=['me1','me2','me3','me4','zh','work'];
 const ZH_URL='https://minhtuanng28.github.io/hsk2/',PAGES_URL='https://minhtuanng28.github.io/hsk2/academy/';
 const PROJECTS=['Monrei Saigon','Gladia by the Waters','The Prive','Eco Five Star Long An','The Royal at Five Star Eco City','Rivea Hanoi','The Flame Vine','Happy One Mori','Green Skyline','Capital Square Đà Nẵng','Wellton Nha Trang','Meypearl','CaraWorld Cam Ranh'];
@@ -397,7 +404,7 @@ const toM=s=>{const[a,b]=s.split(':').map(Number);return a*60+b};
 function defaults(){
  const classes={};
  for(const id of ['me1','me2','me3','me4','zh'])classes[id]={lessons:(SEED[id]||[]).map((x,i)=>({id:id+'-l'+i,t:x[0],url:x[1],done:false})),docs:(SEED_DOCS[id]||[]).map((x,i)=>({id:id+'-d'+i,t:x[0],url:x[1],note:''})),certs:[],notes:'',gate:false};
- return {v:1,updatedAt:0,lang:'vi',settings:{focus:25,brk:5,lbrk:15,zhUrl:ZH_URL,realtime:true,simHour:12,notify:true,before:10},classes,
+ return {v:1,updatedAt:0,lang:'vi',settings:{focus:25,brk:5,lbrk:15,zhUrl:ZH_URL,realtime:true,simHour:12,notify:true,before:10,theme:'campus'},classes,crm:{links:[],log:{},notes:''},
   work:{tasks:[{id:'w1',t:{vi:'Hoàn thiện báo cáo Meta Ads → Sheets (bài build Lớp 1)',en:'Finish the Meta Ads → Sheets report (Class 1 build)'},done:false},{id:'w2',t:{vi:'Cập nhật CRM fanpage cho sale',en:'Update the fanpage CRM for sales'},done:false}],
    links:[{id:'k1',t:'Meta Ads Manager',url:'https://adsmanager.facebook.com/'},{id:'k2',t:'Meta Business Suite',url:'https://business.facebook.com/'},{id:'k3',t:'Meta Ad Library',url:'https://www.facebook.com/ads/library/'},{id:'k4',t:'Google Sheets',url:'https://docs.google.com/spreadsheets/'}],checks:{},notes:''},
   plan:{cards:[],posts:[],pages:[]},totals:{},sessions:[]};
@@ -409,6 +416,7 @@ function merge(j){
  s.classes={};for(const id of ['me1','me2','me3','me4','zh'])s.classes[id]=Object.assign(defaults().classes[id],(j.classes||{})[id]||{});
  s.work=Object.assign(defaults().work,j.work||{});
  s.plan=Object.assign({cards:[],posts:[],pages:[]},j.plan||{});
+ s.crm=Object.assign({links:[],log:{},notes:''},j.crm||{});
  s.totals=j.totals&&typeof j.totals==='object'?j.totals:{};
  s.sessions=Array.isArray(j.sessions)?j.sessions:[];
  return s;
@@ -429,7 +437,7 @@ async function flush(){
  cloudBusy=false;if(cloudDirty&&cloud)saveT=setTimeout(flush,1500+Math.random()*1000);
 }
 function adopt(r){
- if(r&&r.v===1&&(r.updatedAt||0)>(S.updatedAt||0)){S=merge(JSON.parse(JSON.stringify(r)));L=S.lang==='en'?'en':'vi';try{localStorage.setItem(LS,JSON.stringify(S))}catch(e){}refreshAll();badge('cloud')}
+ if(r&&r.v===1&&(r.updatedAt||0)>(S.updatedAt||0)){S=merge(JSON.parse(JSON.stringify(r)));L=S.lang==='en'?'en':'vi';try{localStorage.setItem(LS,JSON.stringify(S))}catch(e){}if((S.settings.theme==='beach'?'beach':'campus')!==THEME0){location.reload();return}refreshAll();badge('cloud')}
  else if((S.updatedAt||0)>((r&&r.updatedAt)||0))flush();
  else badge('cloud');
 }
@@ -462,13 +470,18 @@ async function fbInit(){
 async function fbPull(first){
  if(!fb||!fb.user)return;
  try{
-  const snap=await fb.fs.getDoc(fb.fs.doc(fb.D,'users',fb.user.uid));
+  const ref=fb.fs.doc(fb.D,'users',fb.user.uid);
+  const snap=await fb.fs.getDoc(ref);
   const d=snap.exists()?snap.data():{};
   try{HSK=JSON.parse(d.s||'null')}catch(e){HSK=null}hskAt=Date.now();afterHsk();
-  const aref=fb.fs.doc(fb.D,'academy',fb.user.uid);let r=null;
-  try{const as=await fb.fs.getDoc(aref);if(as.exists())r=JSON.parse(as.data().s||'null');cloudErr=''}catch(e){cloudErr=(e&&e.code)||'error';badge('local');if(panelState)renderPanel();return}
-  cloud={set:x=>fb.fs.setDoc(aref,{s:JSON.stringify(x),at:x.updatedAt||0})};
-  adopt(r);
+  cloud={set:x=>fb.fs.runTransaction(fb.D,async tx=>{
+    const sn=await tx.get(ref);const dd=sn.exists()?sn.data():{};
+    let st=null;if(dd.s){st=JSON.parse(dd.s);if(!st||st.v!==1)throw new Error('hsk-state')}
+    if(!st)st={v:1,cards:{},days:{},newLog:{},updated:0};
+    st.acad=x;st.updated=Math.max(Date.now(),(st.updated||0)+1);
+    tx.set(ref,{s:JSON.stringify(st),v:1,updated:fb.fs.serverTimestamp()},{merge:true});
+  })};
+  cloudErr='';adopt(HSK&&HSK.acad&&HSK.acad.v===1?HSK.acad:null);
   if(first)toast(t('saveGoogle'));
  }catch(e){badge('local');acctMsg=String(e&&e.message||e);if(panelState)renderPanel()}
 }
@@ -527,24 +540,38 @@ function box(w,h,d,color,x,y,z,parent,o={}){const m=new THREE.Mesh(bgeo(w,h,d),o
 
 const X0=-20,X1=20,Z0=-16,Z1=20,RIV=[9,12],BRI=[-1,1];
 const PLAZA=[-4,4,-4,4];
-const PATHS=[[-1,1,-6,-4],[-11,11,-8,-6],[-10.4,-4,-1,1],[4,10.4,-1,1],[-1,1,4,9],[-1,1,12,14.2],[-2.6,2.6,13.2,14.2]];
+const PATHS=[[-1,1,-6,-4],[-11,11,-8,-6],[-10.4,-4,-1,1],[4,10.4,-1,1],[-1,1,4,9],[-1,1,12,14.2],[-2.6,2.6,13.2,14.2],[-5.6,-1,6,7],[1,5.6,6,7]];
+const CR=BEACH?6.5:0;
+function cornerD(x,z){const dx=Math.max(X0+CR-x,0,x-(X1-CR)),dz=Math.max(Z0+CR-z,0,z-(Z1-CR));return Math.hypot(dx,dz)}
+const onIsland=(x,z)=>x>X0&&x<X1&&z>Z0&&z<Z1&&cornerD(x,z)<=CR;
+const edgeD=(x,z)=>{const c=cornerD(x,z);return c>0?CR-c:Math.min(x-X0,X1-x,z-Z0,Z1-z)};
 const inR=(x,z,r)=>x>=r[0]&&x<r[1]&&z>=r[2]&&z<r[3];
-function cellType(x,z){if(z>RIV[0]&&z<RIV[1])return(x>BRI[0]&&x<BRI[1])?'bridge':'water';if(inR(x,z,PLAZA))return 'plaza';if(PATHS.some(p=>inR(x,z,p)))return 'path';if(x>-12.5&&x<12.5&&z>-13.5&&z<-5)return 'court';return 'grass'}
-const PAL={grass:['#7fbf4d','#74b445'],court:['#8ccb57','#82c24f'],path:['#e8cb7a','#dfbf68'],plaza:['#ddd5c6','#d1c8b6']};
+function cellType(x,z){if(BEACH&&!onIsland(x,z))return 'out';if(z>RIV[0]&&z<RIV[1])return(x>BRI[0]&&x<BRI[1])?'bridge':'water';if(inR(x,z,PLAZA))return 'plaza';if(PATHS.some(p=>inR(x,z,p)))return 'path';if(BEACH&&(edgeD(x,z)<2.8||(z>RIV[0]-1.4&&z<RIV[1]+1.4)))return 'sand';if(x>-12.5&&x<12.5&&z>-13.5&&z<-5)return 'court';return 'grass'}
+const PAL=BEACH?{grass:['#6cc24a','#63b843'],court:['#79cc52','#70c34b'],path:['#d9b27c','#cfa46e'],plaza:['#f6ead0','#efe0c0'],sand:['#f7ecc9','#f1e3b9']}:{grass:['#7fbf4d','#74b445'],court:['#8ccb57','#82c24f'],path:['#e8cb7a','#dfbf68'],plaza:['#ddd5c6','#d1c8b6']};
 {
- const cells=[];for(let x=X0;x<X1;x++)for(let z=Z0;z<Z1;z++){const cx=x+.5,cz=z+.5,ty=cellType(cx,cz);if(ty!=='water'&&ty!=='bridge')cells.push([cx,cz,ty])}
- const im=new THREE.InstancedMesh(new THREE.BoxGeometry(1,.3,1),new THREE.MeshLambertMaterial(),cells.length);
+ const cells=[];for(let x=X0;x<X1;x++)for(let z=Z0;z<Z1;z++){const cx=x+.5,cz=z+.5,ty=cellType(cx,cz);if(ty!=='water'&&ty!=='bridge'&&ty!=='out')cells.push([cx,cz,ty])}
+ const TH=BEACH?1.7:.3;
+ const im=new THREE.InstancedMesh(new THREE.BoxGeometry(1,TH,1),new THREE.MeshLambertMaterial(),cells.length);
  im.receiveShadow=true;const m=new THREE.Matrix4(),c=new THREE.Color();
- cells.forEach(([x,z,ty],i)=>{m.makeTranslation(x,-.15,z);im.setMatrixAt(i,m);const par=((Math.floor(x)+Math.floor(z))%2+2)%2;let col=PAL[ty][par];if(ty==='grass'&&rand()<.06)col='#c9c35c';c.set(col);c.offsetHSL(0,0,(rand()-.5)*.02);im.setColorAt(i,c)});
+ cells.forEach(([x,z,ty],i)=>{m.makeTranslation(x,-TH/2,z);im.setMatrixAt(i,m);const par=((Math.floor(x)+Math.floor(z))%2+2)%2;let col=PAL[ty][par];if(ty==='grass'&&rand()<.06)col=BEACH?'#8fd35e':'#c9c35c';c.set(col);c.offsetHSL(0,0,(rand()-.5)*.02);im.setColorAt(i,c)});
  scene.add(im);
+ if(!BEACH){
  box(X1-X0,2,RIV[0]-Z0,'#8b5a3c',0,-1.3,(Z0+RIV[0])/2,null,{cast:false});
  box(X1-X0,2,Z1-RIV[1],'#8b5a3c',0,-1.3,(Z1+RIV[1])/2,null,{cast:false});
  box(X1-X0,1.3,RIV[1]-RIV[0],'#7a4e33',0,-1.65,(RIV[0]+RIV[1])/2,null,{cast:false});
+ }else{
+  box(X1-X0,.6,RIV[1]-RIV[0],'#efdcae',0,-1.2,(RIV[0]+RIV[1])/2,null,{cast:false});
+  // shallow water + surf foam around the island
+  const sh=[],fo=[];for(let x=X0-4;x<X1+4;x++)for(let z=Z0-4;z<Z1+4;z++){const cx=x+.5,cz=z+.5;if(onIsland(cx,cz))continue;let dmin=9;for(let dx=-3;dx<=3;dx++)for(let dz=-3;dz<=3;dz++)if(onIsland(cx+dx,cz+dz))dmin=Math.min(dmin,Math.max(Math.abs(dx),Math.abs(dz)));if(dmin<=1)fo.push([cx,cz]);else if(dmin<=3)sh.push([cx,cz])}
+  const mk=(list,col,op,y)=>{const mm=new THREE.InstancedMesh(bgeo(1,.04,1),new THREE.MeshBasicMaterial({color:col,transparent:true,opacity:op}),list.length);list.forEach(([x,z],i)=>{m.makeTranslation(x,y,z);mm.setMatrixAt(i,m)});scene.add(mm);return mm};
+  window.__foam=mk(fo,'#ffffff',.6,-1.1);mk(sh,'#8fe9ee',.45,-1.12);
+ }
 }
-const oceanMat=new THREE.MeshLambertMaterial({color:'#27b5cf'});
+const OCEAN=BEACH?'#14bdd3':'#27b5cf',RIVERC=BEACH?'#5fdbe3':'#36c6d8';
+const oceanMat=new THREE.MeshLambertMaterial({color:OCEAN});
 const ocean=new THREE.Mesh(new THREE.PlaneGeometry(220,220),oceanMat);ocean.rotation.x=-Math.PI/2;ocean.position.y=-1.15;scene.add(ocean);
-const riverMat=new THREE.MeshLambertMaterial({color:'#36c6d8',transparent:true,opacity:.92});
-const riverGeo=new THREE.PlaneGeometry(X1-X0,RIV[1]-RIV[0],64,6);
+const riverMat=new THREE.MeshLambertMaterial({color:RIVERC,transparent:true,opacity:.92});
+const riverGeo=new THREE.PlaneGeometry(X1-X0+(BEACH?6:0),RIV[1]-RIV[0],64,6);
 const river=new THREE.Mesh(riverGeo,riverMat);river.rotation.x=-Math.PI/2;river.position.set(0,-.42,(RIV[0]+RIV[1])/2);river.receiveShadow=true;scene.add(river);
 const rBase=Float32Array.from(riverGeo.attributes.position.array);
 // bridge (on the axis)
@@ -632,18 +659,70 @@ function board(r){
  box(2.7,.14,.4,'#2f5fd0',0,2.27,0,g);
  place(r,g,2.6,.4,1.1,3.1);
 }
-for(const r of ROOMS){if(r.kind==='class')classHouse(r);else if(r.kind==='work')office(r,'#2f5fd0','#b7c0cc');else if(r.kind==='plan')office(r,'#17a398','#b9cfc9');else if(r.kind==='zh')pavilion(r);else if(r.kind==='pomo')tower(r);else if(r.kind==='board')board(r)}
+function kiosk(r){
+ const g=new THREE.Group(),[w,d]=r.size;
+ box(w+1,.3,d+1,'#c79a63',0,.15,0,g);for(let i=0;i<6;i++)box(w+1,.02,.05,'#a9804c',0,.31,-(d+1)/2+.25+i*(d+.5)/5,g,{cast:false});
+ for(const sx of [-1,1])for(const sz of [-1,1])box(.24,2.6,.24,'#8a5e38',sx*(w/2-.05),1.6,sz*(d/2-.05),g);
+ box(w-.3,1.7,.2,'#f5e6c8',0,1.15,-d/2+.25,g);
+ const BC=['#e8553a','#2f5fd0','#1f9e6a','#e3a21a','#ff8fb0'];
+ for(const yy of [1.15,1.7]){box(w-.6,.06,.3,'#a9804c',0,yy,-d/2+.45,g);for(let i=0;i<6;i++)box(.12,.3,.12,BC[(i+yy*10|0)%5],-1.3+i*.52,yy+.18,-d/2+.45,g,{cast:false})}
+ box(w-.4,1.05,.6,r.hex,0,.82,d/2-.55,g);for(const xx of [-1.3,-.45,.45,1.3])box(.2,1.0,.03,'#ffffff',xx,.82,d/2-.24,g,{cast:false});
+ box(w-.1,.09,.85,'#e9d3a8',0,1.39,d/2-.55,g);
+ box(.2,.26,.2,'#f2c230',-1.15,1.57,d/2-.6,g);box(.12,.2,.12,'#3d9a3a',-1.15,1.8,d/2-.6,g);
+ for(const xx of [.5,.9]){box(.18,.2,.18,'#7a4e30',xx,1.53,d/2-.55,g);box(.03,.22,.03,'#ff5a7a',xx+.04,1.72,d/2-.55,g)}
+ box(w+1.5,.22,d+1.5,'#cfa04a',0,2.95,0,g);
+ const roof=new THREE.Mesh(new THREE.ConeGeometry((w+1.6)*.72,1.7,4),M('#e3c06a'));roof.rotation.y=Math.PI/4;roof.scale.z=(d+1.6)/(w+1.6);roof.position.y=3.9;roof.castShadow=true;g.add(roof);
+ box(.3,.4,.3,r.hex,0,4.85,0,g);
+ box(2.5,.66,.08,r.hex,0,2.55,d/2+.2,g);box(2.3,.5,.1,'#ffffff',0,2.55,d/2+.22,g);
+ for(const xx of [-1.1,0,1.1]){const p=new THREE.Mesh(new THREE.CylinderGeometry(.05,.05,.55,8),M('#5a4632'));p.position.set(xx,.57,d/2+.55);g.add(p);const st=new THREE.Mesh(new THREE.CylinderGeometry(.2,.2,.08,12),M(r.hex));st.position.set(xx,.88,d/2+.55);st.castShadow=true;g.add(st)}
+ place(r,g,w+1,d+1,d/2+1.35,5.4);
+}
+function villa(r,accent){
+ const g=new THREE.Group(),[w,d]=r.size,H=3.6;
+ box(w+1.4,.3,d+1.4,'#c79a63',0,.15,0,g);box(2,.15,.6,'#c79a63',0,.08,d/2+.95,g);
+ box(w,H,d,'#fbf7ef',0,.3+H/2,0,g);
+ for(const sx of [-1,1]){for(const yy of [1.4,2.95]){box(.8,1,.06,null,sx*1.6,yy,d/2+.03,g,{mat:winMat});for(const ox of [-.55,.55])box(.24,1.05,.07,accent,sx*1.6+ox,yy,d/2+.04,g)}
+  for(const zz of [-1.2,1.2])for(const yy of [1.4,2.95])box(.06,1,.8,null,sx*(w/2+.03),yy,zz,g,{mat:winMat})}
+ box(1.2,1.9,.08,accent,0,1.25,d/2+.04,g);box(.9,.3,.08,null,0,2.45,d/2+.04,g,{mat:winMat});
+ box(w+.5,.25,d+.5,'#e8dcc4',0,.3+H+.12,0,g);
+ for(const sx of [-1,1])box(.08,.6,d+.5,'#ffffff',sx*(w/2+.2),H+.7,0,g);box(w+.5,.08,.08,'#ffffff',0,H+.95,d/2+.21,g);box(w+.5,.08,.08,'#ffffff',0,H+.95,-d/2-.21,g);
+ const pole=new THREE.Mesh(new THREE.CylinderGeometry(.05,.05,1.6,8),M('#ffffff'));pole.position.set(-1.4,H+1.2,-.4);g.add(pole);
+ const um=new THREE.Mesh(new THREE.ConeGeometry(1.1,.5,8),M(accent));um.position.set(-1.4,H+2.1,-.4);um.castShadow=true;g.add(um);
+ box(1.4,.08,.6,'#ffffff',1.2,H+.75,-.3,g);
+ box(3,.6,.12,accent,.2,H+1.25,d/2+.1,g);
+ for(const sx of [-1,1]){box(.5,.45,.5,'#d9c9a6',sx*(w/2-.2),.52,d/2+.85,g);box(.08,1.2,.08,'#8a5e38',sx*(w/2-.2),1.3,d/2+.85,g);for(let k=0;k<4;k++){const f=box(.9,.06,.25,'#3d9a3a',sx*(w/2-.2),1.85,d/2+.85,g);f.rotation.y=k*Math.PI/4}}
+ place(r,g,w+1.4,d+1.4,d/2+1.45,H+2.6);
+}
+function clockPost(r){
+ const g=new THREE.Group();
+ box(1.8,.35,1.8,'#efe0c0',0,.17,0,g);box(1.1,.6,1.1,'#d9c9a6',0,.65,0,g);
+ const pole=new THREE.Mesh(new THREE.CylinderGeometry(.16,.22,4.3,12),M('#1f4d3a'));pole.position.y=3.1;pole.castShadow=true;g.add(pole);
+ for(const yy of [1.2,5.1])box(.55,.14,.55,'#c9a227',0,yy,0,g);
+ const cv=document.createElement('canvas');cv.width=cv.height=256;r.cv=cv;const tex=new THREE.CanvasTexture(cv);tex.colorSpace=THREE.SRGBColorSpace;r.tex=tex;
+ const face=new THREE.MeshLambertMaterial({map:tex,emissive:'#fff3d6',emissiveMap:tex,emissiveIntensity:.2}),side=M('#1f4d3a');
+ const cb=new THREE.Mesh(bgeo(1.6,1.6,1.6),[face,face,side,side,face,face]);cb.position.y=6;cb.castShadow=true;g.add(cb);
+ for(const sx of [-1,1])for(const sz of [-1,1])box(.12,1.7,.12,'#c9a227',sx*.8,6,sz*.8,g);
+ const dome=new THREE.Mesh(new THREE.SphereGeometry(.55,16,10,0,Math.PI*2,0,Math.PI/2),M('#c9a227'));dome.position.y=6.8;dome.castShadow=true;g.add(dome);box(.08,.5,.08,'#c9a227',0,7.5,0,g);
+ place(r,g,1.8,1.8,1.5,8.4);
+}
+function surfBoard(r){board(r);const C=['#ff7a5c','#1fb5c9','#ffd84a'];[-1.75,1.75,2.15].forEach((x,i)=>{const b=box(.42,2,.08,C[i],x+r.pos[0],1,r.pos[1]-.1);b.rotation.z=x>0?-.12-i*.05:.12})}
+for(const r of ROOMS){
+ if(BEACH){if(r.kind==='class'||r.kind==='crm'||r.kind==='cert')kiosk(r);else if(r.kind==='work')villa(r,'#2f5fd0');else if(r.kind==='plan')villa(r,'#17a398');else if(r.kind==='zh')pavilion(r);else if(r.kind==='pomo')clockPost(r);else if(r.kind==='board')surfBoard(r)}
+ else{if(r.kind==='class'||r.kind==='crm'||r.kind==='cert')classHouse(r);else if(r.kind==='work')office(r,'#2f5fd0','#b7c0cc');else if(r.kind==='plan')office(r,'#17a398','#b9cfc9');else if(r.kind==='zh')pavilion(r);else if(r.kind==='pomo')tower(r);else if(r.kind==='board')board(r)}
+}
 // academy arch + hedges around the courtyard
-for(const px of [-1.5,1.5]){box(.4,3,.4,'#1d2a4d',px,1.5,-5);CIRCLES.push([px,-5,.28])}
-box(3.6,.5,.55,'#1d2a4d',0,3.1,-5);box(2.6,.3,.6,'#e8553a',0,3.1,-5);
-const hedge=(x0,x1,z0,z1)=>{const w=x1-x0,d=z1-z0;box(w,.7,d,'#3f8f3a',(x0+x1)/2,.35,(z0+z1)/2);BOXES.push([x0,x1,z0,z1])};
+const ARCH=BEACH?['#a07850','#1fb5c9']:['#1d2a4d','#e8553a'];
+for(const px of [-1.5,1.5]){box(.4,3,.4,ARCH[0],px,1.5,-5);CIRCLES.push([px,-5,.28])}
+box(3.6,.5,.55,ARCH[0],0,3.1,-5);box(2.6,.3,.6,ARCH[1],0,3.1,-5);
+const hedge=(x0,x1,z0,z1)=>{const w=x1-x0,d=z1-z0;if(BEACH){box(w,.42,d,'#f1e2c6',(x0+x1)/2,.21,(z0+z1)/2)}else box(w,.7,d,'#3f8f3a',(x0+x1)/2,.35,(z0+z1)/2);BOXES.push([x0,x1,z0,z1])};
 hedge(-12.6,12.6,-13.6,-13.1);hedge(-12.6,-12.1,-13.1,-4.9);hedge(12.1,12.6,-13.1,-4.9);hedge(-12.1,-1.9,-5.2,-4.8);hedge(1.9,12.1,-5.2,-4.8);
 // lamps (symmetric)
 const LAMPS=[[-4.6,-4.6],[4.6,-4.6],[-4.6,4.6],[4.6,4.6],[-1.7,8.4],[1.7,8.4],[-6,-9],[6,-9],[0,-12.4],[-9.3,1.6],[9.3,1.6],[-9.3,-1.6],[9.3,-1.6]];
 const lampLights=[];
-LAMPS.forEach(([x,z],i)=>{box(.14,1.8,.14,'#3a3f4a',x,.9,z);box(.36,.36,.36,null,x,1.95,z,null,{mat:lampMat});box(.44,.08,.44,'#3a3f4a',x,2.16,z);CIRCLES.push([x,z,.18]);if(i<6){const L=new THREE.PointLight('#ffc977',0,8,2);L.position.set(x,2.1,z);scene.add(L);lampLights.push(L)}});
+if(BEACH){lampMat.color.set('#ffb35c');lampMat.emissive.set('#ff8a2a')}
+LAMPS.forEach(([x,z],i)=>{if(BEACH){box(.12,1.9,.12,'#7a4e30',x,.95,z);box(.26,.3,.26,'#3a2a1a',x,1.95,z);box(.2,.28,.2,null,x,2.22,z,null,{mat:lampMat})}else{box(.14,1.8,.14,'#3a3f4a',x,.9,z);box(.36,.36,.36,null,x,1.95,z,null,{mat:lampMat});box(.44,.08,.44,'#3a3f4a',x,2.16,z)}CIRCLES.push([x,z,.18]);if(i<6){const L=new THREE.PointLight('#ffc977',0,8,2);L.position.set(x,2.1,z);scene.add(L);lampLights.push(L)}});
 // benches (symmetric)
-for(const [x,z] of [[-2.7,-2.7],[2.7,-2.7],[-2.7,2.9],[2.7,2.9]]){box(1.4,.12,.45,'#a8774a',x,.45,z);box(1.4,.4,.08,'#a8774a',x,.7,z-.2);for(const dx of [-.55,.55])box(.1,.4,.4,'#3a3f4a',x+dx,.2,z);addBox(x,z,1.4,.5,.05)}
+for(const [x,z] of [[-2.7,-2.7],[2.7,-2.7],[-2.7,2.9],[2.7,2.9]]){if(BEACH){const c=x<0?'#1fb5c9':'#ff7a5c';box(.6,.12,1.3,'#ffffff',x,.3,z);box(.6,.4,.1,'#ffffff',x,.5,z-.6).rotation.x=-.5;box(.62,.05,1.3,c,x,.37,z);const pl=new THREE.Mesh(new THREE.CylinderGeometry(.04,.04,2,8),M('#ffffff'));pl.position.set(x+.5,1,z);scene.add(pl);const u=new THREE.Mesh(new THREE.ConeGeometry(1,.45,8),M(c));u.position.set(x+.5,2.05,z);u.castShadow=true;scene.add(u);addBox(x,z,.7,1.4,.05)}else{box(1.4,.12,.45,'#a8774a',x,.45,z);box(1.4,.4,.08,'#a8774a',x,.7,z-.2);for(const dx of [-.55,.55])box(.1,.4,.4,'#3a3f4a',x+dx,.2,z);addBox(x,z,1.4,.5,.05)}}
 
 // trees: formal alleys on the campus, natural woods outside
 const nearPath=(x,z,m)=>{for(const dx of [-m,0,m])for(const dz of [-m,0,m]){const ty=cellType(x+dx,z+dz);if(ty!=='grass')return true}return false};
@@ -651,25 +730,40 @@ const inBoxes=(x,z,p)=>BOXES.some(b=>x>b[0]-p&&x<b[1]+p&&z>b[2]-p&&z<b[3]+p);
 const doorNear=(x,z,m)=>ROOMS.some(r=>Math.hypot(x-r.door[0],z-r.door[1])<m);
 {
  const spots=[];
- for(const sx of [-1,1]){for(const zz of [5,7])spots.push([sx*2.3,zz,.8]);for(const xx of [6,8.6])for(const sz of [-1,1])spots.push([sx*xx,sz*2.5,.8]);spots.push([sx*15.5,-6,1]);spots.push([sx*15.5,5,1])}
+ for(const sx of [-1,1]){for(const zz of [4.9])spots.push([sx*2.3,zz,.8]);for(const xx of [6,8.6])for(const sz of [-1,1])spots.push([sx*xx,sz*2.5,.8]);spots.push([sx*15.5,-6,1]);spots.push([sx*15.5,5,1])}
  let tries=0;
  while(spots.length<95&&tries<6000){tries++;const x=X0+1+rand()*(X1-X0-2),z=Z0+1+rand()*(Z1-Z0-2);
   if(nearPath(x,z,1.1)||inBoxes(x,z,1.3)||doorNear(x,z,2.6))continue;
-  if(Math.abs(x)<17&&z>-14.5&&z<5.5)continue;if(Math.abs(x)<5.5&&z>12)continue;
+  if(BEACH&&!onIsland(x,z))continue;if(Math.abs(x)<17&&z>-14.5&&z<5.5)continue;if(Math.abs(x)<5.5&&z>12)continue;if(Math.abs(x)<11&&z>4&&z<9.2&&Math.abs(x)>3)continue;
   if(spots.some(s=>Math.hypot(s[0]-x,s[1]-z)<1.6))continue;
   spots.push([x,z,.85+rand()*.45])}
- const n=spots.length,trunk=new THREE.InstancedMesh(bgeo(.28,1,.28),M('#7a4e30'),n),leaf=new THREE.InstancedMesh(bgeo(1,1,1),new THREE.MeshLambertMaterial(),n),top=new THREE.InstancedMesh(bgeo(1,1,1),new THREE.MeshLambertMaterial(),n);
+if(BEACH){
+ const PS=[];for(const sx of [-1,1]){for(const zz of [4.9,8.1])PS.push([sx*2.4,zz,1]);PS.push([sx*5.2,-2.6,1.05],[sx*5.2,2.6,1.05],[sx*14,-14,1.1],[sx*17.5,-4,1],[sx*17.5,4,1],[sx*14,10.6,1.1],[sx*15,15.5,1])}
+ let tr2=0;while(PS.length<64&&tr2<6000){tr2++;const x=X0+1+rand()*(X1-X0-2),z=Z0+1+rand()*(Z1-Z0-2);if(!onIsland(x,z)||edgeD(x,z)<.9)continue;const ty=cellType(x,z);if(ty!=='sand'&&ty!=='grass')continue;if(inBoxes(x,z,1.3)||doorNear(x,z,2.6)||nearPath(x,z,.9)&&ty!=='sand')continue;if(Math.abs(x)<17&&z>-14.5&&z<4)continue;if(z>RIV[0]-.6&&z<RIV[1]+.6)continue;if(Math.abs(x)<5.5&&z>12)continue;if(PS.some(s=>Math.hypot(s[0]-x,s[1]-z)<2.2))continue;PS.push([x,z,.9+rand()*.35])}
+ const segs=4,fr=6,n=PS.length,tm=new THREE.InstancedMesh(bgeo(.26,.72,.26),new THREE.MeshLambertMaterial(),n*segs),fm=new THREE.InstancedMesh(bgeo(1.6,.07,.44),new THREE.MeshLambertMaterial(),n*fr),cm=new THREE.InstancedMesh(bgeo(.2,.2,.2),M('#6b4a2b'),n*3);
+ const mm=new THREE.Matrix4(),t1=new THREE.Matrix4(),cc=new THREE.Color(),FG=['#3d9a3a','#4caf3f','#2f8a35'];
+ PS.forEach(([x,z,s],i)=>{const a=rand()*Math.PI*2,lean=.13*s,dx=Math.cos(a),dz=Math.sin(a);let top=null;
+  for(let k=0;k<segs;k++){const y=(.36+k*.68)*s,ox=dx*lean*k,oz=dz*lean*k;mm.makeTranslation(x+ox,y,z+oz).multiply(t1.makeScale(1-k*.06,s,1-k*.06));tm.setMatrixAt(i*segs+k,mm);cc.set(k%2?'#9b6b3d':'#86592f');tm.setColorAt(i*segs+k,cc);top=[x+ox,(.36+segs*.68)*s,z+oz]}
+  for(let k=0;k<fr;k++){const ang=k/fr*Math.PI*2+a;mm.makeTranslation(top[0],top[1],top[2]).multiply(t1.makeRotationY(ang)).multiply(new THREE.Matrix4().makeTranslation(.72*s,0,0)).multiply(new THREE.Matrix4().makeRotationZ(-.38)).multiply(new THREE.Matrix4().makeScale(s,1,s));fm.setMatrixAt(i*fr+k,mm);cc.set(FG[(i+k)%3]);fm.setColorAt(i*fr+k,cc)}
+  for(let k=0;k<3;k++){const ang=k*2.1+a;mm.makeTranslation(top[0]+Math.cos(ang)*.2,top[1]-.2,top[2]+Math.sin(ang)*.2);cm.setMatrixAt(i*3+k,mm)}
+  CIRCLES.push([x,z,.28])});
+ for(const im of [tm,fm,cm]){im.castShadow=true;im.receiveShadow=true;scene.add(im)}
+ const sb=new THREE.Group();box(2.6,.5,.9,'#ffffff',0,0,0,sb);box(2.2,.12,.7,'#c79a63',0,.3,0,sb);const ms=new THREE.Mesh(new THREE.CylinderGeometry(.05,.05,2.4,6),M('#8a5e38'));ms.position.y=1.4;sb.add(ms);const sail=gable(1.6,2,.04,'#ff7a5c');sail.rotation.y=Math.PI/2;sail.position.set(0,.45,.1);sb.add(sail);sb.position.set(8,-1.05,23.5);scene.add(sb);window.__boat=sb;
+ const bl=box(.4,.4,.4,'#ff5a7a',-6,.2,17.5);bl.rotation.y=.6;box(.42,.14,.42,'#ffffff',-6,.2,17.5).rotation.y=.6;
+}
+ const n=BEACH?0:spots.length,trunk=new THREE.InstancedMesh(bgeo(.28,1,.28),M('#7a4e30'),n),leaf=new THREE.InstancedMesh(bgeo(1,1,1),new THREE.MeshLambertMaterial(),n),top=new THREE.InstancedMesh(bgeo(1,1,1),new THREE.MeshLambertMaterial(),n);
  const m=new THREE.Matrix4(),q=new THREE.Quaternion(),c=new THREE.Color(),G=['#3f8f3a','#4e9e3f','#367f33','#5aa843','#469a3c'],Y=new THREE.Vector3(0,1,0);
- spots.forEach(([x,z,s],i)=>{q.setFromAxisAngle(Y,i<12?0:rand()*.6);
+ (BEACH?[]:spots).forEach(([x,z,s],i)=>{q.setFromAxisAngle(Y,i<12?0:rand()*.6);
   m.compose(new THREE.Vector3(x,.45*s,z),q,new THREE.Vector3(s,.9*s,s));trunk.setMatrixAt(i,m);
   m.compose(new THREE.Vector3(x,1.25*s,z),q,new THREE.Vector3(1.15*s,.95*s,1.15*s));leaf.setMatrixAt(i,m);c.set(G[i%G.length]);leaf.setColorAt(i,c);
   m.compose(new THREE.Vector3(x,1.95*s,z),q,new THREE.Vector3(.7*s,.55*s,.7*s));top.setMatrixAt(i,m);c.offsetHSL(0,0,.05);top.setColorAt(i,c);
   CIRCLES.push([x,z,.42*s])});
  for(const im of [trunk,leaf,top]){im.castShadow=true;im.receiveShadow=true;scene.add(im)}
- const reeds=[];for(let x=X0+.5;x<X1-.5;x+=.28){if(x>-1.8&&x<1.8)continue;for(const bz of [RIV[0]-.25,RIV[1]+.25])if(rand()<.7)reeds.push([x,bz+(rand()-.5)*.35,.3+rand()*.5])}
+ const reeds=[];if(!BEACH)for(let x=X0+.5;x<X1-.5;x+=.28){if(x>-1.8&&x<1.8)continue;for(const bz of [RIV[0]-.25,RIV[1]+.25])if(rand()<.7)reeds.push([x,bz+(rand()-.5)*.35,.3+rand()*.5])}
  const rd=new THREE.InstancedMesh(bgeo(.08,1,.08),M('#9fd157'),reeds.length);
  reeds.forEach(([x,z,h],i)=>{m.compose(new THREE.Vector3(x,h/2,z),q.identity(),new THREE.Vector3(1,h,1));rd.setMatrixAt(i,m)});scene.add(rd);
- const fl=[];let k=0;while(fl.length<130&&k<4000){k++;const x=X0+1+rand()*(X1-X0-2),z=Z0+1+rand()*(Z1-Z0-2);if(nearPath(x,z,.6)||inBoxes(x,z,.4)||cellType(x,z)==='court')continue;fl.push([x,z])}
+ const fl=[];let k=0;while(fl.length<(BEACH?70:130)&&k<4000){k++;const x=X0+1+rand()*(X1-X0-2),z=Z0+1+rand()*(Z1-Z0-2);if(nearPath(x,z,.6)||inBoxes(x,z,.4)||cellType(x,z)==='court')continue;fl.push([x,z])}
+ if(BEACH)for(let i=0;i<40;i++){const x=X0+2+rand()*(X1-X0-4),z=Z0+2+rand()*(Z1-Z0-4);if(cellType(x,z)==='sand'&&!inBoxes(x,z,.3))fl.push([x,z])}
  for(const sx of [-1,1])for(let i=0;i<8;i++)fl.push([sx*(1.5+(i%2)*.3),4.5+i*.55]);
  const fm=new THREE.InstancedMesh(bgeo(.14,.14,.14),new THREE.MeshLambertMaterial(),fl.length),FC=['#ffffff','#ffd84a','#ff8fb0','#ffb3a1'];
  fl.forEach(([x,z],i)=>{m.makeTranslation(x,.07,z);fm.setMatrixAt(i,m);c.set(FC[i%4]);fm.setColorAt(i,c)});scene.add(fm);
@@ -689,6 +783,7 @@ const ring=new THREE.Mesh(new THREE.RingGeometry(.25,.36,24),new THREE.MeshBasic
 const PR=.3;
 function walkable(x,z){
  if(x<X0+.6||x>X1-.6||z<Z0+.6||z>Z1-.6)return false;
+ if(BEACH&&!onIsland(x+(x>0?.6:-.6),z+(z>0?.6:-.6)))return false;
  if(z>RIV[0]-.2&&z<RIV[1]+.2&&!(x>BRI[0]+.15&&x<BRI[1]-.15))return false;
  for(const b of BOXES)if(x>b[0]-PR&&x<b[1]+PR&&z>b[2]-PR&&z<b[3]+PR)return false;
  for(const c of CIRCLES){const dx=x-c[0],dz=z-c[1];if(dx*dx+dz*dz<(c[2]+PR)**2)return false}
@@ -710,7 +805,8 @@ function applyLight(h){
  const ang=(h-6)/12*Math.PI;sun.position.set(Math.cos(ang)*30+(night>.5?-12:0),Math.max(10,Math.sin(ang)*34),16);
  winMat.emissiveIntensity=night*1.4;lampMat.emissiveIntensity=.25+night*1.6;lanternMat.emissiveIntensity=.35+night*1.6;
  lampLights.forEach(l=>l.intensity=night*14);
- oceanMat.color.set('#27b5cf').lerp(cC.set('#14365a'),night*.8);riverMat.color.set('#36c6d8').lerp(cC.set('#1b4a70'),night*.8);
+ oceanMat.color.set(OCEAN).lerp(cC.set('#14365a'),night*.8);riverMat.color.set(RIVERC).lerp(cC.set('#1b4a70'),night*.8);
+ if(BEACH&&night<.6){sun.color.lerp(cC.set('#ffd98a'),.4*(1-night));hemi.groundColor.set('#efdcae')}
  $('#stars').style.opacity=night;
 }
 {const st=$('#stars');let h='';for(let i=0;i<90;i++)h+=`<i style="left:${(rand()*100).toFixed(1)}%;top:${(rand()*70).toFixed(1)}%;opacity:${(.3+rand()*.7).toFixed(2)}"></i>`;st.innerHTML=h}
@@ -741,8 +837,11 @@ const archTag=mkTag('arch',new THREE.Vector3(0,4.1,-5));
 const meTag=mkTag('me',new THREE.Vector3());
 function updateTags(){
  for(const r of ROOMS){const el=r.tag.el;el.style.setProperty('--c',r.hex);
-  if(r.kind==='class'){const p=lessonPct(r.id);el.innerHTML=`${esc(tr(r.title))}<small>${esc(tr(r.dates))} · ${fmtMin(S.totals[r.id])}</small><div class="bar"><i style="width:${p}%"></i></div>`}
+  if(r.kind==='class'){const p=lessonPct(r.id);el.innerHTML=`${esc(tr(r.title))}<small>${BEACH?esc(tr(r.dates2))+' · ':''}${esc(tr(r.dates))} · ${fmtMin(S.totals[r.id])}</small><div class="bar"><i style="width:${p}%"></i></div>`}
   else if(r.kind==='zh'&&hskStats()){const h=hskStats(),p=lessonPct('zh');el.innerHTML=`${esc(tr(r.title))}<small>${h.learned} ${L==='vi'?'từ':'words'} · ${t('hskDue').toLowerCase()} ${h.due}</small><div class="bar"><i style="width:${p}%"></i></div>`}
+  else if(r.kind==='crm'){const lg=S.crm.log[dkey(new Date())]||{};el.innerHTML=`${esc(tr(r.title))}<small>${L==='vi'?'Hôm nay':'Today'}: ${+lg.lead||0} lead · ${+lg.mess||0} ${L==='vi'?'tin':'msgs'}</small>`}
+  else if(r.kind==='cert'){let n=0;for(const id of ['me1','me2','me3','me4','zh'])n+=S.classes[id].certs.length;el.innerHTML=`${esc(tr(r.title))}<small>${n} ${L==='vi'?'chứng chỉ':'certificates'}</small>`}
+  else if(BEACH&&r.kind==='class'){}
   else if(r.kind==='plan'){const open=S.plan.cards.filter(c=>c.col!=='done').length;el.innerHTML=`${esc(tr(r.title))}<small>${open} ${L==='vi'?'việc mở':'open tasks'}</small>`}
   else el.innerHTML=`${esc(tr(r.title))}<small>${esc(tr(r.dates))}</small>`}
  archTag.el.textContent=t('arch');meTag.el.textContent=t('you');
@@ -818,6 +917,8 @@ function frame(now){
  if(!reduce&&tick%2===0){const p=riverGeo.attributes.position,a=p.array;for(let i=0;i<a.length;i+=3)a[i+2]=Math.sin(rBase[i]*.9+now/700)*.04+Math.cos(rBase[i+1]*2+now/900)*.02;p.needsUpdate=true}
  let nb=null,nd=1.7;for(const r of ROOMS){const d=Math.hypot(P.x-r.door[0],P.z-r.door[1]);if(d<nd){nd=d;nb=r}}
  if(nb!==near){near=nb;const pr=$('#prompt');if(near&&!panelState){$('#ptxt').textContent=tr(near.title);pr.classList.add('on')}else pr.classList.remove('on')}
+ if(window.__boat){window.__boat.position.y=-1.05+Math.sin(now/900)*.06;window.__boat.rotation.z=Math.sin(now/1300)*.05}
+ if(window.__foam&&tick%3===0)window.__foam.material.opacity=.45+Math.sin(now/700)*.15;
  if(++tick%30===0)applyLight(hourNow());
  placeTags();
  renderer.render(scene,cam);
@@ -856,6 +957,12 @@ $('#b-certs').addEventListener('click',()=>openPanel({kind:'certs'}));
 $('#b-set').addEventListener('click',()=>openPanel({kind:'settings'}));
 $('#b-acct').addEventListener('click',()=>openPanel({kind:'acct'}));
 $('#b-find').addEventListener('click',()=>openPanel({kind:'find',q:''}));
+$('#b-theme').addEventListener('click',()=>{S.settings.theme=BEACH?'campus':'beach';save();try{localStorage.setItem(LS,JSON.stringify(S))}catch(e){}toast(t('th_'+S.settings.theme));setTimeout(()=>location.reload(),400)});
+let instEv=null;
+addEventListener('beforeinstallprompt',e=>{e.preventDefault();instEv=e;$('#b-inst').hidden=false});
+addEventListener('appinstalled',()=>{instEv=null;$('#b-inst').hidden=true;toast(t('installed'))});
+async function doInstall(){if(instEv){instEv.prompt();try{await instEv.userChoice}catch(e){}instEv=null;$('#b-inst').hidden=true}else{openPanel({kind:'settings'});toast(t('installHow'))}}
+$('#b-inst').addEventListener('click',doInstall);
 
 /* ---------------- notifications ---------------- */
 let swReg=null;
@@ -912,7 +1019,7 @@ $('#pcls').addEventListener('change',e=>{PM.cls=e.target.value;savePM()});
 
 /* ---------------- panel ---------------- */
 const panel=$('#panel');let panelState=null;
-function openRoom(id){const r=RM[id];if(r.kind==='board')openPanel({kind:'board'});else if(r.kind==='pomo')openPanel({kind:'pomo'});else if(r.kind==='plan')openPanel({kind:'plan',tab:'board'});else openPanel({kind:r.kind,id,tab:'syllabus'})}
+function openRoom(id){const r=RM[id];if(r.kind==='board')openPanel({kind:'board'});else if(r.kind==='pomo')openPanel({kind:'pomo'});else if(r.kind==='plan')openPanel({kind:'plan',tab:'board'});else if(r.kind==='crm')openPanel({kind:'crm'});else if(r.kind==='cert')openPanel({kind:'certs'});else openPanel({kind:r.kind,id,tab:'syllabus'})}
 function openPanel(st){panelState=st;renderPanel();panel.classList.add('open');document.body.classList.add('popen');$('#prompt').classList.remove('on');walk=null;if(st.kind==='find')setTimeout(()=>{const i=$('#fq');if(i)i.focus()},60)}
 function closePanel(){if(!panelState)return;panelState=null;panel.classList.remove('open');document.body.classList.remove('popen');near=null;canvas.focus({preventScroll:true})}
 const head=(hex,k,title,sub)=>`<div class="grab"></div><header class="ph" style="--c:${hex}"><div class="pk">${esc(k)}</div><div><h2>${esc(title)}</h2><p>${sub}</p></div><button class="x" data-act="close" aria-label="${t('close')}">×</button></header>`;
@@ -989,6 +1096,17 @@ function planPanel(){
  }
  return h+`</div>`;
 }
+function crmPanel(){
+ const r=RM.crm,c=S.crm,today=dkey(new Date()),lg=c.log[today]||{},K=[['mess','crmMess'],['lead','crmLead'],['good','crmGood'],['cost','crmCost']];
+ let h=head(r.hex,r.short,tr(r.title),t('crmSub'))+`<div class="pb" style="--c:${r.hex}">`;
+ h+=`<div class="sec" style="margin-top:0"><h3>${t('crmLinks')}</h3>${c.links.length?`<ul class="list">${c.links.map(k=>`<li><div class="lt">${linkOrText(k.t,safeUrl(k.url))}</div><button class="del" data-act="delCrm" data-id="${k.id}" aria-label="${t('del')}">×</button></li>`).join('')}</ul>`:`<div class="empty">${t('crmLinkHint')}</div>`}
+ <div class="add"><input name="t" placeholder="${t('title')}"><div class="row"><input name="u" placeholder="${t('link')}" inputmode="url"><button class="btn sm pri" data-act="addCrm">${t('add')}</button></div></div></div>`;
+ h+=`<div class="sec"><h3>${t('crmToday')}</h3><div class="grid3" style="grid-template-columns:repeat(2,minmax(0,1fr))">${K.map(([k,l])=>`<label>${t(l)}<input class="inp" type="number" inputmode="numeric" min="0" data-act="crmv" data-k="${k}" value="${lg[k]??''}"></label>`).join('')}</div></div>`;
+ const rows=[];for(let i=0;i<7;i++){const d=new Date();d.setDate(d.getDate()-i);const k=dkey(d),v=c.log[k]||{};rows.push([k,v])}
+ h+=`<div class="sec"><h3>${t('crm7')}</h3><div class="scroll"><table style="width:100%;border-collapse:collapse;font-size:12.5px;font-variant-numeric:tabular-nums"><thead><tr style="color:var(--mute);text-align:right"><th style="text-align:left;font-weight:600;padding:4px">${t('crmDay')}</th><th style="font-weight:600;padding:4px">${t('crmMess')}</th><th style="font-weight:600;padding:4px">Lead</th><th style="font-weight:600;padding:4px">${t('crmGood')}</th><th style="font-weight:600;padding:4px">${t('crmCPL')}</th></tr></thead><tbody>${rows.map(([k,v])=>`<tr style="border-top:1px solid var(--line);text-align:right"><td style="text-align:left;padding:5px 4px">${k.slice(8)}/${k.slice(5,7)}</td><td style="padding:5px 4px">${v.mess??'–'}</td><td style="padding:5px 4px">${v.lead??'–'}</td><td style="padding:5px 4px">${v.good??'–'}</td><td style="padding:5px 4px">${+v.lead&&+v.cost?Math.round(v.cost/v.lead):'–'}</td></tr>`).join('')}</tbody></table></div></div>`;
+ h+=`<div class="sec"><h3>${t('notes')}</h3><textarea data-act="crmnotes" placeholder="${t('notesPh')}">${esc(c.notes)}</textarea></div></div>`;
+ return h;
+}
 function boardPanel(){
  const r=RM.board,n=new Date(),day=n.getDay(),mins=n.getHours()*60+n.getMinutes();
  let h=head(r.hex,'7',tr(r.title),esc(tr(r.dates)));
@@ -1016,7 +1134,9 @@ function certsPanel(){
 function settingsPanel(){
  const perm=window.Notification?Notification.permission:'unsupported';
  let h=head('#1d2a4d','≡',t('settings'),ON_PAGES&&fb&&fb.user?esc(fb.user.email||''):'');
- h+=`<div class="pb"><div class="sec"><h3>${t('notify')}</h3><div class="box"><label class="gate"><input type="checkbox" data-act="setn" ${S.settings.notify?'checked':''}><span>${t('notifyOn')}</span></label>
+ h+=`<div class="pb"><div class="sec" style="margin-top:0"><h3>${t('theme')}</h3><div class="tpl">${['campus','beach'].map(v=>`<button data-act="theme" data-v="${v}" style="${THEME0===v?'border-color:var(--acc);box-shadow:0 0 0 1px var(--acc) inset':''}">${t('th_'+v)}<small>${THEME0===v?'✓':''}</small></button>`).join('')}</div></div>
+ <div class="sec"><h3>${t('install')}</h3><div class="box"><p>${t('installWhy')}</p><p style="margin-top:8px"><button class="btn sm pri" data-act="install">${t('install')}</button></p><p class="note">${t('installHow')}</p></div></div>
+ <div class="sec"><h3>${t('notify')}</h3><div class="box"><label class="gate"><input type="checkbox" data-act="setn" ${S.settings.notify?'checked':''}><span>${t('notifyOn')}</span></label>
  <div class="logrow"><label style="font-size:12.5px;color:var(--mute);display:flex;gap:6px;align-items:center">${t('notifyBefore')}<input class="inp" style="width:72px" type="number" min="0" max="60" data-act="setb" value="${S.settings.before}"></label><button class="btn sm ${perm==='granted'?'':'pri'}" data-act="askN">${perm==='granted'?t('notifyOk'):t('notifyAsk')}</button></div>
  <p class="note">${t('notifyIOS')}</p></div></div>
  <div class="sec"><h3>${t('pomoLen')}</h3><div class="grid3">${['focus','brk','lbrk'].map(k=>`<label>${t(k)}<input class="inp" type="number" min="1" max="180" data-act="plen" data-k="${k}" value="${S.settings[k]}"></label>`).join('')}</div></div>
@@ -1031,7 +1151,8 @@ function acctPanel(){
   if(fb&&fb.user)h+=`<div class="box"><p>${t('signedAs')} <b>${esc(fb.user.email||fb.user.displayName||'')}</b></p><p style="margin-top:8px;color:var(--mute)">${t('acctWhy')}</p></div><div class="logrow"><button class="btn sm" data-act="hskRefresh">${t('refresh')}</button><button class="btn sm" data-act="signOut">${t('signOut')}</button></div>`;
   else h+=`<div class="box"><p>${t('acctWhy')}</p><p style="margin-top:10px"><button class="btn pri" data-act="signIn">${t('signIn')}</button></p></div>`;
  }else h+=`<div class="box"><p>${t('acctArtifact')}</p><p style="margin-top:10px"><a class="btn pri" href="${PAGES_URL}" target="_blank" rel="noopener">${t('openPages')} ↗</a></p></div>`;
- if(ON_PAGES&&cloudErr)h+=`<div class="box" style="margin-top:10px"><p><b>${t('rulesTitle')}</b></p><p style="color:var(--mute)">${t('rulesWhy')}</p><pre style="font-size:12px;white-space:pre-wrap;margin:8px 0 0">match /academy/{uid} {\n  allow read, write: if request.auth != null\n    &amp;&amp; request.auth.uid == uid;\n}</pre></div>`;
+ if(ON_PAGES&&fb&&fb.user)h+=`<p class="note">${t('syncNote')}</p>`;
+ if(ON_PAGES&&cloudErr)h+=`<p class="note" style="color:var(--acc)">${esc(cloudErr)}</p>`;
  if(acctMsg)h+=`<p class="note" style="color:var(--acc)">${esc(acctMsg)}</p>`;
  return h+`</div>`;
 }
@@ -1059,7 +1180,7 @@ function findResults(){
 }
 function renderPanel(){
  if(!panelState)return;const k=panelState.kind;const y=panel.scrollTop;
- panel.innerHTML=k==='class'||k==='zh'?classPanel():k==='work'?workPanel():k==='plan'?planPanel():k==='board'?boardPanel():k==='pomo'?pomoPanel():k==='certs'?certsPanel():k==='acct'?acctPanel():k==='find'?findPanel():settingsPanel();
+ panel.innerHTML=k==='class'||k==='zh'?classPanel():k==='work'?workPanel():k==='plan'?planPanel():k==='crm'?crmPanel():k==='board'?boardPanel():k==='pomo'?pomoPanel():k==='certs'?certsPanel():k==='acct'?acctPanel():k==='find'?findPanel():settingsPanel();
  panel.scrollTop=y;
 }
 const fval=(b,n)=>{const f=b.closest('.add');const el=f&&f.querySelector(`[name=${n}]`);return el?el.value.trim():''};
@@ -1098,6 +1219,10 @@ panel.addEventListener('click',e=>{
   case 'fgo':{const r=(st.res||[])[+b.dataset.i];if(r)openPanel(Object.assign({},r.go));break}
   case 'qCard':{const ti=(st.q||'').trim();if(!ti)return;S.plan.cards.push({id:uid(),t:ti,p:'',g:TAGS[0],due:'',col:'todo'});save();updateTags();openPanel({kind:'plan',tab:'board'});break}
   case 'qPage':{const ti=(st.q||'').trim();if(!ti)return;const pg=newPage('',ti);openPanel({kind:'plan',tab:'pages',page:pg.id});break}
+  case 'addCrm':{const u=safeUrl(fval(b,'u'));if(!u)return;S.crm.links.push({id:uid(),t:fval(b,'t')||u,url:u});done();break}
+  case 'delCrm':S.crm.links=S.crm.links.filter(x=>x.id!==id);done();break;
+  case 'theme':S.settings.theme=b.dataset.v;save();try{localStorage.setItem(LS,JSON.stringify(S))}catch(x){}setTimeout(()=>location.reload(),350);break;
+  case 'install':doInstall();break;
   case 'signIn':fbSignIn();break;
   case 'signOut':fbSignOut();break;
   case 'hskRefresh':fbPull(false);break;
@@ -1117,6 +1242,7 @@ panel.addEventListener('change',e=>{
  else if(a==='zhurl')S.settings.zhUrl=el.value.trim();
  else if(a==='pst'){const p=S.plan.posts.find(x=>x.id===id);if(p)p.s=el.value}
  else if(a==='setn')S.settings.notify=el.checked;
+ else if(a==='crmv'){const k=dkey(new Date());S.crm.log[k]=S.crm.log[k]||{};S.crm.log[k][el.dataset.k]=el.value===''?undefined:Math.max(0,+el.value);const ks=Object.keys(S.crm.log).sort();while(ks.length>120)delete S.crm.log[ks.shift()]}
  else if(a==='setb')S.settings.before=clamp(Math.round(+el.value||0),0,60);
  else return;
  save();renderPanel();updateTags();renderPomo();
@@ -1125,6 +1251,7 @@ let fqT=null;
 panel.addEventListener('input',e=>{const el=e.target,a=el.dataset.act;
  if(a==='notes'){S.classes[panelState.id].notes=el.value;save()}
  else if(a==='wnotes'){S.work.notes=el.value;save()}
+ else if(a==='crmnotes'){S.crm.notes=el.value;save()}
  else if(a==='pgt'||a==='pgb'){const pg=S.plan.pages.find(x=>x.id===panelState.page);if(pg){pg[a==='pgt'?'t':'b']=el.value;pg.at=Date.now();save()}}
  else if(a==='fq'){panelState.q=el.value;clearTimeout(fqT);fqT=setTimeout(()=>{const r=$('#fres');if(r)r.innerHTML=findResults()},150)}});
 panel.addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target.tagName==='INPUT'&&e.target.closest('.add')){const b=e.target.closest('.add').querySelector('button[data-act]');if(b){e.preventDefault();b.click()}}});
