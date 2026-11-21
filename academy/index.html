@@ -1705,9 +1705,9 @@ function ambStop(){clearTimeout(MU.ambT);for(const n of MU.ambNodes)try{n.stop()
 function muApplyVol(){if(!MU.ctx)return;const c=mcfg(),t=MU.ctx.currentTime;MU.out.gain.setTargetAtTime(MU.playing&&c.mode==='gen'?c.vol*.9:0,t,.4);MU.bus.gain.setTargetAtTime(c.beats?1:0,t,.3);MU.amb.gain.setTargetAtTime(c.amb?1:0,t,.3)}
 function ytEmbed(u){u=(u||'').trim();let m;
  if((m=u.match(/[?&]list=([\w-]+)/)))return `https://www.youtube.com/embed/videoseries?list=${m[1]}&autoplay=1`;
- if((m=u.match(/(?:youtu\.be\/|v=|embed\/|live\/|shorts\/)([\w-]{11})/)))return `https://www.youtube.com/embed/${m[1]}?autoplay=1&loop=1&playlist=${m[1]}`;
+ if((m=u.match(/(?:youtu\.be\/|v=|embed\/|live\/|shorts\/)([\w-]{11})/)))return `https://www.youtube.com/embed/${m[1]}?autoplay=1`;
  if((m=u.match(/open\.spotify\.com\/(?:intl-\w+\/)?(playlist|album|track|show|episode)\/(\w+)/)))return `https://open.spotify.com/embed/${m[1]}/${m[2]}?utm_source=generator`;
- if(/^[\w-]{11}$/.test(u))return `https://www.youtube.com/embed/${u}?autoplay=1&loop=1&playlist=${u}`;return null}
+ if(/^[\w-]{11}$/.test(u))return `https://www.youtube.com/embed/${u}?autoplay=1`;return null}
 function ytShow(on){const box2=$('#ytbox');if(!on){box2.classList.remove('on');box2.querySelector('.ytf').innerHTML='';return}
  const src=ytEmbed(mcfg().yt);if(!src){toast(t('muBadLink'));return}box2.querySelector('.ytf').innerHTML=`<iframe src="${esc(src)}" allow="autoplay; encrypted-media; clipboard-write" allowfullscreen title="music"></iframe>`;box2.classList.add('on')}
 function muPlay(){const c=mcfg();if(c.mode==='yt'){muStopGen();ytShow(true);MU.playing=true;renderMusic();return}
@@ -1721,7 +1721,7 @@ function renderMusic(){const c=mcfg(),p=$('#musicpop');$('#b-music').classList.t
  ${c.mode==='gen'?`<p>${t('muGenHint',{th:t('th_'+THEME0)})}</p><label class="rw">${t('muVol')}<input type="range" min="0" max="1" step="0.05" value="${c.vol}" data-mu="vol"></label>
  <label class="ck"><input type="checkbox" data-mu="beats" ${c.beats?'checked':''}> ${t('muBeats')}</label><label class="ck"><input type="checkbox" data-mu="amb" ${c.amb?'checked':''}> ${t('muAmb_'+TM().amb)}</label>`
  :`<p>${t('muYtHint')}</p><div class="row"><input class="inp" id="mu-link" placeholder="youtube.com/… · open.spotify.com/…" value="${esc(c.yt||'')}" inputmode="url"><button class="btn sm pri" data-mu="link">OK</button></div>
- <div class="chips">${[['Lofi Girl','https://www.youtube.com/watch?v=jfKfPfyJRdk'],['Synthwave','https://www.youtube.com/watch?v=4xDzrJKXOOY'],['Jazz café','https://www.youtube.com/watch?v=Dx5qFachd3A']].map(([n,u])=>`<button data-mu="preset" data-u="${u}">${n}</button>`).join('')}</div>`}
+ <div class="chips">${[['Lofi study','https://www.youtube.com/watch?v=lTRiuFIWV54'],['Synthwave','https://www.youtube.com/watch?v=4xDzrJKXOOY'],['Jazz café','https://www.youtube.com/watch?v=Dx5qFachd3A']].map(([n,u])=>`<button data-mu="preset" data-u="${u}">${n}</button>`).join('')}</div>`}
  <label class="ck"><input type="checkbox" data-mu="pomo" ${c.pomo?'checked':''}> ${t('muPomo')}</label>`}
 $('#b-music').addEventListener('click',e=>{e.stopPropagation();renderMusic();$('#musicpop').classList.toggle('on');$('#lightpop').classList.remove('on')});
 $('#musicpop').addEventListener('click',e=>{e.stopPropagation();const b=e.target.closest('[data-mu]');if(!b)return;const c=mcfg(),k=b.dataset.mu;
