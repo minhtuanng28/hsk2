@@ -1214,10 +1214,10 @@ function addBridge(a,b,W,H,kind){
  return g;
 }
 function bridgeH(br,t){if(br.kind==='pier')return Math.min(.28,t*.4);return .08+Math.sin(Math.PI*Math.max(0,Math.min(1,t/br.L)))*.32}
-function onBridge(x,z){for(const b of BRIDGES){const px=x-b.a[0],pz=z-b.a[1],t=px*b.ux+pz*b.uz,s=Math.abs(-px*b.uz+pz*b.ux);if(t>-.1&&t<b.L+.1&&s<b.W/2-.18)return bridgeH(b,t)}return null}
+function onBridge(x,z){for(const b of BRIDGES){const px=x-b.a[0],pz=z-b.a[1],t=px*b.ux+pz*b.uz,s=Math.abs(-px*b.uz+pz*b.ux);if(t>-.15&&t<b.L+.15&&s<b.W/2-.04)return bridgeH(b,t)}return null}
 if(!BEACH){
  for(const P of PATHS2){const pts=[];for(let i=0;i<P.length-1;i++){const a=P[i],b=P[i+1],L=Math.hypot(b[0]-a[0],b[1]-a[1]);for(let s=0;s<L;s+=.2){const x=a[0]+(b[0]-a[0])*s/L,z=a[1]+(b[1]-a[1])*s/L;if(tileAt(x,z)==='water')pts.push([x,z])}}
-  if(pts.length>2){const a=pts[0],b=pts[pts.length-1],dx=b[0]-a[0],dz=b[1]-a[1],L=Math.hypot(dx,dz)||1;addBridge([a[0]-dx/L*1.1,a[1]-dz/L*1.1],[b[0]+dx/L*1.1,b[1]+dz/L*1.1],1.7,0,'arch')}}
+  if(pts.length>2){const a=pts[0],b=pts[pts.length-1],dx=b[0]-a[0],dz=b[1]-a[1],L=Math.hypot(dx,dz)||1;addBridge([a[0]-dx/L*1.3,a[1]-dz/L*1.3],[b[0]+dx/L*1.3,b[1]+dz/L*1.3],2.1,0,'arch')}}
 }else{
  addBridge(PIER[0],PIER[1],1.8,0,'pier');
  const bt=new THREE.Group();bt.position.set(PIER[1][0]+1.9,-.95,PIER[1][1]-1.2);bt.rotation.y=.2;scene.add(bt);
@@ -1480,7 +1480,7 @@ const ring=new THREE.Mesh(new THREE.RingGeometry(.25,.36,24),new THREE.MeshBasic
 const PR=.3;
 function walkable(x,z){
  if(LIB){if(x<X0+.6||x>X1-.6||z<Z0+.6||z>Z1-.6)return false}
- else if(!(GW.ok(x,z)&&GW.ok(x+.26,z)&&GW.ok(x-.26,z)&&GW.ok(x,z+.26)&&GW.ok(x,z-.26)))return false;
+ else if(!(GW.ok(x,z)&&GW.ok(x+.2,z)&&GW.ok(x-.2,z)&&GW.ok(x,z+.2)&&GW.ok(x,z-.2)))return false;
  if(OLDW&&z>RIV[0]-.2&&z<RIV[1]+.2&&!(x>BRI[0]+.15&&x<BRI[1]-.15))return false;
  for(const b of BOXES)if(x>b[0]-PR&&x<b[1]+PR&&z>b[2]-PR&&z<b[3]+PR)return false;
  for(const c of CIRCLES){const dx=x-c[0],dz=z-c[1];if(dx*dx+dz*dz<(c[2]+PR)**2)return false}
@@ -1541,7 +1541,7 @@ const meTag=mkTag('me',new THREE.Vector3());
 /* ---------------- navigation grid + A* ---------------- */
 const NAV={};
 function navBuild(){const b=LIB?[X0,X1,Z0,Z1]:[-24,24,-24,24],cs=.4,nx=Math.ceil((b[1]-b[0])/cs),nz=Math.ceil((b[3]-b[2])/cs),g=new Uint8Array(nx*nz);
- const e=.16;for(let j=0;j<nz;j++)for(let i=0;i<nx;i++){const x=b[0]+(i+.5)*cs,z=b[2]+(j+.5)*cs;g[i+j*nx]=walkable(x,z)&&walkable(x+e,z)&&walkable(x-e,z)&&walkable(x,z+e)&&walkable(x,z-e)?1:0}Object.assign(NAV,{b,cs,nx,nz,g})}
+ const e=.12;for(let j=0;j<nz;j++)for(let i=0;i<nx;i++){const x=b[0]+(i+.5)*cs,z=b[2]+(j+.5)*cs;g[i+j*nx]=walkable(x,z)&&walkable(x+e,z)&&walkable(x-e,z)&&walkable(x,z+e)&&walkable(x,z-e)?1:0}Object.assign(NAV,{b,cs,nx,nz,g})}
 function navFree(k,R=14){const {nx,nz,g}=NAV;if(g[k])return k;const i0=k%nx,j0=(k/nx)|0;for(let r=1;r<=R;r++){let best=-1,bd=1e9;for(let dj=-r;dj<=r;dj++)for(let di=-r;di<=r;di++){if(Math.max(Math.abs(di),Math.abs(dj))!==r)continue;const i=i0+di,j=j0+dj;if(i<0||j<0||i>=nx||j>=nz)continue;const q=i+j*nx;if(g[q]){const d=di*di+dj*dj;if(d<bd){bd=d;best=q}}}if(best>=0)return best}return -1}
 function navLOS(ax,az,bx,bz){const {b,cs,nx,g}=NAV,L=Math.hypot(bx-ax,bz-az),n=Math.ceil(L/(cs*.45));for(let k=1;k<n;k++){const x=ax+(bx-ax)*k/n,z=az+(bz-az)*k/n,i=Math.floor((x-b[0])/cs),j=Math.floor((z-b[2])/cs);if(!g[i+j*nx])return false}return true}
 function navPath(sx,sz,tx,tz){
@@ -2200,7 +2200,7 @@ setInterval(remindTick,20000);
 setInterval(()=>{drawClock();updateStats()},15000);
 setInterval(drawBoard,60000);
 if(document.fonts&&document.fonts.ready)document.fonts.ready.then(()=>{drawBoard()});
-window.__acad={get P(){return P},get walk(){return walk},get SIT(){return SIT},walkable,navPath,SEATS,NAV,get cat(){return CAT}};
+window.__acad={RM,get P(){return P},get walk(){return walk},get SIT(){return SIT},walkable,navPath,SEATS,NAV,get cat(){return CAT}};
 catInit();setTimeout(()=>{try{if(!NAV.g)navBuild()}catch(e){}},1200);
 requestAnimationFrame(frame);
 setTimeout(()=>$('#loading').classList.add('off'),300);
