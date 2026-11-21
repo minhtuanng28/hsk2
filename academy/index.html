@@ -228,6 +228,43 @@ textarea{min-height:170px;resize:vertical;line-height:1.5;font-size:15px}
 }
 @media (min-width:701px){body.popen #dock,body.popen #help{display:none}}
 @media (prefers-reduced-motion:reduce){#panel,#toast,#hud-tr{transition:none}}
+/* compact glass HUD */
+:root{--glass:light-dark(rgba(255,255,255,.5),rgba(26,30,42,.5));--glassb:light-dark(rgba(255,255,255,.7),rgba(255,255,255,.12))}
+#hud-tl,#pomo,.ib,#dockbtn,#dockgrid,#prompt,#ytbox{background:var(--glass);-webkit-backdrop-filter:blur(22px) saturate(180%);backdrop-filter:blur(22px) saturate(180%);border:1px solid var(--glassb);box-shadow:0 8px 28px rgba(10,20,40,.16),inset 0 1px 0 rgba(255,255,255,.35)}
+#musicpop,#lightpop{background:light-dark(rgba(255,255,255,.8),rgba(26,30,42,.84));-webkit-backdrop-filter:blur(22px) saturate(180%);backdrop-filter:blur(22px) saturate(180%)}
+body.eco #hud-tl,body.eco #pomo,body.eco .ib,body.eco #dockbtn,body.eco #dockgrid,body.eco #prompt,body.eco #ytbox,body.eco #musicpop,body.eco #lightpop,body.eco .card{-webkit-backdrop-filter:none;backdrop-filter:none;background:var(--panel)}
+#hud-tl{transition:padding .2s}
+#hud-tl .logo{cursor:pointer}
+#hud-tl.mini{width:auto;max-width:min(290px,calc(100vw - 80px));padding:6px 10px 7px 7px;border-radius:14px}
+#hud-tl.mini .stats,#hud-tl.mini h1{display:none}
+#hud-tl.mini .brand .clk{font-size:11.5px}
+#hud-tl.mini #nowchip{margin-top:5px;padding:4px 8px;font-size:11.5px;background:light-dark(rgba(255,255,255,.55),rgba(255,255,255,.08))}
+#hud-tl.mini #nowchip em{font-size:10px}
+#hud-tl.hide{width:auto;padding:5px;border-radius:12px}
+#hud-tl.hide>*:not(.brand),#hud-tl.hide .brand>div:last-child{display:none}
+#savebadge{font-size:0;width:10px;height:10px;padding:0;border-radius:50%;background:#9aa3ad;box-shadow:0 0 0 2px rgba(255,255,255,.7);margin:4px 16px 2px 0}
+#savebadge[data-k=cloud]{background:#2ecc71}#savebadge[data-k=saving]{background:#f2b441}
+#moreset,#moreset2{display:none;flex-direction:column;gap:7px;align-items:flex-end}
+#hud-tr.open #moreset,#hud-tr.open #moreset2{display:flex}
+#hud-tr.open #b-more{background:var(--acc);color:#fff}
+#dock{left:auto;right:calc(12px + var(--sr));bottom:calc(12px + var(--sb));display:flex;flex-direction:column;align-items:flex-end;gap:8px;max-width:none;flex-wrap:nowrap}
+#dock #dockbtn{background:var(--glass);border-radius:14px;min-height:42px;padding:0 14px;font-size:13px;gap:8px}
+#dockbtn svg{width:17px;height:17px;fill:none;stroke:currentColor;stroke-width:1.8}
+#dockbtn b{font-size:11px;background:var(--acc);color:#fff;border-radius:20px;padding:0 6px;line-height:18px}
+#dockgrid{display:none;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;padding:8px;border-radius:18px;width:min(400px,calc(100vw - 24px));max-height:60vh;overflow-y:auto}
+#dock.open #dockgrid{display:grid}
+#dock.open #dockbtn{background:var(--acc);color:#fff}
+#dockgrid button{box-shadow:none;justify-content:flex-start;min-height:40px;background:light-dark(rgba(255,255,255,.6),rgba(255,255,255,.06))}
+#pomo.mini{width:auto;padding:6px 8px 6px 6px;gap:8px}
+#pomo.mini .pm,#pomo.mini #preset,#pomo.mini #pskip{display:none}
+#pomo.mini .pbtns{margin-top:0}
+#pomo.mini .ring,#pomo.mini .ring svg{width:44px;height:44px}
+#pomo .ring{cursor:pointer}
+.tag.cat{background:#fff7e6;color:#5a3a10;border-color:#f2c97a;font-weight:600;white-space:normal;max-width:230px;font-size:12px;cursor:default}
+.tag.cat b{color:#c98a2e}
+#help{background:rgba(0,0,0,.28);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
+@media (max-width:900px){#dock{left:auto;right:calc(12px + var(--sr));bottom:calc(12px + var(--sb));overflow:visible;padding-bottom:0}}
+@media (max-width:700px){#pomo.mini{width:auto}body.popen #dock{display:none}#hud-tl.mini{max-width:calc(100vw - 76px)}}
 </style>
 <script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js"}}</script>
 </head>
@@ -246,6 +283,8 @@ textarea{min-height:170px;resize:vertical;line-height:1.5;font-size:15px}
 
 <nav id="hud-tr" aria-label="Công cụ">
  <span id="savebadge">…</span>
+ <button class="ib" id="b-more" data-t="more" title="Thêm" aria-expanded="false"><svg viewBox="0 0 24 24"><circle cx="6" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="18" cy="12" r="1.6"/></svg></button>
+ <div id="moreset">
  <button class="ib" id="b-find" data-t="find" title="Tìm"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4.5 4.5"/></svg></button>
  <button class="ib" id="b-theme" data-t="theme" title="Đổi khung cảnh"><svg viewBox="0 0 24 24"><path d="M12 21V11"/><path d="M12 11c-2-3-6-3.5-8-2 2.5 0 5 .8 8 2zM12 11c2-3 6-3.5 8-2-2.5 0-5 .8-8 2zM12 11c-1-3.5 1-6 4-6.5-1.5 1.5-3 3.5-4 6.5zM12 11c1-3.5-1-6-4-6.5 1.5 1.5 3 3.5 4 6.5z"/><path d="M5 21h14"/></svg></button>
  <button class="ib" id="b-inst" data-t="install" title="Cài app" hidden><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4M12 7v6M9.5 10.5 12 13l2.5-2.5"/></svg></button>
@@ -256,15 +295,18 @@ textarea{min-height:170px;resize:vertical;line-height:1.5;font-size:15px}
   <input type="range" id="simh" min="0" max="24" step="0.25" value="12" aria-label="Giờ mô phỏng">
   <p><span data-i="hour">Giờ mô phỏng</span>: <b id="simv">12:00</b></p>
  </div>
+ </div>
  <button class="ib" id="b-music" data-t="music" title="Nhạc nền"><svg viewBox="0 0 24 24"><path d="M9 18V5l11-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="17" cy="16" r="3"/></svg></button>
  <div id="musicpop" class="card"></div>
+ <div id="moreset2">
  <button class="ib" id="b-sched" data-t="schedule" title="Lịch tuần"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg></button>
  <button class="ib" id="b-certs" data-t="certs" title="Tủ chứng chỉ"><svg viewBox="0 0 24 24"><circle cx="12" cy="9" r="6"/><path d="M8.5 14 7 22l5-3 5 3-1.5-8"/></svg></button>
  <button class="ib" id="b-acct" data-t="acct" title="Tài khoản"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></button>
  <button class="ib" id="b-set" data-t="settings" title="Cài đặt"><svg viewBox="0 0 24 24"><path d="M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12"/><circle cx="16" cy="6" r="2"/><circle cx="10" cy="12" r="2"/><circle cx="18" cy="18" r="2"/></svg></button>
+ </div>
 </nav>
 
-<section id="pomo" class="card">
+<section id="pomo" class="card mini">
  <div class="ring"><svg viewBox="0 0 64 64"><circle class="trk" cx="32" cy="32" r="28"/><circle class="prg" id="pprg" cx="32" cy="32" r="28"/></svg><b id="ptime">25:00</b></div>
  <div class="pc">
   <div class="pm"><b id="pmode">Tập trung</b><select id="pcls" aria-label="Phòng"></select></div>
@@ -273,7 +315,7 @@ textarea{min-height:170px;resize:vertical;line-height:1.5;font-size:15px}
 </section>
 
 <div id="joy" aria-hidden="true"><i></i></div>
-<div id="dock"></div>
+<div id="dock"><div id="dockgrid" class="card"></div><button id="dockbtn"><svg viewBox="0 0 24 24"><rect x="4" y="4" width="7" height="7" rx="2"/><rect x="13" y="4" width="7" height="7" rx="2"/><rect x="4" y="13" width="7" height="7" rx="2"/><rect x="13" y="13" width="7" height="7" rx="2"/></svg><span id="dockl">Phòng</span><b id="dockn"></b></button></div>
 <div id="prompt" class="card"><span id="ptxt"></span><kbd>E</kbd><button class="btn pri" id="pgo">Vào phòng</button></div>
 <div id="help"></div>
 <aside id="panel" class="card"></aside>
@@ -330,7 +372,7 @@ c_todo:'Cần làm',c_doing:'Đang làm',c_review:'Chờ duyệt',c_done:'Xong',
 ch:'Kênh',ps_idea:'Ý tưởng',ps_writing:'Đang viết',ps_review:'Chờ duyệt',ps_live:'Đã đăng',newPost:'Tiêu đề bài…',noPosts:'Chưa có bài nào trong lịch.',
 blank:'Trang trống',newPage:'Trang mới',back:'‹ Quay lại',edited:'Sửa lúc {t}',noPages:'Chưa có trang nào. Tạo từ mẫu bên trên.',
 findPh:'Gõ để tìm trong mọi phòng…',addAsCard:'+ Thêm thành việc',addAsPage:'+ Tạo trang',noRes:'Không thấy kết quả.',
-workSub:'Checklist campaign · việc · link nhanh',theme:'Đổi khung cảnh',th_campus:'Khuôn viên học viện',th_beach:'Đảo biển nắng vàng',th_library:'Thư viện ấm cúng',music:'Nhạc nền',muPlay:'Phát',muStop:'Dừng',muGen:'Lofi tự tạo',muGenHint:'Nhạc lofi được chơi ngay trên máy, đổi theo khung cảnh đang dùng ({th}). Không cần mạng, không quảng cáo, chạy mãi không lặp y hệt.',muVol:'Âm lượng',muBeats:'Nhạc (piano, bass, trống nhẹ)',muAmb_rain:'Tiếng mưa + lửa lò sưởi',muAmb_waves:'Tiếng sóng biển',muAmb_birds:'Chim hót + gió nhẹ',muYtHint:'Dán link YouTube (video, playlist, livestream) hoặc Spotify. Trình phát nhỏ nằm ở góc trái màn hình.',muBadLink:'Link chưa đúng: dán link YouTube hoặc Spotify',muPomo:'Tự bật nhạc khi bắt đầu Pomodoro',crmOpen:'Mở CRM',crmInPanel:'Mở ngay trong quầy',crmShrink:'Thu nhỏ',crmUrl:'Đổi link CRM',crmEmbedHelp:'Khung trống hoặc báo lỗi? Google chặn nhúng mặc định. Trong Apps Script của CRM, ở hàm doGet thêm .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL) vào lệnh return HtmlService… rồi Deploy → Manage deployments → Edit → New version. Chưa sửa thì dùng nút Mở CRM.',themeNow:'Đang dùng: {t}. Bấm để đổi, trang sẽ tải lại.',install:'Cài app ra màn hình',installWhy:'Cài thành app riêng trên máy tính: có biểu tượng ở Desktop/Dock, mở trong cửa sổ riêng, không cần mở trình duyệt.',installHow:'Nếu không thấy nút: Chrome/Edge → biểu tượng Cài đặt ở thanh địa chỉ (hoặc ⋮ → Lưu và chia sẻ → Cài đặt trang). Safari trên Mac → Tệp → Thêm vào Dock. iPhone/iPad → Chia sẻ → Thêm vào MH chính.',installed:'App đã được cài',clockT:'Đồng hồ trung tâm',clockS:'Giờ thực · Pomodoro',crmSub:'Lead · số liệu mỗi ngày · link CRM',crmLinks:'Link CRM',crmLinkHint:'Dán link web CRM cho sale và Google Sheet CRM để mở nhanh từ đây.',crmToday:'Số liệu hôm nay',crmMess:'Tin nhắn',crmLead:'SĐT / lead',crmGood:'Lead tốt',crmCost:'Chi phí (nghìn đ)',crm7:'7 ngày gần nhất',crmCPL:'CPL (nghìn đ)',crmDay:'Ngày',syncNote:'Dữ liệu học viện được cất chung trong tài khoản app HSK (không cần sửa Firebase).',lesson_s:'Bài học',doc_s:'Tài liệu',note_s:'Ghi chú',card_s:'Việc',post_s:'Bài đăng',page_s:'Trang',task_s:'Việc MKT'},
+workSub:'Checklist campaign · việc · link nhanh',theme:'Đổi khung cảnh',th_campus:'Khuôn viên học viện',th_beach:'Đảo biển nắng vàng',th_library:'Thư viện ấm cúng',rooms:'Phòng',more:'Thêm',hudTip:'Bấm để thu gọn / ẩn bảng',quality:'Hiệu năng',q_auto:'Tự động',q_high:'Đẹp nhất',q_eco:'Tiết kiệm pin',qHint:'Tự động: giảm độ nét khi máy nóng hoặc giật. Tiết kiệm pin: tắt bóng đổ, 30 khung hình/giây, bỏ hiệu ứng kính mờ. Khi bạn chuyển sang app khác, 3D dừng hẳn, chỉ còn nhạc chạy.',catT:'Mèo đồng hành',catOn:'Hiện mèo vàng đi theo',catSnd:'Tiếng kêu meo',catNameL:'Tên mèo',music:'Nhạc nền',muPlay:'Phát',muStop:'Dừng',muGen:'Lofi tự tạo',muGenHint:'Nhạc lofi được chơi ngay trên máy, đổi theo khung cảnh đang dùng ({th}). Không cần mạng, không quảng cáo, chạy mãi không lặp y hệt.',muVol:'Âm lượng',muBeats:'Nhạc (piano, bass, trống nhẹ)',muAmb_rain:'Tiếng mưa + lửa lò sưởi',muAmb_waves:'Tiếng sóng biển',muAmb_birds:'Chim hót + gió nhẹ',muYtHint:'Dán link YouTube (video, playlist, livestream) hoặc Spotify. Trình phát nhỏ nằm ở góc trái màn hình.',muBadLink:'Link chưa đúng: dán link YouTube hoặc Spotify',muPomo:'Tự bật nhạc khi bắt đầu Pomodoro',crmOpen:'Mở CRM',crmInPanel:'Mở ngay trong quầy',crmShrink:'Thu nhỏ',crmUrl:'Đổi link CRM',crmEmbedHelp:'Khung trống hoặc báo lỗi? Google chặn nhúng mặc định. Trong Apps Script của CRM, ở hàm doGet thêm .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL) vào lệnh return HtmlService… rồi Deploy → Manage deployments → Edit → New version. Chưa sửa thì dùng nút Mở CRM.',themeNow:'Đang dùng: {t}. Bấm để đổi, trang sẽ tải lại.',install:'Cài app ra màn hình',installWhy:'Cài thành app riêng trên máy tính: có biểu tượng ở Desktop/Dock, mở trong cửa sổ riêng, không cần mở trình duyệt.',installHow:'Nếu không thấy nút: Chrome/Edge → biểu tượng Cài đặt ở thanh địa chỉ (hoặc ⋮ → Lưu và chia sẻ → Cài đặt trang). Safari trên Mac → Tệp → Thêm vào Dock. iPhone/iPad → Chia sẻ → Thêm vào MH chính.',installed:'App đã được cài',clockT:'Đồng hồ trung tâm',clockS:'Giờ thực · Pomodoro',crmSub:'Lead · số liệu mỗi ngày · link CRM',crmLinks:'Link CRM',crmLinkHint:'Dán link web CRM cho sale và Google Sheet CRM để mở nhanh từ đây.',crmToday:'Số liệu hôm nay',crmMess:'Tin nhắn',crmLead:'SĐT / lead',crmGood:'Lead tốt',crmCost:'Chi phí (nghìn đ)',crm7:'7 ngày gần nhất',crmCPL:'CPL (nghìn đ)',crmDay:'Ngày',syncNote:'Dữ liệu học viện được cất chung trong tài khoản app HSK (không cần sửa Firebase).',lesson_s:'Bài học',doc_s:'Tài liệu',note_s:'Ghi chú',card_s:'Việc',post_s:'Bài đăng',page_s:'Trang',task_s:'Việc MKT'},
 en:{brand:"Tuấn's Academy",today:'Today',week:'This week',streak:'Streak',total:'Total',
 now:'Now',next:'Next',left:'left',tomorrow:'tomorrow',enter:'Enter room',
 help:'WASD / arrow keys to walk · Click the ground or a building to go there · E to enter · Scroll to zoom',
@@ -364,7 +406,7 @@ c_todo:'To do',c_doing:'Doing',c_review:'Review',c_done:'Done',proj:'Project',ta
 ch:'Channel',ps_idea:'Idea',ps_writing:'Writing',ps_review:'Review',ps_live:'Live',newPost:'Post title…',noPosts:'No posts in the calendar yet.',
 blank:'Blank page',newPage:'New page',back:'‹ Back',edited:'Edited {t}',noPages:'No pages yet. Start from a template above.',
 findPh:'Type to search every room…',addAsCard:'+ Add as task',addAsPage:'+ Create page',noRes:'No results.',
-workSub:'Campaign checklist · tasks · quick links',theme:'Change scenery',th_campus:'Academy campus',th_beach:'Sunny beach island',th_library:'Cozy library',music:'Background music',muPlay:'Play',muStop:'Stop',muGen:'Built-in lofi',muGenHint:'Lofi generated live on your device, matched to the current scenery ({th}). No network, no ads, never repeats exactly.',muVol:'Volume',muBeats:'Music (piano, bass, soft drums)',muAmb_rain:'Rain + crackling fire',muAmb_waves:'Ocean waves',muAmb_birds:'Birdsong + light wind',muYtHint:'Paste a YouTube (video, playlist, live) or Spotify link. A small player sits in the bottom-left corner.',muBadLink:'That link did not work: paste a YouTube or Spotify link',muPomo:'Start music with the Pomodoro',crmOpen:'Open CRM',crmInPanel:'Open inside the desk',crmShrink:'Collapse',crmUrl:'Change CRM link',crmEmbedHelp:'Blank frame or an error? Google blocks embedding by default. In the CRM Apps Script doGet, add .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL) to the return HtmlService… line, then Deploy → Manage deployments → Edit → New version. Until then use Open CRM.',themeNow:'Now: {t}. Tap to switch; the page reloads.',install:'Install as an app',installWhy:'Install it as its own computer app: an icon on the Desktop/Dock, opens in its own window, no browser needed.',installHow:'No button? Chrome/Edge → the Install icon in the address bar (or ⋮ → Save and share → Install page). Safari on Mac → File → Add to Dock. iPhone/iPad → Share → Add to Home Screen.',installed:'App installed',clockT:'Central clock',clockS:'Real time · Pomodoro',crmSub:'Leads · daily numbers · CRM links',crmLinks:'CRM links',crmLinkHint:'Paste the sales CRM web link and the CRM Google Sheet to open them from here.',crmToday:'Today',crmMess:'Messages',crmLead:'Phones / leads',crmGood:'Good leads',crmCost:'Spend (k VND)',crm7:'Last 7 days',crmCPL:'CPL (k VND)',crmDay:'Day',syncNote:'Academy data is stored inside your HSK app account (no Firebase changes needed).',lesson_s:'Lesson',doc_s:'Material',note_s:'Notes',card_s:'Task',post_s:'Post',page_s:'Page',task_s:'MKT task'}};
+workSub:'Campaign checklist · tasks · quick links',theme:'Change scenery',th_campus:'Academy campus',th_beach:'Sunny beach island',th_library:'Cozy library',rooms:'Rooms',more:'More',hudTip:'Tap to shrink / hide the panel',quality:'Performance',q_auto:'Automatic',q_high:'Best looking',q_eco:'Battery saver',qHint:'Automatic lowers sharpness when the device gets hot or laggy. Battery saver turns off shadows, caps at 30 fps and drops the blur. When you switch apps the 3D stops completely; only music keeps playing.',catT:'Cat companion',catOn:'Show the golden cat',catSnd:'Meow sounds',catNameL:'Cat name',music:'Background music',muPlay:'Play',muStop:'Stop',muGen:'Built-in lofi',muGenHint:'Lofi generated live on your device, matched to the current scenery ({th}). No network, no ads, never repeats exactly.',muVol:'Volume',muBeats:'Music (piano, bass, soft drums)',muAmb_rain:'Rain + crackling fire',muAmb_waves:'Ocean waves',muAmb_birds:'Birdsong + light wind',muYtHint:'Paste a YouTube (video, playlist, live) or Spotify link. A small player sits in the bottom-left corner.',muBadLink:'That link did not work: paste a YouTube or Spotify link',muPomo:'Start music with the Pomodoro',crmOpen:'Open CRM',crmInPanel:'Open inside the desk',crmShrink:'Collapse',crmUrl:'Change CRM link',crmEmbedHelp:'Blank frame or an error? Google blocks embedding by default. In the CRM Apps Script doGet, add .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL) to the return HtmlService… line, then Deploy → Manage deployments → Edit → New version. Until then use Open CRM.',themeNow:'Now: {t}. Tap to switch; the page reloads.',install:'Install as an app',installWhy:'Install it as its own computer app: an icon on the Desktop/Dock, opens in its own window, no browser needed.',installHow:'No button? Chrome/Edge → the Install icon in the address bar (or ⋮ → Save and share → Install page). Safari on Mac → File → Add to Dock. iPhone/iPad → Share → Add to Home Screen.',installed:'App installed',clockT:'Central clock',clockS:'Real time · Pomodoro',crmSub:'Leads · daily numbers · CRM links',crmLinks:'CRM links',crmLinkHint:'Paste the sales CRM web link and the CRM Google Sheet to open them from here.',crmToday:'Today',crmMess:'Messages',crmLead:'Phones / leads',crmGood:'Good leads',crmCost:'Spend (k VND)',crm7:'Last 7 days',crmCPL:'CPL (k VND)',crmDay:'Day',syncNote:'Academy data is stored inside your HSK app account (no Firebase changes needed).',lesson_s:'Lesson',doc_s:'Material',note_s:'Notes',card_s:'Task',post_s:'Post',page_s:'Page',task_s:'MKT task'}};
 let L='vi';
 const t=(k,v)=>{let s=(I[L]&&I[L][k])??I.vi[k]??k;if(v)for(const x in v)s=s.replace('{'+x+'}',v[x]);return s};
 const tr=x=>x==null?'':typeof x==='string'?x:(x[L]??x.vi??'');
@@ -435,7 +477,7 @@ const toM=s=>{const[a,b]=s.split(':').map(Number);return a*60+b};
 function defaults(){
  const classes={};
  for(const id of ['me1','me2','me3','me4','zh'])classes[id]={lessons:(SEED[id]||[]).map((x,i)=>({id:id+'-l'+i,t:x[0],url:x[1],done:false})),docs:(SEED_DOCS[id]||[]).map((x,i)=>({id:id+'-d'+i,t:x[0],url:x[1],note:''})),certs:[],notes:'',gate:false};
- return {v:1,updatedAt:0,lang:'vi',settings:{focus:25,brk:5,lbrk:15,zhUrl:ZH_URL,realtime:true,simHour:12,notify:true,before:10,theme:'campus',music:{on:false,vol:.55,mode:'gen',yt:'',beats:true,amb:true,pomo:false},crmUrl:'https://script.google.com/macros/s/AKfycbwAQLgzNAllPBin53K4o6kZ6h3pJRFrWxvEBePX1E3X411CcS8jpYWTyEl3DjtH5mU/exec',crmEmbed:false},classes,crm:{links:[],log:{},notes:''},
+ return {v:1,updatedAt:0,lang:'vi',settings:{focus:25,brk:5,lbrk:15,zhUrl:ZH_URL,realtime:true,simHour:12,notify:true,before:10,theme:'campus',music:{on:false,vol:.55,mode:'gen',yt:'',beats:true,amb:true,pomo:false},crmUrl:'https://script.google.com/macros/s/AKfycbwAQLgzNAllPBin53K4o6kZ6h3pJRFrWxvEBePX1E3X411CcS8jpYWTyEl3DjtH5mU/exec',crmEmbed:false,quality:'auto',catOn:true,catName:'Bắp',catSound:true},classes,crm:{links:[],log:{},notes:''},
   work:{tasks:[{id:'w1',t:{vi:'Hoàn thiện báo cáo Meta Ads → Sheets (bài build Lớp 1)',en:'Finish the Meta Ads → Sheets report (Class 1 build)'},done:false},{id:'w2',t:{vi:'Cập nhật CRM fanpage cho sale',en:'Update the fanpage CRM for sales'},done:false}],
    links:[{id:'k1',t:'Meta Ads Manager',url:'https://adsmanager.facebook.com/'},{id:'k2',t:'Meta Business Suite',url:'https://business.facebook.com/'},{id:'k3',t:'Meta Ad Library',url:'https://www.facebook.com/ads/library/'},{id:'k4',t:'Google Sheets',url:'https://docs.google.com/spreadsheets/'}],checks:{},notes:''},
   plan:{cards:[],posts:[],pages:[]},totals:{},sessions:[]};
@@ -457,7 +499,7 @@ let S;try{S=merge(JSON.parse(localStorage.getItem(LS)))}catch(e){S=defaults()}
 L=S.lang==='en'?'en':'vi';
 
 let cloudErr='',cloud=null,cloudBusy=false,cloudDirty=false,saveT=null;
-function badge(k){$('#savebadge').textContent=k==='cloud'?(ON_PAGES?t('saveGoogle'):t('saveCloud')):k==='saving'?t('saving'):t('saveLocal');$('#savebadge').dataset.k=k}
+function badge(k){setTimeout(()=>{const sb=$('#savebadge');sb.title=sb.textContent},0);$('#savebadge').textContent=k==='cloud'?(ON_PAGES?t('saveGoogle'):t('saveCloud')):k==='saving'?t('saving'):t('saveLocal');$('#savebadge').dataset.k=k}
 function save(){S.updatedAt=Date.now();try{localStorage.setItem(LS,JSON.stringify(S))}catch(e){}cloudDirty=true;clearTimeout(saveT);if(cloud)badge('saving');saveT=setTimeout(flush,1200)}
 async function flush(){
  if(!cloud){badge('local');return}
@@ -548,9 +590,11 @@ function status(id){const r=RM[id];if(r.kind!=='class')return 'now';const c=S.cl
 
 /* ---------------- 3D ---------------- */
 const canvas=$('#c');
-const renderer=new THREE.WebGLRenderer({canvas,antialias:true,alpha:true,powerPreference:'high-performance'});
-renderer.setPixelRatio(Math.min(devicePixelRatio,MOBILE?1.6:2));
-renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;
+const Q0=['high','eco'].includes(S.settings.quality)?S.settings.quality:'auto',ECO=Q0==='eco';if(ECO)document.body.classList.add('eco');
+const DPR_MAX=Q0==='high'?Math.min(devicePixelRatio,2):ECO?Math.min(devicePixelRatio,1):Math.min(devicePixelRatio,1.5);let DPR=DPR_MAX;
+const renderer=new THREE.WebGLRenderer({canvas,antialias:!ECO&&devicePixelRatio<1.5,alpha:true,powerPreference:Q0==='high'?'high-performance':'low-power'});
+renderer.setPixelRatio(DPR);
+renderer.shadowMap.enabled=!ECO;renderer.shadowMap.type=THREE.PCFSoftShadowMap;renderer.shadowMap.autoUpdate=false;let shadowDirty=3;
 const scene=new THREE.Scene();
 const cam=new THREE.OrthographicCamera(-10,10,10,-10,-200,200);
 const CAM_OFF=new THREE.Vector3(15,23,17);
@@ -558,8 +602,8 @@ let zoom=MOBILE?.78:1;
 function resize(){const w=innerWidth,h=innerHeight;renderer.setSize(w,h,false);const v=(w<700?11.5:10.5)/zoom,a=w/h;cam.left=-v*a;cam.right=v*a;cam.top=v;cam.bottom=-v;cam.updateProjectionMatrix()}
 resize();addEventListener('resize',resize);
 const hemi=new THREE.HemisphereLight(0xdfefff,0x6a8a3a,1);scene.add(hemi);
-const sun=new THREE.DirectionalLight(0xffffff,2.5);sun.castShadow=true;const SM=MOBILE?1024:2048;sun.shadow.mapSize.set(SM,SM);
-Object.assign(sun.shadow.camera,{left:-34,right:34,top:34,bottom:-34,near:1,far:140});sun.shadow.bias=-0.0005;sun.shadow.normalBias=0.04;sun.shadow.camera.updateProjectionMatrix();
+const sun=new THREE.DirectionalLight(0xffffff,2.5);sun.castShadow=true;const SM=Q0==='high'?2048:MOBILE?1024:1536;sun.shadow.mapSize.set(SM,SM);
+Object.assign(sun.shadow.camera,{left:-27,right:27,top:27,bottom:-27,near:1,far:140});sun.shadow.bias=-0.0005;sun.shadow.normalBias=0.04;sun.shadow.camera.updateProjectionMatrix();
 scene.add(sun,sun.target);
 
 const mats={};const M=c=>mats[c]||(mats[c]=new THREE.MeshLambertMaterial({color:c}));
@@ -739,6 +783,14 @@ function clockPost(r){
  place(r,g,1.8,1.8,1.5,8.4);
 }
 function surfBoard(r){board(r);const C=['#ff7a5c','#1fb5c9','#ffd84a'];[-1.75,1.75,2.15].forEach((x,i)=>{const b=box(.42,2,.08,C[i],x+r.pos[0],1,r.pos[1]-.1);b.rotation.z=x>0?-.12-i*.05:.12})}
+/* ---------------- seats (library) ---------------- */
+const SEATS=[];let SIT=null;
+function addSeat(g,lx,lz,ly,lry,o={}){g.updateMatrixWorld(true);const v=new THREE.Vector3(lx,0,lz);g.localToWorld(v);const wr=g.rotation.y+lry;const s={x:v.x,z:v.z,y:ly-.42,rot:wr,ax:o.ax,az:o.az,room:o.room,legs:o.legs??-1.45};
+ if(s.ax==null){s.ax=v.x-Math.sin(wr)*.85;s.az=v.z-Math.cos(wr)*.85}SEATS.push(s);return s}
+function sitAt(s){walk=null;SIT={s,k:0,fx:P.x,fz:P.z,fy:player.position.y};P.rot=s.rot}
+function standUp(){if(!SIT)return;const s=SIT.s;SIT=null;P.x=s.ax;P.z=s.az;if(!walkable(P.x,P.z)&&NAV.g){const k=navFree(Math.floor((P.x-NAV.b[0])/NAV.cs)+Math.floor((P.z-NAV.b[2])/NAV.cs)*NAV.nx);if(k>=0){P.x=NAV.b[0]+(k%NAV.nx+.5)*NAV.cs;P.z=NAV.b[2]+(((k/NAV.nx)|0)+.5)*NAV.cs}}legs.forEach(l=>l.rotation.x=0)}
+
+
 /* ---------- library theme: one desk per room ---------- */
 const BOOKC=['#7a2e2e','#2f4a3a','#2b3a5a','#8a5a2b','#c9a227','#5a2a4a','#3d6b6b','#b5562f','#e8dcc0','#1f2a44','#6b3a2a','#9c7b3c','#a33b3b','#4a6b3a','#d9c7a0','#2e5b70'];
 const WOOD='#5b3a26',WOOD2='#6e472e',WOODL='#8a5a3a',WOODD='#3b2518';
@@ -792,7 +844,7 @@ function potPlant(g,x,z,s=1,y=0,pot='#b86a3c'){const p=new THREE.Mesh(new THREE.
 function armchair(x,z,ry,col){const g=new THREE.Group();g.position.set(x,0,z);g.rotation.y=ry;scene.add(g);
  box(1.05,.36,.95,col,0,.32,0,g);box(1.05,1.0,.26,col,0,.78,-.36,g);for(const s of [-1,1]){box(.22,.62,.95,col,s*.5,.5,0,g);box(.24,.06,.97,'#'+new THREE.Color(col).offsetHSL(0,0,-.08).getHexString(),s*.5,.82,0,g)}
  box(.7,.12,.66,'#'+new THREE.Color(col).offsetHSL(0,0,.08).getHexString(),0,.56,.08,g);for(const a of [-.42,.42])for(const b of [-.36,.36])box(.08,.14,.08,'#2a1a10',a,.07,b,g);
- for(const a of [-.25,0,.25])for(const b of [.6,.9])box(.05,.05,.02,'#'+new THREE.Color(col).offsetHSL(0,0,-.15).getHexString(),a,b,-.22,g,{cast:false});CIRCLES.push([x,z,.62])}
+ for(const a of [-.25,0,.25])for(const b of [.6,.9])box(.05,.05,.02,'#'+new THREE.Color(col).offsetHSL(0,0,-.15).getHexString(),a,b,-.22,g,{cast:false});CIRCLES.push([x,z,.62]);addSeat(g,0,.08,.62,0,{ax:x+Math.sin(ry)*1,az:z+Math.cos(ry)*1})}
 function floorLamp(x,z,ry=0){const g=new THREE.Group();g.position.set(x,0,z);g.rotation.y=ry;scene.add(g);const b=new THREE.Mesh(new THREE.CylinderGeometry(.22,.26,.06,14),M('#2a1a10'));b.position.y=.03;g.add(b);box(.05,1.7,.05,goldM,0,.88,0,g);const arm=box(.05,.05,.6,goldM,0,1.72,.27,g);
  const sh=new THREE.Mesh(new THREE.ConeGeometry(.3,.34,16,1,true),new THREE.MeshLambertMaterial({color:'#f1dfb5',emissive:'#ffcf7a',emissiveIntensity:.5,side:THREE.DoubleSide}));sh.position.set(0,1.62,.56);g.add(sh);LIBGLOW.push(sh.material);CIRCLES.push([x,z,.25])}
 const LIBGLOW=[];
@@ -815,7 +867,7 @@ function studyDesk(r,i){
  box(.6,.12,.05,r.hex,0,.66,.56,g);box(.4,.05,.06,'#f6eedb',0,.66,.57,g,{cast:false});
  chair(g,0,.85,Math.PI,r.hex);
  const L=new THREE.PointLight('#ffc98a',0,5.5,2);L.position.set(-.78,1.2,-.1);g.add(L);lampLights.push(L);
- place(r,g,2.4,1.9,1.75,2.5);
+ place(r,g,2.4,1.9,1.75,2.5);r.seat=addSeat(g,0,.85,.59,Math.PI,{room:r.id,ax:r.door[0],az:r.door[1]});
 }
 function workDesk(r){
  const g=new THREE.Group();rug(g,.2,.25,4,3.2,r.hex);
@@ -830,7 +882,7 @@ function workDesk(r){
  const al=new THREE.Group();al.position.set(2.15,.84,-.85);g.add(al);box(.18,.03,.18,'#222',0,.02,0,al);const a1=box(.03,.5,.03,'#222',0,.26,0,al);const a2=box(.03,.03,.45,'#222',0,.5,.2,al);const hd=new THREE.Mesh(new THREE.ConeGeometry(.12,.18,12,1,true),new THREE.MeshLambertMaterial({color:'#2f5fd0',emissive:'#ffcf7a',emissiveIntensity:.3,side:THREE.DoubleSide}));hd.position.set(0,.42,.42);g.add(hd);hd.position.add(al.position);LIBGLOW.push(hd.material);
  const oc=new THREE.Group();oc.position.set(0,0,.95);oc.rotation.y=Math.PI+.2;g.add(oc);const seat=new THREE.Mesh(new THREE.CylinderGeometry(.3,.3,.1,16),M(r.hex));seat.position.y=.5;seat.castShadow=true;oc.add(seat);box(.5,.62,.08,r.hex,0,.9,-.26,oc);box(.05,.4,.05,'#333',0,.28,0,oc);for(let k=0;k<5;k++){const l=box(.05,.04,.34,'#333',0,.06,0,oc);l.rotation.y=k*Math.PI*2/5;l.translateZ(.17)}
  potPlant(g,-1.05,-.35,.5,.84,'#e9e1d0');
- place(r,g,3.4,2,1.8,2.6);
+ place(r,g,3.4,2,1.8,2.6);r.seat=addSeat(g,0,.95,.55,Math.PI+.2,{room:r.id,ax:r.door[0],az:r.door[1]});
 }
 function planTable(r){
  const g=new THREE.Group();rug(g,0,.15,3.8,3,r.hex);
@@ -841,7 +893,7 @@ function planTable(r){
  box(2.9,1.75,.1,'#6b4129',0,1.95,-.85,g);box(2.7,1.55,.11,'#c49a6c',0,1.95,-.84,g,{cast:false});for(const a of [-1.2,1.2])box(.1,1.2,.1,'#4a2c1b',a,.6,-.85,g);
  COLS.forEach(([k,c],ci)=>{box(.56,.08,.02,c,-1+ci*.66,2.6,-.78,g,{cast:false});for(let n=0;n<3-(ci===3?1:0);n++){const p=box(.4,.3,.015,'#'+new THREE.Color(c).offsetHSL(0,-.15,.28).getHexString(),-1+ci*.66+(rand()-.5)*.06,2.3-n*.38,-.775,g,{cast:false});p.rotation.z=(rand()-.5)*.12;box(.04,.04,.03,'#c8322a',-1+ci*.66,2.43-n*.38,-.765,g,{cast:false})}});
  for(const s of [-1,1]){const st=new THREE.Mesh(new THREE.CylinderGeometry(.2,.2,.06,12),M(r.hex));st.position.set(s*.7,.55,1.2);st.castShadow=true;g.add(st);box(.05,.52,.05,'#4a2c1b',s*.7,.26,1.2,g)}
- place(r,g,3,2.2,1.65,3.3);
+ place(r,g,3,2.2,1.65,3.3);r.seat=addSeat(g,-.7,1.2,.58,Math.PI,{room:r.id,ax:r.door[0],az:r.door[1]});addSeat(g,.7,1.2,.58,Math.PI,{room:r.id,ax:r.door[0],az:r.door[1]});
 }
 function zhNook(r){
  const g=new THREE.Group();
@@ -856,7 +908,7 @@ function zhNook(r){
   else{box(.7,1.4,.075,'#efe2c4',0,1.15,0,p,{cast:false});for(let n=0;n<4;n++)leafClump(p,(rand()-.5)*.4,.8+n*.25,.06,.07,'#d86a8a');box(.03,1.2,.02,'#3a1f14',-.15*k,1.1,.05,p,{cast:false})}});
  for(const s of [-1,1]){box(.06,1.5,.06,'#3a1f14',s*1.45,.95,.95,g);box(.4,.05,.05,'#3a1f14',s*1.3,1.68,.95,g);const ln=new THREE.Mesh(new THREE.CylinderGeometry(.16,.16,.34,10),lanternMat);ln.position.set(s*1.18,1.42,.95);ln.castShadow=true;g.add(ln);box(.2,.05,.2,'#c9a227',s*1.18,1.62,.95,g);box(.2,.05,.2,'#c9a227',s*1.18,1.22,.95,g)}
  const bp=new THREE.Mesh(new THREE.CylinderGeometry(.22,.17,.16,10),M('#2f4a3a'));bp.position.set(1.2,.3,-.45);g.add(bp);box(.06,.3,.06,'#5a3d22',1.2,.5,-.45,g);for(let k=0;k<4;k++)leafClump(g,1.2+(k-1.5)*.13,.66+(k%2)*.08,-.45+(k%3-1)*.08,.12,'#2f7a35');
- place(r,g,3.4,2.8,1.9,2.9);
+ place(r,g,3.4,2.8,1.9,2.9);r.seat=addSeat(g,0,.95,.36,Math.PI,{room:r.id,ax:r.door[0],az:r.door[1],legs:-1.55});addSeat(g,-.95,.2,.36,Math.PI/2,{room:r.id,ax:r.door[0],az:r.door[1],legs:-1.55});addSeat(g,.95,.2,.36,-Math.PI/2,{room:r.id,ax:r.door[0],az:r.door[1],legs:-1.55});
 }
 function crmDesk(r){
  const g=new THREE.Group();rug(g,0,.2,4.2,3.2,r.hex);
@@ -870,7 +922,7 @@ function crmDesk(r){
  potPlant(g,-.55,-1.55,.45,1.25,'#e9e1d0');const ro=new THREE.Mesh(new THREE.CylinderGeometry(.12,.12,.3,12),M('#2b2b30'));ro.rotation.z=Math.PI/2;ro.position.set(.4,1.4,-1.55);g.add(ro);
  chair(g,0,-.5,0,r.hex);
  const L=new THREE.PointLight('#ffc98a',0,5.5,2);L.position.set(.6,1.6,1);g.add(L);lampLights.push(L);
- place(r,g,3.8,2.9,2.05,2.7);
+ place(r,g,3.8,2.9,2.05,2.7);r.seat=addSeat(g,0,-.5,.59,0,{room:r.id,ax:r.door[0],az:r.door[1]});
 }
 function certCabinet(r){
  const g=new THREE.Group();
@@ -1268,7 +1320,7 @@ for(let k=0;k<9;k++){const g=new THREE.Group(),ca=k/9*Math.PI*2+rand()*.4,cr=BEA
 function smokeAt(x,y,z){for(let k=0;k<4;k++){const m=new THREE.Mesh(new THREE.IcosahedronGeometry(.18,0),new THREE.MeshLambertMaterial({color:'#e9e4dc',transparent:true,opacity:.6,depthWrite:false}));m.userData={x,y,z,ph:k/4};scene.add(m);SMOKE.push(m)}}
 for(const f of window.__smokeSrc||[])smokeAt(...f());
 
-GW.y=groundY;GW.hub=HUB;GW.ok=(x,z)=>{const t=tileAt(x,z);if(!t||t==='water'||t==='sea')return onBridge(x,z)!=null;return true};GW.clouds=CLOUDS;GW.smoke=SMOKE;GW.ducks=DUCKS;
+GW.y=groundY;GW.hub=HUB;GW.ok=(x,z)=>{const t=tileAt(x,z);if(!t||t==='water'||t==='sea')return onBridge(x,z)!=null;return true};GW.clouds=CLOUDS;GW.smoke=SMOKE;GW.ducks=DUCKS;GW.pier=PIER;GW.pond=POND;
 }
 if(LIB){
  // floor: base slab + staggered planks
@@ -1322,13 +1374,13 @@ if(LIB){
  {const g=new THREE.Group();scene.add(g);rug(g,-12.1,1.7,4.2,4.2,'#8e1f1a',true)}
  armchair(-12.1,-.65,-.6,'#7a2e2e');armchair(-12.1,4.05,-2.5,'#2f4a3a');
  {const t=new THREE.Mesh(new THREE.CylinderGeometry(.3,.3,.05,14),M(WOOD));t.position.set(-11.3,.62,1.7);scene.add(t);box(.06,.6,.06,WOODD,-11.3,.3,1.7);mug(scene,-11.2,1.75,'#f3ead6',.645);CIRCLES.push([-11.3,1.7,.32])}
- {const cat=new THREE.Group();cat.position.set(-12.9,0,1.6);cat.rotation.y=.8;scene.add(cat);const bd=box(.5,.22,.36,'#e08a3c',0,.13,0,cat);box(.2,.18,.2,'#e08a3c',.3,.12,.08,cat);for(const s of [-1,1])box(.05,.07,.04,'#e08a3c',.33,.24,.08+s*.06,cat);const tl=box(.4,.08,.08,'#c9702c',-.1,.06,.22,cat);tl.rotation.y=.4;box(.12,.23,.37,'#c9702c',-.08,.13,0,cat,{cast:false});window.__cat=bd}
+ 
  floorLamp(-13.9,-1.9,.9);
  // central reading table on a big rug
  {const g=new THREE.Group();g.position.set(2.2,0,-4.6);scene.add(g);rug(g,0,0,7.2,4.6,'#6b1f24');
   box(4.6,.1,1.5,'#6b4129',0,.82,0,g);box(4.7,.05,1.6,'#4a2c1b',0,.76,0,g);for(const a of [-2.1,2.1])for(const b of [-.6,.6])box(.12,.76,.12,'#4a2c1b',a,.38,b,g);
   bankerLamp(g,-1.1,0,.87);bankerLamp(g,1.2,0,.87);
-  [-1.6,-.2,1.6].forEach((x,i)=>{chair(g,x,-1.05,0,['#2f4a3a','#7a2e2e','#2b3a5a'][i]);chair(g,x+.3,1.05,Math.PI,['#7a2e2e','#2b3a5a','#2f4a3a'][i])});
+  [-1.6,-.2,1.6].forEach((x,i)=>{chair(g,x,-1.05,0,['#2f4a3a','#7a2e2e','#2b3a5a'][i]);chair(g,x+.3,1.05,Math.PI,['#7a2e2e','#2b3a5a','#2f4a3a'][i]);addSeat(g,x,-1.05,.59,0,{ax:2.2+x,az:-4.6-1.05-.75-1.3});addSeat(g,x+.3,1.05,.59,Math.PI,{ax:2.2+x+.3,az:-4.6+1.05+.75+1.3})});
   for(const [x,z,ry] of [[-.6,-.3,.2],[.5,.35,-.4],[1.9,-.25,.1]]){for(const s of [-1,1]){const p=box(.27,.02,.36,'#f6eedb',x+s*.145*Math.cos(ry),.89,z,g,{cast:false});p.rotation.set(0,ry,s*.12)}}
   let y=.87;for(let k=0;k<5;k++){const th=.07+rand()*.04,b=box(.42,th,.3,BOOKC[(k*3+1)%BOOKC.length],-2,y+th/2,.3,g);b.rotation.y=(rand()-.5)*.6;y+=th}
   mug(g,.15,-.4,'#2b3a5a',.87);
@@ -1420,6 +1472,7 @@ const body=rounded(.64,.6,.42,.14,'#ea4f3d');body.position.y=.72;player.add(body
 const faceP=rounded(.5,.26,.02,.08,'#f7d3bd');faceP.position.set(0,.76,.31);player.add(faceP);
 for(const ex of [-.12,.12])box(.07,.1,.03,'#1a1a1a',ex,.77,.345,player,{cast:false});
 const legs=[];for(const lx of [-.13,.13]){const p=new THREE.Group();p.position.set(lx,.38,0);player.add(p);box(.11,.26,.11,'#f7d3bd',0,-.13,0,p);box(.14,.09,.18,'#ea4f3d',0,-.27,.02,p);legs.push(p)}
+player.traverse(o=>{if(o.isMesh)o.castShadow=false});{const bs=new THREE.Mesh(new THREE.CircleGeometry(.36,18),new THREE.MeshBasicMaterial({color:'#000',transparent:true,opacity:.22,depthWrite:false}));bs.rotation.x=-Math.PI/2;bs.position.y=.02;player.add(bs)}
 const P={x:LIB?0:GW.hub[0]+2.1,z:LIB?6:GW.hub[1]+2.5,rot:Math.PI};player.position.set(P.x,0,P.z);
 const ring=new THREE.Mesh(new THREE.RingGeometry(.25,.36,24),new THREE.MeshBasicMaterial({color:'#ffffff',transparent:true,opacity:0}));ring.rotation.x=-Math.PI/2;ring.position.y=.02;scene.add(ring);
 
@@ -1451,7 +1504,7 @@ function applyLight(h){
  lampLights.forEach(l=>{l.intensity=night*14;l.userData.base=night*14});if(window.__beamM)window.__beamM.opacity=night*.2;if(window.__sea)window.__sea.color.set('#36d0de').lerp(cC.set('#163f66'),night*.8);if(window.__water)window.__water.color.set('#5cc6d0').lerp(cC.set('#1b4a70'),night*.8);
  oceanMat.color.set(OCEAN).lerp(cC.set('#14365a'),night*.8);riverMat.color.set(RIVERC).lerp(cC.set('#1b4a70'),night*.8);
  if(BEACH&&night<.6){sun.color.lerp(cC.set('#ffd98a'),.4*(1-night));hemi.groundColor.set('#efdcae')}
- $('#stars').style.opacity=LIB?0:night;
+ $('#stars').style.opacity=LIB?0:night;{const sk=sun.position.x.toFixed(1)+sun.position.y.toFixed(1)+sun.position.z.toFixed(1);if(sk!==window.__sk){window.__sk=sk;shadowDirty=Math.max(shadowDirty,1)}}
  if(LIB){const day=1-night;skyWinMat.color.set(top);skyWinMat.emissive.set(top);skyWinMat.emissiveIntensity=.55+day*.3;
   sun.color.set('#ffdcae').lerp(cC.set('#8fa0d8'),night*.6);sun.intensity=.35+si*1.05;hemi.color.set('#ffe7c8');hemi.groundColor.set('#5a3a26');hemi.intensity=.5+hi*.75;
   sun.position.set(16,26,12);lampMat.emissiveIntensity=.7+night*1.3;shadeMat.emissiveIntensity=.3+night*.55;LIBGLOW.forEach(m=>m.emissiveIntensity=.35+night*.9);
@@ -1485,6 +1538,99 @@ function mkTag(cls,pos,room){const el=document.createElement('div');el.className
 for(const r of ROOMS)r.tag=mkTag('',new THREE.Vector3(r.pos[0],r.labelY,r.pos[1]),r.id);
 const archTag=mkTag('arch',LIB?new THREE.Vector3(4,7.2,-13):new THREE.Vector3(GW.hub[0],BEACH?3.3:3.4,GW.hub[1]));
 const meTag=mkTag('me',new THREE.Vector3());
+/* ---------------- navigation grid + A* ---------------- */
+const NAV={};
+function navBuild(){const b=LIB?[X0,X1,Z0,Z1]:[-24,24,-24,24],cs=.4,nx=Math.ceil((b[1]-b[0])/cs),nz=Math.ceil((b[3]-b[2])/cs),g=new Uint8Array(nx*nz);
+ for(let j=0;j<nz;j++)for(let i=0;i<nx;i++)g[i+j*nx]=walkable(b[0]+(i+.5)*cs,b[2]+(j+.5)*cs)?1:0;Object.assign(NAV,{b,cs,nx,nz,g})}
+function navFree(k,R=14){const {nx,nz,g}=NAV;if(g[k])return k;const i0=k%nx,j0=(k/nx)|0;for(let r=1;r<=R;r++){let best=-1,bd=1e9;for(let dj=-r;dj<=r;dj++)for(let di=-r;di<=r;di++){if(Math.max(Math.abs(di),Math.abs(dj))!==r)continue;const i=i0+di,j=j0+dj;if(i<0||j<0||i>=nx||j>=nz)continue;const q=i+j*nx;if(g[q]){const d=di*di+dj*dj;if(d<bd){bd=d;best=q}}}if(best>=0)return best}return -1}
+function navLOS(ax,az,bx,bz){const {b,cs,nx,g}=NAV,L=Math.hypot(bx-ax,bz-az),n=Math.ceil(L/(cs*.45));for(let k=1;k<n;k++){const x=ax+(bx-ax)*k/n,z=az+(bz-az)*k/n,i=Math.floor((x-b[0])/cs),j=Math.floor((z-b[2])/cs);if(!g[i+j*nx])return false}return true}
+function navPath(sx,sz,tx,tz){
+ if(!NAV.g)navBuild();const {b,cs,nx,nz,g}=NAV,cl=(v,m)=>Math.max(0,Math.min(m-1,v));
+ const s=navFree(cl(Math.floor((sx-b[0])/cs),nx)+cl(Math.floor((sz-b[2])/cs),nz)*nx,4),t0=cl(Math.floor((tx-b[0])/cs),nx)+cl(Math.floor((tz-b[2])/cs),nz)*nx,t=navFree(t0);
+ if(s<0||t<0)return null;const N=nx*nz,G=new Float32Array(N).fill(1e9),Pr=new Int32Array(N).fill(-1),C=new Uint8Array(N);
+ const ti=t%nx,tj=(t/nx)|0,h=k=>{const dx=Math.abs(k%nx-ti),dz=Math.abs(((k/nx)|0)-tj);return Math.max(dx,dz)+.414*Math.min(dx,dz)};
+ const H=[],F=[];const push=(k,f)=>{H.push(k);F.push(f);let i=H.length-1;while(i>0){const p=(i-1)>>1;if(F[p]<=F[i])break;[H[p],H[i]]=[H[i],H[p]];[F[p],F[i]]=[F[i],F[p]];i=p}};
+ const pop=()=>{const top=H[0],lk=H.pop(),lf=F.pop();if(H.length){H[0]=lk;F[0]=lf;let i=0;for(;;){const l=2*i+1,r=l+1;let m=i;if(l<H.length&&F[l]<F[m])m=l;if(r<H.length&&F[r]<F[m])m=r;if(m===i)break;[H[m],H[i]]=[H[i],H[m]];[F[m],F[i]]=[F[i],F[m]];i=m}}return top};
+ G[s]=0;push(s,h(s));let found=false,it=0;
+ while(H.length&&it++<40000){const k=pop();if(k===t){found=true;break}if(C[k])continue;C[k]=1;const i=k%nx,j=(k/nx)|0;
+  for(let dj=-1;dj<=1;dj++)for(let di=-1;di<=1;di++){if(!di&&!dj)continue;const ni=i+di,nj=j+dj;if(ni<0||nj<0||ni>=nx||nj>=nz)continue;const q=ni+nj*nx;if(!g[q]||C[q])continue;if(di&&dj&&(!g[i+di+j*nx]||!g[i+(j+dj)*nx]))continue;
+   const ng=G[k]+(di&&dj?1.414:1);if(ng<G[q]){G[q]=ng;Pr[q]=k;push(q,ng+h(q))}}}
+ if(!found)return null;const pts=[];for(let k=t;k>=0;k=Pr[k]){pts.push([b[0]+(k%nx+.5)*cs,b[2]+(((k/nx)|0)+.5)*cs]);if(k===s)break}pts.reverse();
+ if(t===t0&&walkable(tx,tz))pts[pts.length-1]=[tx,tz];
+ const out=[pts[0]];let a=0;while(a<pts.length-1){let c=pts.length-1;while(c>a+1&&!navLOS(pts[a][0],pts[a][1],pts[c][0],pts[c][1]))c--;out.push(pts[c]);a=c}
+ out.shift();return out.length?out:[pts[pts.length-1]];
+}
+function walkTo(x,z,extra){const p=navPath(P.x,P.z,x,z);if(!p)return false;walk=Object.assign({path:p,i:0,x:p[0][0],z:p[0][1],stuck:0},extra||{});const f=p[p.length-1];ring.position.set(f[0],.03+GW.y(f[0],f[1]),f[1]);ring.material.opacity=.9;return true}
+
+/* ---------------- golden cat companion ---------------- */
+const CAT={on:false,state:'follow',t:0,path:null,pi:0,repath:0,idleT:0,say:null,sayT:0,nextTalk:performance.now()+25000,walkT:0,act:null,fishT:0};
+const catG=new THREE.Group();scene.add(catG);
+{const GO='#e9b04f',GD='#c98a2e',CR='#fbe8c4';
+ const body=box(.46,.24,.24,GO,0,.25,0,catG);box(.3,.05,.2,CR,.02,.13,0,catG,{cast:false});for(const x of [-.08,.1])box(.04,.245,.245,GD,x,.25,0,catG,{cast:false});
+ const head=new THREE.Group();head.position.set(.3,.38,0);catG.add(head);box(.24,.21,.24,GO,0,0,0,head);box(.12,.08,.1,CR,.1,-.05,0,head,{cast:false});
+ for(const s of [-1,1]){const e=new THREE.Mesh(new THREE.ConeGeometry(.055,.11,4),M(GO));e.position.set(-.01,.14,s*.075);e.rotation.y=Math.PI/4;head.add(e);box(.035,.05,.03,'#2a1a10',.121,.03,s*.06,head,{cast:false})}
+ box(.03,.025,.03,'#e86a8a',.125,-.03,0,head,{cast:false});
+ const tail=new THREE.Group();tail.position.set(-.23,.32,0);catG.add(tail);let tp=tail;const segs=[];for(let k=0;k<3;k++){const sg=new THREE.Group();sg.position.set(k?-.11:0,k?.02:0,0);tp.add(sg);box(.12,.055,.055,k===2?CR:GO,-.05,0,0,sg);segs.push(sg);tp=sg}
+ const lg=[];for(const [x,z] of [[.16,.08],[.16,-.08],[-.15,.08],[-.15,-.08]]){const p=new THREE.Group();p.position.set(x,.15,z);catG.add(p);box(.06,.15,.06,GO,0,-.075,0,p);box(.065,.03,.065,CR,0,-.14,0,p,{cast:false});lg.push(p)}
+ const sh=new THREE.Mesh(new THREE.CircleGeometry(.28,16),new THREE.MeshBasicMaterial({color:'#000',transparent:true,opacity:.18,depthWrite:false}));sh.rotation.x=-Math.PI/2;sh.position.y=.015;sh.scale.set(1.3,.8,1);catG.add(sh);
+ Object.assign(CAT,{body,head,tail,segs,lg});catG.scale.setScalar(1.15);catG.traverse(o=>{if(o.isMesh&&o!==sh){o.castShadow=false;o.userData.cat=1}});
+}
+const catTag=mkTag('cat',new THREE.Vector3());catTag.hide=true;
+const fishM=box(.16,.06,.04,'#8fc6e8',0,-5,0);fishM.castShadow=false;
+function catName(){return S.settings.catName||'Bắp'}
+function catSay(s,ms=5200){CAT.say=s;CAT.sayT=performance.now()+ms;catTag.el.innerHTML=`<b>${esc(catName())}</b> ${esc(s)}`;catTag.hide=false}
+function meowSound(kind){if(!S.settings.catSound)return;try{if(!MU.ctx)muInit();const C=MU.ctx;if(C.state==='suspended')C.resume();const t=C.currentTime,o=C.createOscillator(),f=C.createBiquadFilter(),g=C.createGain();o.type='sawtooth';const b=kind==='purr'?90:620+Math.random()*120;
+ if(kind==='purr'){o.frequency.value=b;const l=C.createOscillator(),lg=C.createGain();l.frequency.value=24;lg.gain.value=.5;l.connect(lg);lg.connect(g.gain);l.start(t);l.stop(t+1.2);f.type='lowpass';f.frequency.value=400;g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(.12,t+.1);g.gain.linearRampToValueAtTime(0,t+1.2)}
+ else{o.frequency.setValueAtTime(b,t);o.frequency.linearRampToValueAtTime(b*1.35,t+.12);o.frequency.linearRampToValueAtTime(b*.8,t+.45);f.type='bandpass';f.frequency.setValueAtTime(1200,t);f.frequency.linearRampToValueAtTime(800,t+.45);f.Q.value=3;g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(.09,t+.04);g.gain.exponentialRampToValueAtTime(.0005,t+.5)}
+ o.connect(f);f.connect(g);g.connect(C.destination);o.start(t);o.stop(t+(kind==='purr'?1.25:.55))}catch(e){}}
+const CAT_LINES={vi:['Meo~','Uống ngụm nước đi Tuấn ơi','Đứng dậy vươn vai 1 phút nha','Hôm nay học được gì rồi?','Bắp canh giờ cho, cứ tập trung','Meo! Đừng lướt điện thoại nữa','Làm xong 1 việc nhỏ trước đã'],en:['Meow~','Have a sip of water','Stand up and stretch for a minute','What did you learn today?','I\'ll keep time, you focus','Meow! Put the phone down','Finish one small task first']};
+function catTalk(){const i=nowInfo(),n=new Date(),mins=n.getHours()*60+n.getMinutes(),h=hskStats(),V=L==='vi';
+ if(i.b&&i.b.d.includes(n.getDay())){const s=toM(i.b.s)-mins;if(s>0&&s<=30)return catSay(V?`Meo! ${s} phút nữa tới "${tr(i.b.t)}" (${i.b.s}) đó`:`Meow! "${tr(i.b.t)}" starts in ${s} min`);if(s<=0&&mins<toM(i.b.e))return catSay(V?`Đang giờ "${tr(i.b.t)}" nè, vào học thôi!`:`It's time for "${tr(i.b.t)}"!`)}
+ if(h&&h.due>20&&Math.random()<.5)return catSay(V?`Còn ${h.due} từ HSK cần ôn, ôn 10 phút nha`:`${h.due} HSK words are due, 10 minutes?`);
+ const L2=CAT_LINES[V?'vi':'en'];catSay(L2[(Math.random()*L2.length)|0])}
+function catSpots(){const s=[];if(LIB){s.push({k:'fire',x:-13.1,z:1.7,face:-Math.PI/2});s.push({k:'nap',x:-12.5,z:1.1,face:-1.2});s.push({k:'window',x:-5.2,z:-11.9,face:Math.PI})}
+ else if(BEACH){const [hx,hz]=GW.hub;s.push({k:'fire',x:hx+1.15,z:hz+.9,face:Math.atan2(-1.15,-.9)});if(GW.pier)s.push({k:'fish',x:GW.pier[1][0]+.3,z:GW.pier[1][1]-.6,face:0})}
+ else{const [hx,hz]=GW.hub,PO=GW.pond;s.push({k:'fire',x:hx+1.7,z:hz+.9,face:Math.atan2(-1.7,-.9)});if(PO)for(let a=0;a<6.28;a+=.3){const x=PO[0]+Math.cos(a)*(PO[2]+1),z=PO[1]+Math.sin(a)*(PO[2]+1);if(walkable(x,z)){s.push({k:'fish',x,z,face:Math.atan2(PO[0]-x,PO[1]-z)});break}}}
+ return s}
+function catGo(x,z){const p=navPath(catG.position.x,catG.position.z,x,z);CAT.path=p;CAT.pi=0;return !!p}
+function catInit(){CAT.on=S.settings.catOn!==false;catG.visible=CAT.on;if(!CAT.on){catTag.hide=true;return}catG.position.set(P.x-1,0,P.z+.6);CAT.state='follow'}
+let catLast=0;
+function catTick(dt,now,playerMoving){
+ if(!CAT.on)return false;let moving=false;const cx=catG.position.x,cz=catG.position.z,dp=Math.hypot(P.x-cx,P.z-cz);
+ if(CAT.sayT&&now>CAT.sayT){CAT.sayT=0;catTag.hide=true}
+ if(now>CAT.nextTalk){CAT.nextTalk=now+55000+Math.random()*65000;catTalk();meowSound('meow')}
+ if(playerMoving)CAT.idleT=0;else CAT.idleT+=dt;
+ // leave an activity when the player wanders off
+ if(CAT.state!=='follow'&&dp>7){CAT.state='follow';CAT.path=null;CAT.act=null}
+ if(CAT.state==='follow'){
+  const tx=P.x-Math.sin(P.rot)*1.1+Math.cos(P.rot)*.6,tz=P.z-Math.cos(P.rot)*1.1-Math.sin(P.rot)*.6;
+  if(dp>1.6){CAT.repath-=dt;if(!CAT.path||CAT.repath<=0){CAT.repath=.9;catGo(tx,tz)}}else CAT.path=null;
+  if(CAT.idleT>9&&dp<3){const sp=catSpots().filter(s=>Math.hypot(s.x-P.x,s.z-P.z)<14),r=Math.random();
+   if(sp.length&&r<.6){const s=sp[(Math.random()*sp.length)|0];CAT.act=s;CAT.state='goto';catGo(s.x,s.z)}
+   else{for(let k=0;k<8;k++){const a=Math.random()*6.28,x=P.x+Math.cos(a)*3.5,z=P.z+Math.sin(a)*3.5;if(walkable(x,z)){CAT.state='wander';CAT.act={k:'wander',x,z};catGo(x,z);break}}}CAT.idleT=0}}
+ if(CAT.path&&CAT.path.length){const w=CAT.path[CAT.pi],dx=w[0]-cx,dz=w[1]-cz,d=Math.hypot(dx,dz);
+  if(d<.15){CAT.pi++;if(CAT.pi>=CAT.path.length){CAT.path=null;if(CAT.state==='goto'||CAT.state==='wander'){CAT.state=CAT.act?CAT.act.k:'idle';CAT.t=0;if(CAT.state==='fire')catSay(L==='vi'?'Bắp canh lửa cho ấm nè':'Keeping the fire cosy');if(CAT.state==='fish')catSay(L==='vi'?'Suỵt… Bắp đang câu cá':'Shh… fishing');if(CAT.state==='nap')catSay('Zzz…',3000)}}}
+  else{const sp=Math.min(d,(dp>4&&CAT.state==='follow'?5.4:CAT.state==='follow'?3.6:1.8)*dt);catG.position.x+=dx/d*sp;catG.position.z+=dz/d*sp;const ry=Math.atan2(dx,dz)-Math.PI/2;let dr=ry-catG.rotation.y;dr=Math.atan2(Math.sin(dr),Math.cos(dr));catG.rotation.y+=dr*Math.min(1,dt*10);moving=true}}
+ // activities
+ CAT.t+=dt;const st=CAT.state,face=CAT.act&&CAT.act.face;
+ if(!moving&&face!=null&&['fire','fish','window','nap'].includes(st)){let dr=face-Math.PI/2-catG.rotation.y;dr=Math.atan2(Math.sin(dr),Math.cos(dr));catG.rotation.y+=dr*Math.min(1,dt*4)}
+ if(st==='wander'&&!moving&&CAT.t>4){CAT.state='follow'}
+ if(st==='fish'&&!moving){if(CAT.t>3.5+Math.random()*4&&!CAT.fishT){CAT.fishT=now;CAT.t=0;if(Math.random()<.45){catSay(L==='vi'?'Bắt được cá rồi! 🐟':'Caught a fish! 🐟');meowSound('meow')}}}
+ if(CAT.fishT){const k=(now-CAT.fishT)/900;if(k>1){CAT.fishT=0;fishM.position.y=-5}else{const f=new THREE.Vector3(.5,0,0).applyAxisAngle(new THREE.Vector3(0,1,0),catG.rotation.y);fishM.position.set(cx+f.x*(1-k),.2+Math.sin(k*Math.PI)*.7,cz+f.z*(1-k));fishM.rotation.z=k*8}}
+ if(['fire','nap','window','fish'].includes(st)&&CAT.t>40){CAT.state='follow'}
+ // body animation
+ CAT.walkT+=dt*(moving?16:0);const sw=Math.sin(CAT.walkT)*.6;CAT.lg[0].rotation.z=moving?sw:0;CAT.lg[3].rotation.z=moving?sw:0;CAT.lg[1].rotation.z=moving?-sw:0;CAT.lg[2].rotation.z=moving?-sw:0;
+ const lying=st==='nap'||st==='fire';catG.children.forEach(()=>{});CAT.body.scale.y=lying?.82:1;CAT.head.position.y=lying?.3:.38;CAT.lg.forEach(l=>l.visible=!lying);
+ const wag=st==='fish'?Math.sin(now/180)*.5:Math.sin(now/420)*.35;CAT.tail.rotation.z=.5+(moving?.2:0);CAT.segs.forEach((s,i)=>{s.rotation.y=wag*(i+1)*.5;s.rotation.z=.25});
+ if(st==='fire'&&!moving){CAT.head.rotation.z=Math.sin(now/900)*.08;const pk=Math.max(0,Math.sin(now/700));CAT.lg[0].visible=true;CAT.lg[0].rotation.z=-pk*1.2}
+ else if(st==='fish'&&!moving){CAT.lg[0].rotation.z=CAT.fishT?-1.4:0;CAT.head.rotation.z=-.15}
+ else CAT.head.rotation.z=0;
+ catG.position.y=GW.y(catG.position.x,catG.position.z);
+ catTag.pos.set(catG.position.x,1.05,catG.position.z);
+ return moving||!!CAT.fishT;
+}
+function catPet(){catSay(L==='vi'?'Rừ rừ… ❤':'Purr… ❤',3500);meowSound('purr');CAT.state='follow';CAT.idleT=0;CAT.head.rotation.z=.2}
+
 function updateTags(){
  for(const r of ROOMS){const el=r.tag.el;el.style.setProperty('--c',r.hex);
   if(r.kind==='class'){const p=lessonPct(r.id);el.innerHTML=`${esc(tr(r.title))}<small>${(BEACH||LIB)?esc(tr(r.dates2))+' · ':''}${esc(tr(r.dates))} · ${fmtMin(S.totals[r.id])}</small><div class="bar"><i style="width:${p}%"></i></div>`}
@@ -1497,7 +1643,7 @@ function updateTags(){
  archTag.el.textContent=t('arch');meTag.el.textContent=t('you');
 }
 const v3=new THREE.Vector3();
-function placeTags(){const W=innerWidth,H=innerHeight;for(const o of tags){v3.copy(o.pos).project(cam);const x=(v3.x*.5+.5)*W,y=(-v3.y*.5+.5)*H;if(x<-150||x>W+150||y<-60||y>H+120){o.el.style.display='none';continue}o.el.style.display='';o.el.style.transform=`translate(${x.toFixed(1)}px,${y.toFixed(1)}px) translate(-50%,-100%)`}}
+function placeTags(){const W=innerWidth,H=innerHeight;for(const o of tags){if(o.hide){o.el.style.display='none';continue}v3.copy(o.pos).project(cam);const x=(v3.x*.5+.5)*W,y=(-v3.y*.5+.5)*H;if(x<-150||x>W+150||y<-60||y>H+120){o.el.style.display='none';continue}o.el.style.display='';o.el.style.transform=`translate(${x.toFixed(1)}px,${y.toFixed(1)}px) translate(-50%,-100%)`}}
 
 /* input */
 const keys=new Set();let walk=null,near=null;const joyV={x:0,y:0};
@@ -1515,10 +1661,14 @@ addEventListener('blur',()=>keys.clear());
 const ray=new THREE.Raycaster(),ndc=new THREE.Vector2(),ground=new THREE.Plane(new THREE.Vector3(0,1,0),0),hit=new THREE.Vector3();
 function onTap(cx,cy){
  ndc.set(cx/innerWidth*2-1,-(cy/innerHeight)*2+1);ray.setFromCamera(ndc,cam);
+ if(CAT.on&&ray.intersectObject(catG,true).length){catPet();return}
  const hs=ray.intersectObjects(pickables,false);if(hs.length){walkToRoom(hs[0].object.userData.room);return}
- if(ray.ray.intersectPlane(ground,hit)){walk={x:hit.x,z:hit.z,stuck:0};ring.position.set(hit.x,.03,hit.z);ring.material.opacity=.9}
+ if(ray.ray.intersectPlane(ground,hit)){if(SIT)standUp();
+  let best=null,bd=.9;for(const st of SEATS){if(st.room)continue;const d=Math.hypot(st.x-hit.x,st.z-hit.z);if(d<bd){bd=d;best=st}}
+  if(best){if(!walkTo(best.ax,best.az,{seat:best}))sitAt(best);return}
+  if(!walkTo(hit.x,hit.z)){walk={x:hit.x,z:hit.z,stuck:0};ring.position.set(hit.x,.03,hit.z);ring.material.opacity=.9}}
 }
-function walkToRoom(id){const r=RM[id];walk={x:r.door[0],z:r.door[1],room:id,stuck:0};ring.position.set(r.door[0],.03,r.door[1]);ring.material.opacity=.9}
+function walkToRoom(id){const r=RM[id];if(SIT)standUp();if(!walkTo(r.door[0],r.door[1],{room:id}))goRoom(id)}
 const ptrs=new Map();let down=null,pinch=0;
 canvas.addEventListener('pointerdown',e=>{canvas.setPointerCapture(e.pointerId);ptrs.set(e.pointerId,[e.clientX,e.clientY]);$('#lightpop').classList.remove('on');$('#musicpop').classList.remove('on');if(ptrs.size===1)down=[e.clientX,e.clientY];else{down=null;const[a,b]=[...ptrs.values()];pinch=Math.hypot(a[0]-b[0],a[1]-b[1])}});
 canvas.addEventListener('pointermove',e=>{if(!ptrs.has(e.pointerId))return;ptrs.set(e.pointerId,[e.clientX,e.clientY]);if(ptrs.size===2){const[a,b]=[...ptrs.values()],d=Math.hypot(a[0]-b[0],a[1]-b[1]);if(pinch)setZoom(zoom*d/pinch);pinch=d}});
@@ -1540,7 +1690,15 @@ function goRoom(id){teleport(id);setTimeout(()=>openRoom(id),260)}
 const tgt=new THREE.Vector3(P.x,0,P.z);let last=performance.now(),walkT=0,tick=0;
 const UP=new THREE.Vector3(-CAM_OFF.x,0,-CAM_OFF.z).normalize(),RT=new THREE.Vector3(-UP.z,0,UP.x);
 const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+let lastInput=0,camMoving=true,catBusy=false,perfN=0,perfAcc=0;
+['pointerdown','keydown','wheel','touchstart'].forEach(ev=>addEventListener(ev,()=>{lastInput=performance.now()},{passive:true,capture:true}));
 function frame(now){
+ requestAnimationFrame(frame);
+ const active=keys.size||walk||joyV.x||joyV.y||ptrs.size>0||(SIT&&SIT.k<1)||camMoving||catBusy||now-lastInput<2500;
+ const minDt=active?(ECO?32:0):(panelState?(ECO?110:70):(ECO?66:40));
+ if(now-last<minDt-3)return;
+ const rawMs=now-last;
+ if(Q0==='auto'&&active&&rawMs<200){perfN++;perfAcc+=rawMs;if(perfN>=120){const avg=perfAcc/perfN;if(avg>23&&DPR>1){DPR=Math.max(1,+(DPR-.25).toFixed(2));renderer.setPixelRatio(DPR);resize()}perfN=0;perfAcc=0}}
  const dt=Math.min(.05,(now-last)/1000);last=now;
  let mx=0,mz=0;
  if(keys.has('w')||keys.has('arrowup')){mx+=UP.x;mz+=UP.z}
@@ -1548,23 +1706,24 @@ function frame(now){
  if(keys.has('d')||keys.has('arrowright')){mx+=RT.x;mz+=RT.z}
  if(keys.has('a')||keys.has('arrowleft')){mx-=RT.x;mz-=RT.z}
  if(joyV.x||joyV.y){mx+=RT.x*joyV.x-UP.x*joyV.y;mz+=RT.z*joyV.x-UP.z*joyV.y}
- if(!mx&&!mz&&walk){const dx=walk.x-P.x,dz=walk.z-P.z,d=Math.hypot(dx,dz);
-  if(d<.18){const id=walk.room;walk=null;if(id)openRoom(id)}else{mx=dx/d;mz=dz/d}}
+ if(SIT&&(mx||mz))standUp();
+ if(!mx&&!mz&&walk){if(walk.path){const w=walk.path[walk.i];walk.x=w[0];walk.z=w[1]}const last2=!walk.path||walk.i>=walk.path.length-1,dx=walk.x-P.x,dz=walk.z-P.z,d=Math.hypot(dx,dz);
+  if(d<(last2?.18:.34)){if(!last2)walk.i++;else{const id=walk.room,st=walk.seat;walk=null;if(st)sitAt(st);if(id)openRoom(id)}}else{mx=dx/d;mz=dz/d}}
  const ml=Math.hypot(mx,mz);let moving=false;
- if(ml>.05){const sc=Math.min(1,ml);mx/=ml;mz/=ml;const sp=4.4*dt*sc,ox=P.x,oz=P.z;
+ if(ml>.05&&!SIT){const sc=Math.min(1,ml);mx/=ml;mz/=ml;const sp=4.4*dt*sc,ox=P.x,oz=P.z;
   if(walkable(P.x+mx*sp,P.z))P.x+=mx*sp;if(walkable(P.x,P.z+mz*sp))P.z+=mz*sp;
   const moved=Math.hypot(P.x-ox,P.z-oz);moving=moved>.001;
   P.rot=Math.atan2(mx,mz);
-  if(walk){if(moved<sp*.25){walk.stuck+=dt;if(walk.stuck>.45){const id=walk.room;walk=null;if(id)goRoom(id)}}else walk.stuck=0}}
- player.position.set(P.x,GW.y(P.x,P.z),P.z);
+  if(walk){if(moved<sp*.25){walk.stuck+=dt;if(walk.stuck>.6){const w=walk;walk=null;if(!w.re&&w.path){const f=w.path[w.path.length-1];walkTo(f[0],f[1],{room:w.room,seat:w.seat,re:1})}else if(w.room)goRoom(w.room);else if(w.seat)sitAt(w.seat)}}else walk.stuck=0}}
+ if(SIT){SIT.k=Math.min(1,SIT.k+dt*4);const s2=SIT.s,k=SIT.k;player.position.set(SIT.fx+(s2.x-SIT.fx)*k,SIT.fy+(s2.y-SIT.fy)*k,SIT.fz+(s2.z-SIT.fz)*k);P.x=player.position.x;P.z=player.position.z;legs.forEach(l=>l.rotation.x=s2.legs*k)}else player.position.set(P.x,GW.y(P.x,P.z),P.z);
  let dr=P.rot-player.rotation.y;dr=Math.atan2(Math.sin(dr),Math.cos(dr));player.rotation.y+=dr*Math.min(1,dt*14);
  if(moving){walkT+=dt*11;legs[0].rotation.x=Math.sin(walkT)*.7;legs[1].rotation.x=-Math.sin(walkT)*.7;body.position.y=.72+(reduce?0:Math.abs(Math.sin(walkT))*.05)}
- else{legs[0].rotation.x*=.8;legs[1].rotation.x*=.8;body.position.y=.72+(reduce?0:Math.sin(now/600)*.012)}
+ else if(!SIT){legs[0].rotation.x*=.8;legs[1].rotation.x*=.8;body.position.y=.72+(reduce?0:Math.sin(now/600)*.012)}
  const off=(panelState&&innerWidth>700)?(cam.right-cam.left)/innerWidth*215:0,offY=(panelState&&innerWidth<=700)?(cam.top-cam.bottom)/innerHeight*innerHeight*.28:0;
- tgt.lerp(v3.set(P.x+RT.x*off-UP.x*offY,0,P.z+RT.z*off-UP.z*offY),Math.min(1,dt*5));cam.position.copy(tgt).add(CAM_OFF);cam.lookAt(tgt);
+ v3.set(P.x+RT.x*off-UP.x*offY,0,P.z+RT.z*off-UP.z*offY);camMoving=tgt.distanceToSquared(v3)>.0004;tgt.lerp(v3,Math.min(1,dt*5));cam.position.copy(tgt).add(CAM_OFF);cam.lookAt(tgt);
  meTag.pos.set(P.x,1.55,P.z);
  if(ring.material.opacity>0)ring.material.opacity=Math.max(0,ring.material.opacity-dt*.6);
- if(!reduce&&tick%2===0){const p=riverGeo.attributes.position,a=p.array;for(let i=0;i<a.length;i+=3)a[i+2]=Math.sin(rBase[i]*.9+now/700)*.04+Math.cos(rBase[i+1]*2+now/900)*.02;p.needsUpdate=true}
+ if(OLDW&&!reduce&&tick%2===0){const p=riverGeo.attributes.position,a=p.array;for(let i=0;i<a.length;i+=3)a[i+2]=Math.sin(rBase[i]*.9+now/700)*.04+Math.cos(rBase[i+1]*2+now/900)*.02;p.needsUpdate=true}
  let nb=null,nd=1.7;for(const r of ROOMS){const d=Math.hypot(P.x-r.door[0],P.z-r.door[1]);if(d<nd){nd=d;nb=r}}
  if(nb!==near){near=nb;const pr=$('#prompt');if(near&&!panelState){$('#ptxt').textContent=tr(near.title);pr.classList.add('on')}else pr.classList.remove('on')}
  if(window.__pend)window.__pend.rotation.z=reduce?0:Math.sin(now/1000*Math.PI)*.2;
@@ -1579,9 +1738,10 @@ function frame(now){
  if(window.__boat){window.__boat.position.y=-1.0+Math.sin(now/900)*.07;window.__boat.rotation.z=Math.sin(now/1300)*.05}
  if(window.__foam&&tick%3===0)window.__foam.material.opacity=.45+Math.sin(now/700)*.15;
  if(++tick%30===0)applyLight(hourNow());
+ catBusy=catTick(dt,now,moving);
  placeTags();
+ if(shadowDirty>0){renderer.shadowMap.needsUpdate=true;shadowDirty--}
  renderer.render(scene,cam);
- requestAnimationFrame(frame);
 }
 
 /* ---------------- HUD ---------------- */
@@ -1603,8 +1763,13 @@ function updateClock(){
 }
 function updateStats(){const s=stats();$('#s-t').textContent=fmtMin(s.t);$('#s-w').textContent=fmtMin(s.wk);$('#s-s').textContent=s.st+(L==='vi'?' ngày':'d');$('#s-a').textContent=fmtMin(s.all)}
 $('#nowchip').addEventListener('click',()=>{if(nowB)goRoom(roomFor(nowB))});
-function renderDock(){$('#dock').innerHTML=ROOMS.map(r=>`<button data-room="${r.id}" style="--c:${r.hex}"><i></i>${esc(tr(r.title))}</button>`).join('')}
-$('#dock').addEventListener('click',e=>{const b=e.target.closest('[data-room]');if(b)goRoom(b.dataset.room)});
+function renderDock(){$('#dockl').textContent=t('rooms');$('#dockn').textContent=ROOMS.length;$('#dockgrid').innerHTML=ROOMS.map(r=>`<button data-room="${r.id}" style="--c:${r.hex}"><i></i>${esc(tr(r.title))}</button>`).join('')}
+$('#dock').addEventListener('click',e=>{e.stopPropagation();if(e.target.closest('#dockbtn')){$('#dock').classList.toggle('open');return}const b=e.target.closest('[data-room]');if(!b)return;$('#dock').classList.remove('open');const r=RM[b.dataset.room];if(Math.hypot(P.x-r.door[0],P.z-r.door[1])<11)walkToRoom(r.id);else goRoom(r.id)});
+$('#b-more').addEventListener('click',e=>{e.stopPropagation();const o=$('#hud-tr').classList.toggle('open');$('#b-more').setAttribute('aria-expanded',o)});
+addEventListener('pointerdown',e=>{if(!e.target.closest('#dock'))$('#dock').classList.remove('open');if(!e.target.closest('#hud-tr'))$('#hud-tr').classList.remove('open')},true);
+{const UIK='tuan-academy-ui';let U={};try{U=JSON.parse(localStorage.getItem(UIK))||{}}catch(e){}const tl=$('#hud-tl'),ST=['full','mini','hide'];const ap=()=>{tl.classList.toggle('mini',U.tl==='mini');tl.classList.toggle('hide',U.tl==='hide')};if(!U.tl)U.tl='mini';ap();
+ tl.querySelector('.logo').addEventListener('click',e=>{e.stopPropagation();U.tl=ST[(ST.indexOf(U.tl)+1)%3];ap();try{localStorage.setItem(UIK,JSON.stringify(U))}catch(x){}});tl.querySelector('.logo').title=t('hudTip');
+ $('#pomo .ring').addEventListener('click',()=>$('#pomo').classList.toggle('mini'))}
 $('#pgo').addEventListener('click',()=>{if(near)openRoom(near.id)});
 $('#b-light').addEventListener('click',e=>{e.stopPropagation();$('#lightpop').classList.toggle('on')});
 $('#rt').addEventListener('change',e=>{S.settings.realtime=e.target.checked;$('#simh').disabled=e.target.checked;save();applyLight(hourNow());drawClock()});
@@ -1693,7 +1858,7 @@ function muStep(t){const T=TM(),s=MU.step%16,ch=T.prog[MU.bar%4],sw=(s%2)?(60/T.
  else{if(s===0||s===8)drum('kick',tt,.38);if(s%2===0)drum('shaker',tt,s%4?.035:.06);if([3,6,11,14].includes(s))conga(tt,s===6?57:62,.18)}
  MU.step++;if(MU.step%16===0)MU.bar++;
 }
-function muTick(){const C=MU.ctx,T=TM(),dt=60/T.bpm/4;while(MU.next<C.currentTime+.15){muStep(MU.next);MU.next+=dt}}
+function muTick(){const C=MU.ctx,T=TM(),dt=60/T.bpm/4;while(MU.next<C.currentTime+(document.hidden?1.8:.15)){muStep(MU.next);MU.next+=dt}}
 function ambStart(){const C=MU.ctx,T=TM();ambStop();
  if(T.amb==='rain'){const s=nsrc(null,true),f=C.createBiquadFilter(),g=C.createGain();f.type='lowpass';f.frequency.value=1400;g.gain.value=.16;s.connect(f);f.connect(g);g.connect(MU.amb);s.start();MU.ambNodes.push(s);
   const crack=()=>{if(!MU.playing||T.amb!=='rain')return;const t=C.currentTime;for(let i=0;i<1+(Math.random()*3|0);i++){const n=nsrc(),hf=C.createBiquadFilter(),gg=C.createGain();hf.type='highpass';hf.frequency.value=2500;n.connect(hf);hf.connect(gg);gg.connect(MU.amb);env(gg,t+i*.05,.001,.18*Math.random(),.03);n.start(t+i*.05,Math.random());n.stop(t+i*.05+.06)}MU.ambT=setTimeout(crack,120+Math.random()*700)};crack()}
@@ -1704,10 +1869,10 @@ function ambStart(){const C=MU.ctx,T=TM();ambStop();
 function ambStop(){clearTimeout(MU.ambT);for(const n of MU.ambNodes)try{n.stop()}catch(e){}MU.ambNodes=[]}
 function muApplyVol(){if(!MU.ctx)return;const c=mcfg(),t=MU.ctx.currentTime;MU.out.gain.setTargetAtTime(MU.playing&&c.mode==='gen'?c.vol*.9:0,t,.4);MU.bus.gain.setTargetAtTime(c.beats?1:0,t,.3);MU.amb.gain.setTargetAtTime(c.amb?1:0,t,.3)}
 function ytEmbed(u){u=(u||'').trim();let m;
- if((m=u.match(/[?&]list=([\w-]+)/)))return `https://www.youtube.com/embed/videoseries?list=${m[1]}&autoplay=1`;
- if((m=u.match(/(?:youtu\.be\/|v=|embed\/|live\/|shorts\/)([\w-]{11})/)))return `https://www.youtube.com/embed/${m[1]}?autoplay=1`;
+ if((m=u.match(/[?&]list=([\w-]+)/)))return `https://www.youtube-nocookie.com/embed/videoseries?list=${m[1]}&autoplay=1&playsinline=1`;
+ if((m=u.match(/(?:youtu\.be\/|v=|embed\/|live\/|shorts\/)([\w-]{11})/)))return `https://www.youtube-nocookie.com/embed/${m[1]}?autoplay=1&playsinline=1&rel=0`;
  if((m=u.match(/open\.spotify\.com\/(?:intl-\w+\/)?(playlist|album|track|show|episode)\/(\w+)/)))return `https://open.spotify.com/embed/${m[1]}/${m[2]}?utm_source=generator`;
- if(/^[\w-]{11}$/.test(u))return `https://www.youtube.com/embed/${u}?autoplay=1`;return null}
+ if(/^[\w-]{11}$/.test(u))return `https://www.youtube-nocookie.com/embed/${u}?autoplay=1&playsinline=1&rel=0`;return null}
 function ytShow(on){const box2=$('#ytbox');if(!on){box2.classList.remove('on');box2.querySelector('.ytf').innerHTML='';return}
  const src=ytEmbed(mcfg().yt);if(!src){toast(t('muBadLink'));return}box2.querySelector('.ytf').innerHTML=`<iframe src="${esc(src)}" allow="autoplay; encrypted-media; clipboard-write" allowfullscreen title="music"></iframe>`;box2.classList.add('on')}
 function muPlay(){const c=mcfg();if(c.mode==='yt'){muStopGen();ytShow(true);MU.playing=true;renderMusic();return}
@@ -1723,12 +1888,13 @@ function renderMusic(){const c=mcfg(),p=$('#musicpop');$('#b-music').classList.t
  :`<p>${t('muYtHint')}</p><div class="row"><input class="inp" id="mu-link" placeholder="youtube.com/… · open.spotify.com/…" value="${esc(c.yt||'')}" inputmode="url"><button class="btn sm pri" data-mu="link">OK</button></div>
  <div class="chips">${[['Lofi study','https://www.youtube.com/watch?v=lTRiuFIWV54'],['Synthwave','https://www.youtube.com/watch?v=4xDzrJKXOOY'],['Jazz café','https://www.youtube.com/watch?v=Dx5qFachd3A']].map(([n,u])=>`<button data-mu="preset" data-u="${u}">${n}</button>`).join('')}</div>`}
  <label class="ck"><input type="checkbox" data-mu="pomo" ${c.pomo?'checked':''}> ${t('muPomo')}</label>`}
-$('#b-music').addEventListener('click',e=>{e.stopPropagation();renderMusic();$('#musicpop').classList.toggle('on');$('#lightpop').classList.remove('on')});
+$('#b-music').addEventListener('click',e=>{e.stopPropagation();if(!window.__pc){window.__pc=1;for(const h of ['https://www.youtube-nocookie.com','https://i.ytimg.com','https://www.google.com'])document.head.insertAdjacentHTML('beforeend',`<link rel="preconnect" href="${h}">`)}renderMusic();$('#musicpop').classList.toggle('on');$('#lightpop').classList.remove('on')});
 $('#musicpop').addEventListener('click',e=>{e.stopPropagation();const b=e.target.closest('[data-mu]');if(!b)return;const c=mcfg(),k=b.dataset.mu;
  if(k==='toggle')muToggle();else if(k==='mode'){c.mode=b.dataset.v;save();if(MU.playing){muStop();muPlay()}renderMusic()}
  else if(k==='link'){c.yt=$('#mu-link').value.trim();c.mode='yt';save();if(ytEmbed(c.yt)){c.on=true;muPlay()}else toast(t('muBadLink'))}
  else if(k==='preset'){c.yt=b.dataset.u;c.mode='yt';c.on=true;save();muPlay()}});
 $('#musicpop').addEventListener('input',e=>{const b=e.target.closest('[data-mu]');if(!b)return;const c=mcfg(),k=b.dataset.mu;if(k==='vol')c.vol=+b.value;else if(['beats','amb','pomo'].includes(k))c[k]=b.checked;muApplyVol();save()});
+$('#musicpop').addEventListener('paste',e=>{if(e.target.id!=='mu-link')return;setTimeout(()=>{const c=mcfg();c.yt=e.target.value.trim();if(ytEmbed(c.yt)){c.mode='yt';c.on=true;save();muPlay()}},0)});
 $('#ytbox .x').addEventListener('click',()=>{muStop();mcfg().on=false;save()});
 // browsers only allow sound after a tap: resume a saved "on" state at the first interaction
 {const resume=()=>{removeEventListener('pointerdown',resume,true);removeEventListener('keydown',resume,true);if(mcfg().on&&!MU.playing)muPlay()};addEventListener('pointerdown',resume,true);addEventListener('keydown',resume,true)}
@@ -1764,7 +1930,7 @@ $('#pcls').addEventListener('change',e=>{PM.cls=e.target.value;savePM()});
 
 /* ---------------- panel ---------------- */
 const panel=$('#panel');let panelState=null;
-function openRoom(id){const r=RM[id];if(r.kind==='board')openPanel({kind:'board'});else if(r.kind==='pomo')openPanel({kind:'pomo'});else if(r.kind==='plan')openPanel({kind:'plan',tab:'board'});else if(r.kind==='crm')openPanel({kind:'crm'});else if(r.kind==='cert')openPanel({kind:'certs'});else openPanel({kind:r.kind,id,tab:'syllabus'})}
+function openRoom(id){const r=RM[id];if(LIB&&r.seat&&!SIT&&Math.hypot(P.x-r.door[0],P.z-r.door[1])<2.6)sitAt(r.seat);if(r.kind==='board')openPanel({kind:'board'});else if(r.kind==='pomo')openPanel({kind:'pomo'});else if(r.kind==='plan')openPanel({kind:'plan',tab:'board'});else if(r.kind==='crm')openPanel({kind:'crm'});else if(r.kind==='cert')openPanel({kind:'certs'});else openPanel({kind:r.kind,id,tab:'syllabus'})}
 function openPanel(st){panelState=st;panel.classList.remove('wide');renderPanel();panel.classList.add('open');document.body.classList.add('popen');$('#prompt').classList.remove('on');walk=null;if(st.kind==='find')setTimeout(()=>{const i=$('#fq');if(i)i.focus()},60)}
 function closePanel(){if(!panelState)return;panel.classList.remove('wide');panelState=null;panel.classList.remove('open');document.body.classList.remove('popen');near=null;canvas.focus({preventScroll:true})}
 const head=(hex,k,title,sub)=>`<div class="grab"></div><header class="ph" style="--c:${hex}"><div class="pk">${esc(k)}</div><div><h2>${esc(title)}</h2><p>${sub}</p></div><button class="x" data-act="close" aria-label="${t('close')}">×</button></header>`;
@@ -1883,6 +2049,8 @@ function settingsPanel(){
  const perm=window.Notification?Notification.permission:'unsupported';
  let h=head('#1d2a4d','≡',t('settings'),ON_PAGES&&fb&&fb.user?esc(fb.user.email||''):'');
  h+=`<div class="pb"><div class="sec" style="margin-top:0"><h3>${t('theme')}</h3><div class="tpl">${['campus','beach','library'].map(v=>`<button data-act="theme" data-v="${v}" style="${THEME0===v?'border-color:var(--acc);box-shadow:0 0 0 1px var(--acc) inset':''}">${t('th_'+v)}<small>${THEME0===v?'✓':''}</small></button>`).join('')}</div></div>
+ <div class="sec"><h3>${t('quality')}</h3><div class="tpl" style="grid-template-columns:repeat(3,minmax(0,1fr))">${['auto','high','eco'].map(v=>`<button data-act="qual" data-v="${v}" style="${Q0===v?'border-color:var(--acc);box-shadow:0 0 0 1px var(--acc) inset':''}">${t('q_'+v)}<small>${Q0===v?'✓':''}</small></button>`).join('')}</div><p class="note">${t('qHint')}</p></div>
+ <div class="sec"><h3>${t('catT')}</h3><div class="box"><label class="gate"><input type="checkbox" data-act="catOn" ${S.settings.catOn!==false?'checked':''}><span>${t('catOn')}</span></label><label class="gate"><input type="checkbox" data-act="catSnd" ${S.settings.catSound?'checked':''}><span>${t('catSnd')}</span></label><label style="font-size:12.5px;color:var(--mute);display:flex;gap:6px;align-items:center;margin-top:6px">${t('catNameL')}<input class="inp" style="max-width:160px" data-act="catName" value="${esc(catName())}"></label></div></div>
  <div class="sec"><h3>${t('install')}</h3><div class="box"><p>${t('installWhy')}</p><p style="margin-top:8px"><button class="btn sm pri" data-act="install">${t('install')}</button></p><p class="note">${t('installHow')}</p></div></div>
  <div class="sec"><h3>${t('notify')}</h3><div class="box"><label class="gate"><input type="checkbox" data-act="setn" ${S.settings.notify?'checked':''}><span>${t('notifyOn')}</span></label>
  <div class="logrow"><label style="font-size:12.5px;color:var(--mute);display:flex;gap:6px;align-items:center">${t('notifyBefore')}<input class="inp" style="width:72px" type="number" min="0" max="60" data-act="setb" value="${S.settings.before}"></label><button class="btn sm ${perm==='granted'?'':'pri'}" data-act="askN">${perm==='granted'?t('notifyOk'):t('notifyAsk')}</button></div>
@@ -1972,6 +2140,7 @@ panel.addEventListener('click',e=>{
   case 'crmUrlSave':{const u=safeUrl(fval(b,'cu'));if(!u)return;S.settings.crmUrl=u;done();break}
   case 'addCrm':{const u=safeUrl(fval(b,'u'));if(!u)return;S.crm.links.push({id:uid(),t:fval(b,'t')||u,url:u});done();break}
   case 'delCrm':S.crm.links=S.crm.links.filter(x=>x.id!==id);done();break;
+  case 'qual':S.settings.quality=b.dataset.v;save();try{localStorage.setItem(LS,JSON.stringify(S))}catch(x){}setTimeout(()=>location.reload(),300);break;
   case 'theme':S.settings.theme=b.dataset.v;save();try{localStorage.setItem(LS,JSON.stringify(S))}catch(x){}setTimeout(()=>location.reload(),350);break;
   case 'install':doInstall();break;
   case 'signIn':fbSignIn();break;
@@ -1993,6 +2162,9 @@ panel.addEventListener('change',e=>{
  else if(a==='zhurl')S.settings.zhUrl=el.value.trim();
  else if(a==='pst'){const p=S.plan.posts.find(x=>x.id===id);if(p)p.s=el.value}
  else if(a==='setn')S.settings.notify=el.checked;
+ else if(a==='catOn'){S.settings.catOn=el.checked;catInit()}
+ else if(a==='catSnd')S.settings.catSound=el.checked;
+ else if(a==='catName')S.settings.catName=el.value.trim().slice(0,20)||'Bắp';
  else if(a==='crmv'){const k=dkey(new Date());S.crm.log[k]=S.crm.log[k]||{};S.crm.log[k][el.dataset.k]=el.value===''?undefined:Math.max(0,+el.value);const ks=Object.keys(S.crm.log).sort();while(ks.length>120)delete S.crm.log[ks.shift()]}
  else if(a==='setb')S.settings.before=clamp(Math.round(+el.value||0),0,60);
  else return;
@@ -2028,9 +2200,10 @@ setInterval(remindTick,20000);
 setInterval(()=>{drawClock();updateStats()},15000);
 setInterval(drawBoard,60000);
 if(document.fonts&&document.fonts.ready)document.fonts.ready.then(()=>{drawBoard()});
+catInit();setTimeout(()=>{try{if(!NAV.g)navBuild()}catch(e){}},1200);
 requestAnimationFrame(frame);
 setTimeout(()=>$('#loading').classList.add('off'),300);
-setTimeout(()=>$('#help').classList.add('off'),14000);
+setTimeout(()=>$('#help').classList.add('off'),7000);addEventListener('keydown',()=>$('#help').classList.add('off'),{once:true});
 }
 </script>
 </body>
