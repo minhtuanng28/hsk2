@@ -1699,7 +1699,7 @@ function frame(now){
  if(now-last<minDt-3)return;
  const rawMs=now-last;
  if(Q0==='auto'&&active&&rawMs<200){perfN++;perfAcc+=rawMs;if(perfN>=120){const avg=perfAcc/perfN;if(avg>23&&DPR>1){DPR=Math.max(1,+(DPR-.25).toFixed(2));renderer.setPixelRatio(DPR);resize()}perfN=0;perfAcc=0}}
- const dt=Math.min(.05,(now-last)/1000);last=now;
+ const dt=Math.min(.1,(now-last)/1000);last=now;
  let mx=0,mz=0;
  if(keys.has('w')||keys.has('arrowup')){mx+=UP.x;mz+=UP.z}
  if(keys.has('s')||keys.has('arrowdown')){mx-=UP.x;mz-=UP.z}
