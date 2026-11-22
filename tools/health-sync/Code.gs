@@ -10,8 +10,7 @@ const TZ = 'Asia/Ho_Chi_Minh';
 function setup() {
   ScriptApp.requireAllScopes(ScriptApp.AuthMode.FULL);
   ScriptApp.getProjectTriggers().forEach(t => ScriptApp.deleteTrigger(t));
-  [9, 21].forEach(h => ScriptApp.newTrigger('pull').timeBased().atHour(h).nearMinute(0).everyDays(1).inTimezone(TZ).create());
-  ScriptApp.newTrigger('news').timeBased().atHour(8).nearMinute(30).everyDays(1).inTimezone(TZ).create();
+  [['am', 9, 0], ['coach', 17, 0], ['pm', 21, 0], ['newsPush', 8, 30]].forEach(([f, h, m]) => ScriptApp.newTrigger(f).timeBased().atHour(h).nearMinute(m).everyDays(1).inTimezone(TZ).create());
   try { pull(); } catch (e) { console.log('pull: ' + e.message); }
   try { news(); } catch (e) { console.log('news: ' + e.message); }
 }
