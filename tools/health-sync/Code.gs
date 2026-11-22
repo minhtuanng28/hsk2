@@ -10,6 +10,8 @@ const TZ = 'Asia/Ho_Chi_Minh';
 function setup() {
   ScriptApp.getProjectTriggers().forEach(t => ScriptApp.deleteTrigger(t));
   [9, 21].forEach(h => ScriptApp.newTrigger('pull').timeBased().atHour(h).nearMinute(0).everyDays(1).inTimezone(TZ).create());
+  ScriptApp.newTrigger('news').timeBased().atHour(8).nearMinute(30).everyDays(1).inTimezone(TZ).create();
+  try { news(); } catch (e) { console.log('news: ' + e.message); }
   pull();
 }
 

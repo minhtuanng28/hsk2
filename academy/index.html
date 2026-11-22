@@ -283,6 +283,17 @@ body.eco #hud-tl,body.eco #pomo,body.eco .ib,body.eco #dockbtn,body.eco #dockgri
 .hcharts{display:grid;grid-template-columns:1fr 1fr;gap:10px}.hcharts small{font-size:11.5px;color:var(--mute)}
 .hsp{position:relative;display:flex;align-items:flex-end;gap:3px;height:62px}.hsp>div{flex:1;text-align:center}.hsp i{display:block;border-radius:3px 3px 0 0}.hsp small{font-size:9.5px!important}.hsp>b{position:absolute;left:0;right:0;border-top:1px dashed rgba(127,127,127,.6)}
 #b-today{position:relative}#b-today[data-n]:not([data-n=''])::after{content:attr(data-n);position:absolute;top:-4px;right:-4px;min-width:16px;height:16px;border-radius:9px;background:#e8553a;color:#fff;font:700 10px/16px system-ui;padding:0 3px}
+.nw .nwtop{background:linear-gradient(135deg,rgba(200,50,42,.09),rgba(232,85,58,.05));border-radius:16px;padding:12px 14px}
+.nwday{display:flex;gap:4px;margin-bottom:8px}.nwday button,.nwchips button{border:1px solid var(--line);background:var(--panel);border-radius:20px;padding:5px 11px;font:600 12px inherit;color:inherit;cursor:pointer}
+.nwday button.on,.nwchips button.on{background:var(--k,#c8322a);border-color:transparent;color:#fff}
+.nwhead{margin:0 0 6px;font:700 15px/1.45 Georgia,serif}.nwtakes{margin:0;padding-left:18px;font-size:13px;line-height:1.5}
+.nwchips{display:flex;gap:6px;overflow-x:auto;padding:12px 0 4px;scrollbar-width:none}.nwchips button{white-space:nowrap;flex:none}
+.nwlist{display:flex;flex-direction:column;gap:10px;margin-top:6px}
+.nwc{content-visibility:auto;contain-intrinsic-size:auto 150px;border:1px solid var(--line);border-left:4px solid var(--k);border-radius:12px;padding:10px 12px;background:var(--panel)}
+.nwc.rd{opacity:.62}.nwc.hot{box-shadow:0 0 0 1px rgba(255,59,92,.35)}
+.nwm{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--mute);flex-wrap:wrap}.nwk{color:var(--k);font-weight:800;text-transform:uppercase;letter-spacing:.03em}.nwhot{background:#ff3b5c;color:#fff;border-radius:6px;padding:0 5px;font-weight:800}
+.nwc h4{margin:5px 0 4px;font-size:14.5px;line-height:1.35}.nwc p{margin:0 0 5px;font-size:13px;line-height:1.5}.nwc .nww{color:var(--mute);font-size:12.5px}
+.nwc a{font-size:12.5px;font-weight:700;color:var(--k);text-decoration:none}
 </style>
 <script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js"}}</script>
 </head>
@@ -444,18 +455,19 @@ const ROOMS=[
  {id:'cert',kind:'cert',pos:[8,6.5],rot:-Math.PI/2,size:[4,3.6],hex:'#c9a227',dark:'#8f7215',short:'★',title:{vi:'Tủ chứng chỉ',en:'Certificates hall'},dates:{vi:'Chứng chỉ đã đạt',en:'Earned certificates'}},
  {id:'tower',kind:'pomo',pos:[0,-1],rot:0,size:[2.6,2.6],hex:'#e8553a',short:'25',title:{vi:'Tháp Pomodoro',en:'Pomodoro Tower'},dates:{vi:'Giờ thực + bộ đếm tập trung',en:'Real time + focus timer'}},
  {id:'board',kind:'board',pos:[0,2.8],rot:0,size:[2.6,.4],hex:'#1d2a4d',short:'7',title:{vi:'Bảng lịch tuần',en:'Weekly plan board'},dates:{vi:'Lịch học + nhắc nhở',en:'Schedule + reminders'}},
- {id:'health',kind:'health',pos:[6.4,4.2],rot:.1,size:[3.6,2.4],hex:'#ff5a7a',short:'♥',title:{vi:'Quầy sức khoẻ',en:'Health bar'},dates:{vi:'Bước · giấc ngủ · nhịp tim',en:'Steps · sleep · heart'}}];
+ {id:'health',kind:'health',pos:[6.4,4.2],rot:.1,size:[3.6,2.4],hex:'#ff5a7a',short:'♥',title:{vi:'Quầy sức khoẻ',en:'Health bar'},dates:{vi:'Bước · giấc ngủ · nhịp tim',en:'Steps · sleep · heart'}},
+ {id:'news',kind:'news',pos:[4.8,-3.4],rot:.45,size:[3,2],hex:'#c8322a',short:'TIN',title:{vi:'Quầy báo sáng',en:'Morning newsstand'},dates:{vi:'Bản tin 8:30 mỗi sáng',en:'Brief at 8:30 daily'}}];
 const RM=Object.fromEntries(ROOMS.map(r=>[r.id,r]));
 const THEME0=(()=>{try{const th=(JSON.parse(localStorage.getItem('tuan-academy-v1')||'{}').settings||{}).theme;return th==='beach'||th==='library'?th:'campus'}catch(e){return 'campus'}})(),BEACH=THEME0==='beach',LIB=THEME0==='library';
 if(BEACH){RM.tower.title={vi:'Đồng hồ trung tâm',en:'Central clock'};RM.tower.dates={vi:'Giờ thực · Pomodoro',en:'Real time · Pomodoro'};RM.tower.short='⏱';for(const id of ['me1','me2','me3','me4'])RM[id].dates2={vi:'Quầy nước',en:'Drinks bar'}}
-if(LIB){const P0={me1:[[-11,-9.2],.55],me2:[[-5.8,-10.4],0],me3:[[3.6,-9.8],-.12],me4:[[9,-10.6],.1],work:[[-10.6,9.2],1.35],plan:[[9.6,-2.6],-.3],zh:[[-4.2,9.8],.25],crm:[[5.6,8.4],.3],cert:[[13.2,-8.8],-.45],tower:[[-1.8,-12.05],0],board:[[-6.2,-4.6],.35],health:[[10.6,8.4],.55]};
+if(LIB){const P0={me1:[[-11,-9.2],.55],me2:[[-5.8,-10.4],0],me3:[[3.6,-9.8],-.12],me4:[[9,-10.6],.1],work:[[-10.6,9.2],1.35],plan:[[9.6,-2.6],-.3],zh:[[-4.2,9.8],.25],crm:[[5.6,8.4],.3],cert:[[13.2,-8.8],-.45],tower:[[-1.8,-12.05],0],board:[[-6.2,-4.6],.35],health:[[10.6,8.4],.55],news:[[-7.2,3.0],.6]};
  for(const k in P0){RM[k].pos=P0[k][0];RM[k].rot=P0[k][1]}
  RM.tower.title={vi:'Đồng hồ quả lắc',en:'Grandfather clock'};RM.tower.dates={vi:'Giờ thực · Pomodoro',en:'Real time · Pomodoro'};RM.tower.short='⏱';
  RM.board.title={vi:'Bảng phấn lịch tuần',en:'Weekly chalkboard'};RM.work.title={vi:'Bàn làm việc MKT',en:'MKT work desk'};RM.plan.title={vi:'Bàn kế hoạch',en:'Planning table'};
  RM.crm.title={vi:'Quầy thủ thư · CRM',en:'Front desk · CRM'};RM.zh.title={vi:'Góc trà tiếng Trung',en:'Chinese tea corner'};RM.cert.title={vi:'Tủ kính chứng chỉ',en:'Certificate cabinet'};
  for(const id of ['me1','me2','me3','me4'])RM[id].dates2={vi:'Bàn học',en:'Study desk'}}
-if(!LIB){const P1=BEACH?{me1:[[-11,-6],.8],me2:[[-5.5,-11.5],.3],me3:[[1.5,-11],0],me4:[[-13,2.5],1.3],tower:[[9.5,-10],.2],work:[[8.8,-2.8],-.5],plan:[[-9.5,8.5],.9],cert:[[-5.5,5.5],.45],crm:[[2.5,10],.1],zh:[[12.5,5.2],-.8],board:[[3.2,-2.6],.5],health:[[6.8,4.6],-.3]}
- :{me1:[[-12,-7],.9],me2:[[-7,-12.3],.35],me3:[[1.5,-12],-.1],me4:[[7.5,-8.5],-.45],tower:[[-3.4,-7.4],.5],work:[[-13.2,1.8],1.45],plan:[[8.6,-1.6],-.7],cert:[[-10,10.2],1.0],crm:[[-2.2,10.6],.25],zh:[[9.4,11.4],-.55],board:[[3.3,2.6],.6],health:[[6.4,4.2],.1]};
+if(!LIB){const P1=BEACH?{me1:[[-11,-6],.8],me2:[[-5.5,-11.5],.3],me3:[[1.5,-11],0],me4:[[-13,2.5],1.3],tower:[[9.5,-10],.2],work:[[8.8,-2.8],-.5],plan:[[-9.5,8.5],.9],cert:[[-5.5,5.5],.45],crm:[[2.5,10],.1],zh:[[12.5,5.2],-.8],board:[[3.2,-2.6],.5],health:[[6.8,4.6],-.3],news:[[-6.5,-4.2],.6]}
+ :{me1:[[-12,-7],.9],me2:[[-7,-12.3],.35],me3:[[1.5,-12],-.1],me4:[[7.5,-8.5],-.45],tower:[[-3.4,-7.4],.5],work:[[-13.2,1.8],1.45],plan:[[8.6,-1.6],-.7],cert:[[-10,10.2],1.0],crm:[[-2.2,10.6],.25],zh:[[9.4,11.4],-.55],board:[[3.3,2.6],.6],health:[[6.4,4.2],.1],news:[[4.8,-3.4],.45]};
  for(const k in P1){RM[k].pos=P1[k][0];RM[k].rot=P1[k][1]}
  if(BEACH){RM.tower.title={vi:'Hải đăng đồng hồ',en:'Clock lighthouse'}}else{RM.tower.title={vi:'Tháp đồng hồ',en:'Clock tower'};RM.tower.dates={vi:'Giờ thực · Pomodoro',en:'Real time · Pomodoro'};RM.tower.short='⏱'}}
 const DATA_ROOMS=['me1','me2','me3','me4','zh','work'];
@@ -572,6 +584,7 @@ async function fbPull(first){
     let st=null;if(dd.s){st=JSON.parse(dd.s);if(!st||st.v!==1)throw new Error('hsk-state')}
     if(!st)st={v:1,cards:{},days:{},newLog:{},updated:0};
     {const oh=st.acad&&st.acad.health;if(oh&&oh.days){x.health=x.health||{};x.health.days=x.health.days||{};for(const k in oh.days){const a=oh.days[k],b=x.health.days[k];if(!b||(a.src==='auto'&&(a.at||0)>(b.at||0)))x.health.days[k]=Object.assign({},b||{},a)}if(oh.auto&&(!x.health.auto||(oh.auto.last||0)>(x.health.auto.last||0)))x.health.auto=oh.auto}}
+    {const on=st.acad&&st.acad.news;if(on&&(!x.news||(on.at||0)>(x.news.at||0)))x.news=on}
     st.acad=x;st.updated=Math.max(Date.now(),(st.updated||0)+1);
     tx.set(ref,{s:JSON.stringify(st),v:1,updated:fb.fs.serverTimestamp()},{merge:true});
   })};
@@ -1151,9 +1164,9 @@ function cabana(r){
 }
 const lampLights=[];
 for(const r of ROOMS){
- if(LIB){const k=r.kind;if(k==='class')studyDesk(r,+r.id.slice(2)-1);else if(k==='work')workDesk(r);else if(k==='plan')planTable(r);else if(k==='zh')zhNook(r);else if(k==='crm')crmDesk(r);else if(k==='cert')certCabinet(r);else if(k==='pomo')grandClock(r);else if(k==='board')chalkBoard(r);else if(k==='health')healthKiosk(r)}
- else if(BEACH){const k=r.kind;if(k==='class')tikiBar(r,+r.id.slice(2)-1);else if(k==='work')villa(r,'#2f5fd0');else if(k==='plan')surfShack(r);else if(k==='zh')teaPagoda(r);else if(k==='crm')kiosk(r);else if(k==='cert')cabana(r);else if(k==='pomo')lighthouse(r);else if(k==='board')surfBoard(r);else if(k==='health')healthKiosk(r)}
- else{const k=r.kind;if(k==='class')cottage(r,+r.id.slice(2)-1);else if(k==='work')brickOffice(r);else if(k==='plan')greenhouse(r);else if(k==='zh')teaPagoda(r);else if(k==='crm')shopFront(r);else if(k==='cert')museum(r);else if(k==='pomo')clockTower(r);else if(k==='board')noticeBoard(r);else if(k==='health')healthKiosk(r)}
+ if(LIB){const k=r.kind;if(k==='class')studyDesk(r,+r.id.slice(2)-1);else if(k==='work')workDesk(r);else if(k==='plan')planTable(r);else if(k==='zh')zhNook(r);else if(k==='crm')crmDesk(r);else if(k==='cert')certCabinet(r);else if(k==='pomo')grandClock(r);else if(k==='board')chalkBoard(r);else if(k==='health')healthKiosk(r);else if(k==='news')newsKiosk(r)}
+ else if(BEACH){const k=r.kind;if(k==='class')tikiBar(r,+r.id.slice(2)-1);else if(k==='work')villa(r,'#2f5fd0');else if(k==='plan')surfShack(r);else if(k==='zh')teaPagoda(r);else if(k==='crm')kiosk(r);else if(k==='cert')cabana(r);else if(k==='pomo')lighthouse(r);else if(k==='board')surfBoard(r);else if(k==='health')healthKiosk(r);else if(k==='news')newsKiosk(r)}
+ else{const k=r.kind;if(k==='class')cottage(r,+r.id.slice(2)-1);else if(k==='work')brickOffice(r);else if(k==='plan')greenhouse(r);else if(k==='zh')teaPagoda(r);else if(k==='crm')shopFront(r);else if(k==='cert')museum(r);else if(k==='pomo')clockTower(r);else if(k==='board')noticeBoard(r);else if(k==='health')healthKiosk(r);else if(k==='news')newsKiosk(r)}
 }
 const GW={y:()=>0,ok:null,hub:[0,6]};
 if(!LIB){
@@ -1662,6 +1675,7 @@ function updateTags(){
   else if(r.kind==='crm'){const lg=S.crm.log[dkey(new Date())]||{};el.innerHTML=`${esc(tr(r.title))}<small>${L==='vi'?'Hôm nay':'Today'}: ${+lg.lead||0} lead · ${+lg.mess||0} ${L==='vi'?'tin':'msgs'}</small>`}
   else if(r.kind==='cert'){let n=0;for(const id of ['me1','me2','me3','me4','zh'])n+=S.classes[id].certs.length;el.innerHTML=`${esc(tr(r.title))}<small>${n} ${L==='vi'?'chứng chỉ':'certificates'}</small>`}
   else if(BEACH&&r.kind==='class'){}
+  else if(r.kind==='news'){el.innerHTML=`${esc(tr(r.title))}<small>${esc(newsTag())}</small>`}
   else if(r.kind==='health'){el.innerHTML=`${esc(tr(r.title))}<small>${esc(healthTag())}</small>`}
   else if(r.kind==='plan'){const open=S.plan.cards.filter(c=>c.col!=='done').length;el.innerHTML=`${esc(tr(r.title))}<small>${open} ${L==='vi'?'việc mở':'open tasks'}</small>`}
   else el.innerHTML=`${esc(tr(r.title))}<small>${esc(tr(r.dates))}</small>`}
@@ -1967,7 +1981,7 @@ $('#pcls').addEventListener('change',e=>{PM.cls=e.target.value;savePM()});
 
 /* ---------------- panel ---------------- */
 const panel=$('#panel');let panelState=null;
-function openRoom(id){const r=RM[id];if(LIB&&r.seat&&!SIT&&Math.hypot(P.x-r.door[0],P.z-r.door[1])<2.6)sitAt(r.seat);if(r.kind==='board')openPanel({kind:'board'});else if(r.kind==='pomo')openPanel({kind:'pomo'});else if(r.kind==='plan')openPanel({kind:'plan',tab:'board'});else if(r.kind==='crm')openPanel({kind:'crm'});else if(r.kind==='cert')openPanel({kind:'certs'});else if(r.kind==='health')openPanel({kind:'health'});else openPanel({kind:r.kind,id,tab:'syllabus'})}
+function openRoom(id){const r=RM[id];if(LIB&&r.seat&&!SIT&&Math.hypot(P.x-r.door[0],P.z-r.door[1])<2.6)sitAt(r.seat);if(r.kind==='board')openPanel({kind:'board'});else if(r.kind==='pomo')openPanel({kind:'pomo'});else if(r.kind==='plan')openPanel({kind:'plan',tab:'board'});else if(r.kind==='crm')openPanel({kind:'crm'});else if(r.kind==='cert')openPanel({kind:'certs'});else if(r.kind==='health')openPanel({kind:'health'});else if(r.kind==='news')openPanel({kind:'news'});else openPanel({kind:r.kind,id,tab:'syllabus'})}
 function openPanel(st){panelState=st;panel.classList.remove('wide');renderPanel();panel.classList.add('open');document.body.classList.add('popen');$('#prompt').classList.remove('on');walk=null;if(st.kind==='find')setTimeout(()=>{const i=$('#fq');if(i)i.focus()},60)}
 function closePanel(){if(!panelState)return;panel.classList.remove('wide');panelState=null;panel.classList.remove('open');document.body.classList.remove('popen');near=null;canvas.focus({preventScroll:true})}
 const head=(hex,k,title,sub)=>`<div class="grab"></div><header class="ph" style="--c:${hex}"><div class="pk">${esc(k)}</div><div><h2>${esc(title)}</h2><p>${sub}</p></div><button class="x" data-act="close" aria-label="${t('close')}">×</button></header>`;
@@ -2133,7 +2147,7 @@ function findResults(){
 }
 function renderPanel(){
  if(!panelState)return;const k=panelState.kind;const y=panel.scrollTop;
- panel.innerHTML=k==='class'||k==='zh'?classPanel():k==='work'?workPanel():k==='health'?healthPanel():k==='plan'?planPanel():k==='crm'?crmPanel():k==='board'?boardPanel():k==='pomo'?pomoPanel():k==='certs'?certsPanel():k==='acct'?acctPanel():k==='find'?findPanel():settingsPanel();
+ panel.innerHTML=k==='class'||k==='zh'?classPanel():k==='work'?workPanel():k==='health'?healthPanel():k==='news'?newsPanel():k==='plan'?planPanel():k==='crm'?crmPanel():k==='board'?boardPanel():k==='pomo'?pomoPanel():k==='certs'?certsPanel():k==='acct'?acctPanel():k==='find'?findPanel():settingsPanel();
  panel.scrollTop=y;
 }
 const fval=(b,n)=>{const f=b.closest('.add');const el=f&&f.querySelector(`[name=${n}]`);return el?el.value.trim():''};
@@ -2142,7 +2156,7 @@ panel.addEventListener('click',e=>{
  const b=e.target.closest('[data-act]');if(!b||b.tagName==='INPUT'||b.tagName==='TEXTAREA'||b.tagName==='SELECT')return;
  const a=b.dataset.act,st=panelState,c=st&&st.id&&S.classes[st.id],id=b.dataset.id;
  const done=()=>{save();renderPanel();updateTags()};
- if(healthAct(a,b))return;
+ if(healthAct(a,b))return;if(newsAct(a,b))return;
  switch(a){
   case 'stickyShow':stickyMode('show');break;
   case 'stickyPip':openPip();break;
@@ -2226,7 +2240,7 @@ panel.addEventListener('drop',e=>{const ul=e.target.closest('[data-col]');if(!ul
 
 /* misc */
 let toastT;function toast(s){const el=$('#toast');el.textContent=s;el.classList.add('on');clearTimeout(toastT);toastT=setTimeout(()=>el.classList.remove('on'),2800)}
-function refreshAll(){
+function refreshAll(){try{drawNewsBoard();drawHealthScreen()}catch(e){}
  document.documentElement.lang=L;
  document.querySelectorAll('[data-i]').forEach(el=>el.textContent=t(el.dataset.i));
  document.querySelectorAll('[data-t]').forEach(el=>el.title=t(el.dataset.t));
@@ -2459,6 +2473,63 @@ function healthTip(){const H=H0(),n=new Date(),d=H.days[dkey(n)]||{},h=n.getHour
 setInterval(briefTick,60000);setTimeout(briefTick,6000);
 setInterval(()=>{if(!document.hidden&&cloud&&fb&&fb.user)fbPull(false)},10*60*1000);
 document.addEventListener('visibilitychange',()=>{if(!document.hidden&&cloud&&fb&&fb.user&&Date.now()-(window.__lastPull||0)>5*60*1000){window.__lastPull=Date.now();fbPull(false)}});
+
+/* ================= Quầy báo (8:30 daily brief) ================= */
+const NCAT={mkt:['Marketing','#ff7a00'],ai:['AI','#7b61ff'],world:['Thế giới','#2f5fd0'],macro:['Kinh tế','#17a398'],stock:['Chứng khoán','#1f9e6a'],crypto:['Tiền số','#e3a21a'],invest:['Đầu tư','#c9a227'],bds:['BĐS VN','#e8553a'],law:['Luật mới','#5a6b7d'],hot:['Nóng','#ff3b5c']};
+const NCAT_EN={mkt:'Marketing',ai:'AI',world:'World',macro:'Economy',stock:'Stocks',crypto:'Crypto',invest:'Investing',bds:'VN property',law:'New laws',hot:'Hot'};
+let newsFilter='all',newsDay='today';
+function N0(){return S.news&&S.news.items?S.news:null}
+function newsRead(){try{return JSON.parse(localStorage.getItem('tuan-news-read')||'{}')}catch(e){return{}}}
+function newsMark(id){const r=newsRead();r[id]=Date.now();const ks=Object.keys(r);if(ks.length>200)ks.sort((a,b)=>r[a]-r[b]).slice(0,ks.length-200).forEach(k=>delete r[k]);try{localStorage.setItem('tuan-news-read',JSON.stringify(r))}catch(e){}}
+function newsUnread(){const n=N0();if(!n)return 0;const r=newsRead();return n.items.filter(i=>!r[i.id+n.date]).length}
+function ago(t){const m=Math.round((Date.now()-t)/60000);if(m<60)return V(m+' phút trước',m+' min ago');const h=Math.round(m/60);if(h<24)return V(h+' giờ trước',h+'h ago');return new Date(t).toLocaleDateString(L==='vi'?'vi-VN':'en-GB',{day:'2-digit',month:'2-digit'})}
+function newsPanel(){const r=RM.news,n0=N0(),n=newsDay==='prev'&&n0&&n0.prev?Object.assign({date:n0.prev.date},n0.prev):n0,rd=newsRead();
+ const sub=n0?V('Cập nhật ','Updated ')+new Date(n0.at).toLocaleString(L==='vi'?'vi-VN':'en-GB',{hour:'2-digit',minute:'2-digit',day:'2-digit',month:'2-digit'})+(n0.model?' · Gemini':'')+` · ${n0.items.length} ${V('tin','stories')}`:V('Bản tin tự động lúc 8:30 sáng mỗi ngày','Auto brief every day at 8:30');
+ let h=head(r.hex,r.short,tr(r.title),sub)+`<div class="pb nw" style="--c:${r.hex}">`;
+ if(!n){h+=`<div class="sec" style="margin-top:0"><p class="note">${V('Chưa có bản tin. Bản tin đầu tiên sẽ về lúc 8:30 sáng (hoặc ngay sau khi chạy thử).','No brief yet. The first one arrives at 8:30 (or right after a test run).')}</p></div></div>`;return h}
+ const cats=[...new Set(n.items.map(i=>i.cat))];
+ h+=`<div class="nwtop">${n0&&n0.prev?`<div class="nwday"><button class="${newsDay==='today'?'on':''}" data-act="nday" data-v="today">${V('Hôm nay','Today')}</button><button class="${newsDay==='prev'?'on':''}" data-act="nday" data-v="prev">${V('Hôm qua','Yesterday')}</button></div>`:''}
+ ${n.head?`<p class="nwhead">${esc(n.head)}</p>`:''}${n.takes&&n.takes.length?`<ul class="nwtakes">${n.takes.map(x=>`<li>${esc(x)}</li>`).join('')}</ul>`:''}</div>
+ <div class="nwchips"><button class="${newsFilter==='all'?'on':''}" data-act="nfil" data-v="all">${V('Tất cả','All')} ${n.items.length}</button>${cats.map(c=>`<button class="${newsFilter===c?'on':''}" data-act="nfil" data-v="${c}" style="--k:${(NCAT[c]||['',r.hex])[1]}">${L==='vi'?(NCAT[c]||[c])[0]:(NCAT_EN[c]||c)} ${n.items.filter(i=>i.cat===c).length}</button>`).join('')}</div>
+ <div class="nwlist">${n.items.filter(i=>newsFilter==='all'||i.cat===newsFilter).map(i=>{const k=NCAT[i.cat]||[i.cat,'#888'],u=safeUrl(i.url),isR=rd[i.id+n.date];return `<article class="nwc${isR?' rd':''}${i.hot?' hot':''}" style="--k:${k[1]}"><div class="nwm"><span class="nwk">${L==='vi'?k[0]:(NCAT_EN[i.cat]||i.cat)}</span>${i.hot?`<span class="nwhot">HOT</span>`:''}<span class="nws">${esc(i.src||'')} · ${ago(i.time)}</span></div>
+  <h4>${esc(i.t)}</h4>${i.s?`<p>${esc(i.s)}</p>`:''}${i.w?`<p class="nww">→ ${esc(i.w)}</p>`:''}${u?`<a href="${esc(u)}" target="_blank" rel="noopener" data-nid="${esc(i.id+n.date)}">${V('Đọc bài gốc','Read the article')} ↗</a>`:''}</article>`}).join('')}</div>
+ ${n0.err?`<p class="note" style="margin-top:10px">${esc(n0.err)}</p>`:''}<p class="note">${V('Tin lấy từ RSS VnExpress, Google News…; Gemini chỉ chọn và tóm tắt, không tự viết tin. Bấm "Đọc bài gốc" để xem đầy đủ.','Stories come from news RSS feeds; Gemini only selects and summarises.')}</p></div>`;
+ return h}
+panel.addEventListener('click',e=>{const a=e.target.closest('a[data-nid]');if(a){newsMark(a.dataset.nid);a.closest('.nwc').classList.add('rd');updateTags()}},true);
+function newsAct(a,b){if(a==='nfil'){newsFilter=b.dataset.v;renderPanel();return true}if(a==='nday'){newsDay=b.dataset.v;newsFilter='all';renderPanel();return true}return false}
+function newsTag(){const n=N0();if(!n)return V('Bản tin 8:30 mỗi sáng','Daily brief at 8:30');const u=newsUnread();return (n.date===dkey(new Date())?V('Hôm nay','Today'):V('Bản tin ','Brief ')+n.date.slice(5).split('-').reverse().join('/'))+` · ${n.items.length} ${V('tin','stories')}`+(u?V(` · ${u} chưa đọc`,` · ${u} unread`):'')}
+function drawNewsBoard(){const r=RM.news;if(!r||!r.ncv)return;const c=r.ncv,x=c.getContext('2d'),W=c.width,H=c.height,n=N0();
+ x.fillStyle='#f4ecd8';x.fillRect(0,0,W,H);x.fillStyle='#1d1b18';x.font='900 30px Georgia,serif';x.textAlign='center';x.fillText(V('BẢN TIN SÁNG','MORNING BRIEF'),W/2,38);x.fillRect(16,48,W-32,3);
+ x.font='600 13px system-ui';x.fillText(n?new Date(n.at).toLocaleDateString('vi-VN',{weekday:'long',day:'2-digit',month:'2-digit'}):'8:30',W/2,68);x.textAlign='left';
+ const lines=n?n.items.slice(0,4).map(i=>i.t):[V('Tin MKT · AI · kinh tế · BĐS','MKT · AI · economy · property')];let y=96;
+ for(const t of lines){x.fillStyle='#e8553a';x.fillRect(16,y-11,6,6);x.fillStyle='#1d1b18';x.font='700 15px system-ui';const words=t.split(' ');let ln='',cnt=0;for(const w of words){if(x.measureText(ln+w).width>W-46){x.fillText(ln,30,y);y+=18;ln='';if(++cnt>=1){ln='…';break}}ln+=w+' '}x.fillText(ln.trim(),30,y);y+=26;if(y>H-10)break}
+ if(r.ntex)r.ntex.needsUpdate=true}
+function newsKiosk(r){
+ const g=new THREE.Group(),acc=r.hex;
+ if(LIB)rug(g,0,.1,3.2,2.6,acc);else box(3.4,.14,2.6,BEACH?'#b98a55':'#cfc6b4',0,.07,0,g);
+ const wood=LIB?'#6b4129':BEACH?'#c99a63':'#2f5a46';
+ box(2.4,.95,.9,wood,0,.62,.2,g);box(2.55,.08,1.02,LIB?'#8a5a3a':'#f6f0e2',0,1.13,.2,g);
+ // slanted magazine rack on the counter front
+ const rk=new THREE.Group();rk.position.set(0,.55,.7);rk.rotation.x=-.35;g.add(rk);box(2.3,.75,.05,wood,0,0,0,rk);
+ const MC=['#e8553a','#2f5fd0','#17a398','#e3a21a','#7b61ff','#1d1b18'];for(let k=0;k<6;k++)box(.32,.42,.03,MC[k],-.95+k*.38,.05,.04,rk,{cast:false});
+ // folded newspapers stacked on the counter
+ for(let k=0;k<4;k++){const p=box(.5,.03,.36,'#f4ecd8',-.75+(k%2)*.12,1.19+k*.035,.15,g,{cast:false});p.rotation.y=(k-1.5)*.12}box(.04,.02,.3,'#1d1b18',-.7,1.33,.15,g,{cast:false});
+ // big front-page board on a stand
+ const cv=document.createElement('canvas');cv.width=320;cv.height=220;r.ncv=cv;const tex=new THREE.CanvasTexture(cv);tex.colorSpace=THREE.SRGBColorSpace;r.ntex=tex;
+ const sg=new THREE.Group();sg.position.set(0,0,-.5);g.add(sg);for(const s of [-1,1])box(.08,2.4,.08,'#2b2f36',s*1.05,1.2,0,sg);box(2.3,1.6,.08,'#2b2f36',0,2.15,0,sg);
+ const pg=new THREE.Mesh(new THREE.PlaneGeometry(2.18,1.5),new THREE.MeshLambertMaterial({map:tex,emissive:'#ffffff',emissiveMap:tex,emissiveIntensity:.35}));pg.position.set(0,2.15,.045);sg.add(pg);
+ box(2.4,.22,.14,acc,0,3.02,0,sg);
+ if(!LIB){const roof=new THREE.Mesh(new THREE.ConeGeometry(2.1,.7,BEACH?10:4),M(BEACH?'#d9b46a':'#2f5a46'));if(!BEACH)roof.rotation.y=Math.PI/4;roof.position.y=3.75;roof.castShadow=true;g.add(roof);for(const s of [-1,1]){const pl=new THREE.Mesh(new THREE.CylinderGeometry(.05,.05,3.4,8),M(BEACH?'#c9a45a':'#2b2f36'));pl.position.set(s*1.25,1.7,.75);g.add(pl)}}
+ // a little stool + coffee
+ const st=new THREE.Mesh(new THREE.CylinderGeometry(.2,.2,.06,12),M(acc));st.position.set(1.55,.55,.6);st.castShadow=true;g.add(st);box(.05,.52,.05,'#4a2c1b',1.55,.26,.6,g);mug(g,.85,.35,'#ffffff',1.17);
+ place(r,g,3,2,1.55,LIB?3.5:4.4);setTimeout(drawNewsBoard,60);
+}
+let newsSaidKey='';
+function newsTick(){const n=N0(),now=new Date();if(!n||n.date!==dkey(now))return;const k='news'+n.date;if(newsSaidKey===k)return;const said=(S.health&&S.health.said)||{};if(said[k]){newsSaidKey=k;return}
+ if(now.getHours()<8||(now.getHours()===8&&now.getMinutes()<25))return;newsSaidKey=k;S.health=S.health||{};S.health.said=S.health.said||{};S.health.said[k]=1;save();
+ const top=n.items.find(i=>i.hot)||n.items[0];const msg=V(`Tin sáng đã về (${n.items.length} tin)! ${n.head||('Nổi bật: '+(top?top.t:''))}`,`Morning brief is in (${n.items.length})! ${n.head||(top?top.t:'')}`);
+ setTimeout(()=>{catSay(msg,14000);meowSound('meow')},2500);notify(V('Bản tin sáng · ','Morning brief · ')+n.items.length+V(' tin',' stories'),n.head||(top?top.t:''))}
+setInterval(newsTick,60000);setTimeout(newsTick,8000);
 
 {const q=new URLSearchParams(location.search).get('room');if(q&&RM[q])setTimeout(()=>goRoom(q),900)}
 catInit();setTimeout(()=>{try{if(!NAV.g)navBuild()}catch(e){}},1200);
