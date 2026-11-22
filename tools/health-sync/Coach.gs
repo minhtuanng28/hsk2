@@ -90,7 +90,9 @@ function plan_(H) {
     if (heavyYd) { title = 'Tập vừa–nặng'; body = lastRun ? 'Bơi 40′ có 8×50m nhanh (nghỉ 30″) xen bơi chậm.' : 'Chạy tempo 20′ ở ~' + s.z(.75) + ' bpm, khởi động và thả lỏng mỗi phần 10′.'; }
     else { title = 'Sung sức · tập nặng được'; body = lastRun ? 'Bơi interval: 10×100m nhanh, nghỉ 20″ (khởi động 300m).' : 'Chạy interval 6×3′ ở ' + z4 + ' bpm, nghỉ chạy chậm 2′ giữa các hiệp.'; }
   }
-  return { at: Date.now(), date: dk_(new Date()), level, title, body, why: why.join(' · '), R: s.R };
+  const ps = planSession(H, new Date(), dk_, level, { z1: z1, z2: z2 });
+  if (ps) { title = ps.title; body = ps.body; }
+  return { at: Date.now(), date: dk_(new Date()), level, title, body, why: why.join(' · '), R: s.R, plan: !!ps };
 }
 function briefAm_(H) {
   const s = state_(H), t = s.today, p = [];
@@ -109,7 +111,19 @@ function briefPm_(H) {
   return p.join(' · ') + '. ' + ((t.steps || 0) < goal * .6 ? 'Đi bộ 10–15′ trước khi ngủ nhé. ' : '') + 'Tắt màn hình sớm 30′ để ngủ ngon.';
 }
 /* ---- các mốc tự động ---- */
-function am() { try { pull(); } catch (e) { console.log(e.message); } const a = readAcad_(); push_('🌅 Sức khoẻ sáng nay', briefAm_(a.health || { days: {} }), 'health', a); }
+function am() {
+  try { pull(); } catch (e) { console.log(e.message); }
+  const a = readAcad_(), H = a.health || { days: {} };
+  let msg = briefAm_(H);
+  if (measDue(H, new Date(), dk_)) msg += ' 📏 Hôm nay đo cân & vòng eo nhé (Cơ thể → Đo hàng tháng).';
+  push_('🌅 Sức khoẻ sáng nay', msg, 'health', a);
+}
+function weekly() {
+  try { pull(); } catch (e) { console.log(e.message); }
+  let rep = null; mutate_(a => { const H = a.health = a.health || { days: {} }; H.days = H.days || {}; rep = weekReport(H, new Date(), dk_); H.weekly = rep; });
+  push_('📊 ' + rep.title + ' · ' + rep.score + '/100', rep.lines.slice(0, 2).join(' · ') + '. Mục tiêu tuần tới: ' + rep.goal, 'health');
+  console.log('weekly: ' + rep.score);
+}
 function coach() {
   try { pull(); } catch (e) { console.log(e.message); }
   let pl = null; mutate_(a => { const H = a.health = a.health || { days: {} }; H.days = H.days || {}; pl = plan_(H); H.coach = pl; });

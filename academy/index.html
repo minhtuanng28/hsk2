@@ -319,6 +319,10 @@ body.eco #hud-tl,body.eco #pomo,body.eco .ib,body.eco #dockbtn,body.eco #dockgri
 .hform label{flex:1;min-width:0}.hform label small{display:block;font-size:10.5px;color:var(--mute);margin:0 0 2px 2px}.hform label input{width:100%}.hform>.btn{margin-top:8px;width:100%}
 .hcoach{margin-top:10px;padding:10px 12px;border-radius:14px;background:linear-gradient(135deg,color-mix(in srgb,var(--cc) 18%,transparent),transparent);border-left:5px solid var(--cc)}.hcoach small{font-size:11px;color:var(--mute);font-weight:700}.hcoach b{display:block;font-size:16px;margin:2px 0}.hcoach p{margin:0;font-size:13px;line-height:1.45}.hcoach i{display:block;font-style:normal;font-size:11px;color:var(--mute);margin-top:4px}
 .hpush p{margin:0 0 8px;font-size:12.5px;line-height:1.45}.hpush .row{align-items:center;justify-content:space-between}.hpush b.ok{color:#1f9e6a}.hpush>.btn{width:100%}
+.tpl p{margin:0 0 10px;font-size:13px;line-height:1.5}.tpl>.btn{width:100%}
+.tgrid{display:grid;gap:3px}.tw{display:grid;grid-template-columns:22px repeat(4,1fr);gap:4px;align-items:center}.tw small{font-size:10px;color:var(--mute);text-align:center}.tw.hd b{font-size:10.5px;color:var(--mute);text-align:center}.tw i{font-style:normal;text-align:center;font-size:12px;border-radius:7px;padding:3px 0;background:rgba(127,127,127,.1);opacity:.55}.tw i.ok{background:rgba(46,204,113,.22);opacity:1;color:#1f9e6a;font-weight:800}.tw i.miss{background:rgba(255,90,106,.12);opacity:.8}.tw i.today{outline:2px solid #ff9a3c;opacity:1}.tw.now small{color:var(--ink);font-weight:800}
+.hweek{margin-top:10px;padding:11px 13px;border-radius:14px;background:linear-gradient(135deg,color-mix(in srgb,var(--cc) 16%,transparent),transparent);border:1px solid color-mix(in srgb,var(--cc) 35%,transparent)}.hw-h{display:flex;justify-content:space-between;align-items:baseline}.hw-h small{font-size:11px;color:var(--mute);font-weight:700}.hw-h b{font-size:22px;color:var(--cc)}.hw-h em{font-style:normal;font-size:11px;color:var(--mute)}.hweek h4{margin:2px 0 6px;font-size:15px}.hweek ul{margin:0;padding-left:18px;font-size:12.5px;line-height:1.55}.hweek p{margin:8px 0 0;font-size:12.5px}
+.hcoach .hform{margin-top:8px}.hmeas{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin:8px 0}.hmeas>div{border-radius:10px;padding:7px 8px;background:light-dark(rgba(0,0,0,.035),rgba(255,255,255,.05))}.hmeas small{display:block;font-size:10px;color:var(--mute)}.hmeas b{font-size:14px}.hmeas i{display:block;font-style:normal;font-size:10px;color:var(--mute)}
 .hp2 details.note div{margin-top:3px}
 </style>
 <script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js"}}</script>
@@ -609,7 +613,7 @@ async function fbPull(first){
     const sn=await tx.get(ref);const dd=sn.exists()?sn.data():{};
     let st=null;if(dd.s){st=JSON.parse(dd.s);if(!st||st.v!==1)throw new Error('hsk-state')}
     if(!st)st={v:1,cards:{},days:{},newLog:{},updated:0};
-    {const oh=st.acad&&st.acad.health;if(oh&&oh.days){x.health=x.health||{};x.health.days=x.health.days||{};for(const k in oh.days){const a=oh.days[k],b=x.health.days[k];if(!b||(a.src==='auto'&&(a.at||0)>(b.at||0)))x.health.days[k]=Object.assign({},b||{},a)}if(oh.auto&&(!x.health.auto||(oh.auto.last||0)>(x.health.auto.last||0)))x.health.auto=oh.auto;if(oh.coach&&(!x.health.coach||(oh.coach.at||0)>(x.health.coach.at||0)))x.health.coach=oh.coach}}
+    {const oh=st.acad&&st.acad.health;if(oh&&oh.days){x.health=x.health||{};x.health.days=x.health.days||{};for(const k in oh.days){const a=oh.days[k],b=x.health.days[k];if(!b||(a.src==='auto'&&(a.at||0)>(b.at||0)))x.health.days[k]=Object.assign({},b||{},a)}if(oh.auto&&(!x.health.auto||(oh.auto.last||0)>(x.health.auto.last||0)))x.health.auto=oh.auto;if(oh.coach&&(!x.health.coach||(oh.coach.at||0)>(x.health.coach.at||0)))x.health.coach=oh.coach;if(oh.weekly&&(!x.health.weekly||(oh.weekly.at||0)>(x.health.weekly.at||0)))x.health.weekly=oh.weekly}}
     {const op=st.acad&&st.acad.push;if(op&&op.tokens){x.push=x.push||{tokens:[]};x.push.tokens=x.push.tokens||[];const del=x.push.del||[];for(const t of op.tokens)if(!x.push.tokens.some(y=>y.t===t.t)&&!del.includes(t.t))x.push.tokens.push(t)}}
     {const on=st.acad&&st.acad.news;if(on&&(!x.news||(on.at||0)>(x.news.at||0)))x.news=on}
     st.acad=x;st.updated=Math.max(Date.now(),(st.updated||0)+1);
@@ -2362,7 +2366,7 @@ function todayTick(){if(dayRoll()){save()}todayRefresh();const n=new Date(),hm=S
 function addMin(hm,m){const [h,mm]=hm.split(':').map(Number);const t2=h*60+mm+m;return String(Math.floor(t2/60)%24).padStart(2,'0')+':'+String(t2%60).padStart(2,'0')}
 
 /* ================= Quầy sức khoẻ (Google Health) ================= */
-function H0(){if(!S.health||typeof S.health!=='object')S.health={};const H=S.health;H.cfg=Object.assign({clientId:'',goalSteps:8000,goalSleep:480,goalWater:2000},H.cfg||{});H.days=H.days||{};return H}
+function H0(){if(!S.health||typeof S.health!=='object')S.health={};const H=S.health;if(!H.meas){H.meas=[{d:'2026-11-22',w:68,waist:94}]}H.cfg=Object.assign({clientId:'',goalSteps:8000,goalSleep:480,goalWater:2000},H.cfg||{});H.days=H.days||{};return H}
 function hdd(k){const H=H0();return H.days[k]||(H.days[k]={})}
 /* Google Health được kéo tự động bởi Apps Script (9h · 17h · 21h) — app chỉ đọc dữ liệu đã đồng bộ. */
 let hBusy=false,hErr='';function hSync(){toast(V('Số sức khoẻ tự cập nhật lúc 9h · 17h · 21h','Health data auto-syncs at 9 · 17 · 21'))}
@@ -2376,8 +2380,87 @@ function spark(key,color,fmt,goal){const pts=[];for(let k=6;k>=0;k--){const x=ne
  return `<div class="hsp">${pts.map(([x,v],i)=>`<div title="${x.getDate()}/${x.getMonth()+1}: ${v?fmt(v):'–'}"><i style="height:${Math.max(2,v/mx*44)}px;background:${color};opacity:${i===6?1:.55}"></i><small>${'CN T2 T3 T4 T5 T6 T7'.split(' ')[x.getDay()]}</small></div>`).join('')}${goal?`<b style="bottom:${goal/mx*44+14}px"></b>`:''}</div>`}
 function hRing(p,c,label,val){const r=26,C=2*Math.PI*r,o=C*(1-Math.min(1,p));return `<div class="hring"><svg viewBox="0 0 64 64"><circle cx="32" cy="32" r="${r}" stroke="rgba(127,127,127,.18)"/><circle cx="32" cy="32" r="${r}" stroke="${c}" stroke-dasharray="${C}" stroke-dashoffset="${o}" transform="rotate(-90 32 32)"/></svg><b>${val}</b><small>${label}</small></div>`}
 /* ===== Quầy sức khoẻ v2: baseline cá nhân, 5 tab trực quan ===== */
+/* ==== DÙNG CHUNG app + Apps Script (Plan.gs): giáo án 8 tuần, báo cáo tuần, nhắc đo hàng tháng ====
+   Hàm thuần, không phụ thuộc DOM. K(date) -> 'yyyy-MM-dd' theo giờ VN. */
+var TPL8 = {
+  1: { type: 'run', name: 'Chạy nền (Z2)', w: [30, 30, 35, 25, 35, 40, 40, 30] },
+  3: { type: 'swim', name: 'Bơi kỹ thuật', w: ['10×50m, nghỉ 30″', '8×75m, nghỉ 30″', '6×100m, nghỉ 30″', '400m thả lỏng (tuần nhẹ)', '5×150m, nghỉ 30″', '4×200m, nghỉ 30″', '3×300m, nghỉ 40″', '500m thả lỏng (trước kiểm tra)'] },
+  5: { type: 'run', name: 'Chạy chất lượng', w: ['8×1′ nhanh / 1′30″ chạy chậm', '6×2′ nhanh / 2′ chậm', '5×3′ vùng Z4 / 2′ chậm', 'Chạy liên tục 3 km nhẹ (tuần nhẹ)', '3×6′ tempo / 2′ chậm', '2×10′ tempo / 3′ chậm', 'Tempo 20′ liên tục', 'KIỂM TRA: chạy 5 km, ghi lại thời gian'] },
+  0: { type: 'swim', name: 'Bơi dài', w: ['400m liên tục (được nghỉ ngắn)', '500m liên tục', '600m liên tục', '500m nhẹ (tuần nhẹ)', '800m liên tục', '1.000m liên tục', '1.200m liên tục', 'KIỂM TRA: bơi liền 1.500m'] }
+};
+function planMonday(d) { var x = new Date(d.getTime()); var g = x.getDay(); x.setDate(x.getDate() - ((g + 6) % 7)); x.setHours(12, 0, 0, 0); return x; }
+function planInfo(H, d, K) {
+  var p = H && H.tplan; if (!p || !p.start) return null;
+  var st = new Date(p.start + 'T12:00:00'), day = new Date(K(d) + 'T12:00:00');
+  var wk = Math.floor(Math.round((day - st) / 864e5) / 7); if (wk < 0 || wk > 7) return { over: wk > 7, wk: wk };
+  var t = TPL8[day.getDay()]; if (!t) return { wk: wk, rest: true };
+  var v = t.w[wk];
+  return { wk: wk, type: t.type, name: t.name, base: typeof v === 'number' ? v + '′' : v, mins: typeof v === 'number' ? v : null, key: t.type === 'run' && day.getDay() === 5 ? 'q' : t.type === 'swim' && day.getDay() === 0 ? 'long' : 'easy' };
+}
+function exIs(e, type) { var s = String((e && e.t) || '').toLowerCase(); return type === 'run' ? /run|chạy|treadmill/.test(s) : /swim|bơi/.test(s); }
+function planDone(H, d, K) { var i = planInfo(H, d, K); if (!i || !i.type) return null; var dd = H.days[K(d)] || {}; return (dd.ex || []).some(function (e) { return exIs(e, i.type) && (e.min || 0) >= 10; }) || !!(H.tplan.manual || {})[K(d)]; }
+/* điều chỉnh buổi theo mức hồi phục level 0..3 (0 nghỉ, 1 nhẹ, 2 vừa, 3 sung) */
+function planSession(H, d, K, level, z) {
+  var i = planInfo(H, d, K); if (!i || i.over || i.wk < 0) return null;
+  var tag = 'Tuần ' + (i.wk + 1) + '/8 · ';
+  if (i.rest) return { title: tag + 'Ngày nghỉ theo giáo án', body: level >= 2 ? 'Đi bộ 20–30′ hoặc giãn cơ/core 15′. Để dành sức cho buổi kế tiếp.' : 'Nghỉ hẳn, giãn cơ nhẹ và ngủ sớm.', plan: true, type: null };
+  var body;
+  if (i.type === 'run') {
+    body = i.key === 'q' ? i.base + '. Khởi động 10′ chạy chậm, thả lỏng 5–10′.' : 'Chạy đều ' + i.base + ' ở ' + z.z2 + ' bpm (vẫn nói chuyện được).';
+  } else body = i.base + '. Khởi động 200m bơi chậm, cuối buổi 100m thả lỏng.';
+  var title = tag + i.name;
+  if (level === 0) { title = tag + 'Hoãn ' + i.name.toLowerCase(); body = 'Cơ thể đang căng: nghỉ hôm nay, buổi này dời sang ngày nghỉ gần nhất.'; }
+  else if (level === 1) {
+    if (i.key === 'q') { title = tag + 'Đổi thành chạy nhẹ'; body = 'Hồi phục chưa đủ cho buổi chất lượng: chạy nhẹ 20–25′ ở ' + z.z1 + ' bpm. Buổi chính dời sang hôm sau.'; }
+    else if (i.key === 'long') { title = tag + 'Bơi nhẹ'; body = 'Bơi thả lỏng 20–25′, bỏ mục tiêu cự ly hôm nay.'; }
+    else if (i.mins) body = 'Rút ngắn còn ' + Math.round(i.mins * .7) + '′ chạy chậm ở ' + z.z1 + ' bpm.';
+  } else if (level === 2 && i.key === 'q') body += ' Hôm nay hồi phục vừa: bớt 1 hiệp nếu thấy nặng.';
+  return { title: title, body: body, plan: true, type: i.type, wk: i.wk };
+}
+/* báo cáo tuần (7 ngày tính đến d) */
+function weekReport(H, d, K) {
+  var day = function (i) { var x = new Date(d.getTime() - i * 864e5); return { x: x, d: H.days[K(x)] || {} }; };
+  var cur = [], prev = []; for (var i = 0; i < 7; i++) { cur.push(day(i)); prev.push(day(i + 7)); }
+  var avg = function (a, k) { var v = a.map(function (o) { return o.d[k]; }).filter(function (x) { return typeof x === 'number'; }); return v.length ? v.reduce(function (s, x) { return s + x; }, 0) / v.length : null; };
+  var sum = function (a, k) { return a.reduce(function (s, o) { return s + (o.d[k] || 0); }, 0); };
+  var goal = (H.cfg && H.cfg.goalSleep) || 480;
+  var sl = avg(cur, 'sleepMin'), slP = avg(prev, 'sleepMin'), short = cur.filter(function (o) { return o.d.sleepMin && o.d.sleepMin < 420; }).length;
+  var beds = cur.map(function (o) { if (!o.d.bed) return null; var p = o.d.bed.split(':'); var m = +p[0] * 60 + +p[1]; if (m < 720) m += 1440; return m; }).filter(function (x) { return x != null; });
+  var bAvg = beds.length ? beds.reduce(function (s, x) { return s + x; }, 0) / beds.length : null, bSd = beds.length > 2 ? Math.sqrt(beds.reduce(function (s, x) { return s + (x - bAvg) * (x - bAvg); }, 0) / beds.length) : null;
+  var hrv = avg(cur, 'hrv'), hrvP = avg(prev, 'hrv'), rhr = avg(cur, 'rhr'), rhrP = avg(prev, 'rhr'), azm = sum(cur, 'azm'), steps = avg(cur, 'steps');
+  var runs = [], swims = []; cur.forEach(function (o) { (o.d.ex || []).forEach(function (e) { if (exIs(e, 'run')) runs.push(e); else if (exIs(e, 'swim')) swims.push(e); }); });
+  var km = runs.reduce(function (s, e) { return s + (e.km || 0); }, 0), sMin = swims.reduce(function (s, e) { return s + (e.min || 0); }, 0);
+  var planned = 0, done = 0; cur.forEach(function (o) { var i = planInfo(H, o.x, K); if (i && i.type) { planned++; if (planDone(H, o.x, K)) done++; } });
+  var hm = function (m) { m = Math.round(m); return Math.floor(m / 60) + 'h' + ('0' + (m % 60)).slice(-2); };
+  var clock = function (m) { m = ((Math.round(m) % 1440) + 1440) % 1440; return ('0' + Math.floor(m / 60)).slice(-2) + ':' + ('0' + (m % 60)).slice(-2); };
+  var pct = function (a, b) { return a != null && b ? Math.round((a - b) / b * 100) : null; };
+  var lines = [];
+  if (sl) lines.push('Ngủ TB ' + hm(sl) + (slP ? ' (' + (sl >= slP ? '+' : '') + Math.round(sl - slP) + '′ so với tuần trước)' : '') + (short ? ', ' + short + ' đêm dưới 7h' : ''));
+  if (bSd != null) lines.push('Giờ lên giường TB ' + clock(bAvg) + ', lệch ±' + Math.round(bSd) + '′');
+  if (hrv) lines.push('HRV TB ' + Math.round(hrv) + ' ms' + (pct(hrv, hrvP) != null ? ' (' + (pct(hrv, hrvP) >= 0 ? '+' : '') + pct(hrv, hrvP) + '%)' : '') + (rhr ? ', nhịp nghỉ ' + Math.round(rhr) + (rhrP ? ' (' + (rhr - rhrP >= 0 ? '+' : '') + Math.round(rhr - rhrP) + ')' : '') : ''));
+  lines.push(azm + '/150 phút vận động' + (steps ? ', TB ' + Math.round(steps).toLocaleString('vi-VN') + ' bước/ngày' : ''));
+  lines.push('Chạy ' + runs.length + ' buổi' + (km ? ' · ' + km.toFixed(1) + ' km' : '') + ' · bơi ' + swims.length + ' buổi' + (sMin ? ' · ' + sMin + '′' : '') + (planned ? ' · giáo án ' + done + '/' + planned : ''));
+  var g;
+  if (sl && sl < goal - 30) g = 'Ngủ đủ: lên giường trước ' + (bAvg ? clock(Math.min(bAvg - 30, 24 * 60 + 30)) : '00:00') + ' ít nhất 5/7 đêm';
+  else if (bSd != null && bSd > 45) g = 'Ngủ đều giờ: giữ giờ lên giường lệch dưới ±30′';
+  else if (planned && done < planned - 1) g = 'Hoàn thành đủ ' + Math.min(4, planned) + ' buổi giáo án tuần này';
+  else if (hrv && hrvP && hrv < hrvP * .9) g = 'Tuần hồi phục: giữ buổi chạy/bơi nhẹ, ngủ sớm 30′';
+  else if (azm < 150) g = 'Đạt 150 phút vận động (thêm 1 buổi đi bộ nhanh 30′)';
+  else g = 'Giữ nhịp hiện tại, làm tốt buổi chất lượng thứ 6';
+  var score = (sl ? Math.min(1, sl / goal) * 30 : 15) + (bSd != null ? Math.max(0, 1 - Math.max(0, bSd - 30) / 60) * 15 : 8) + Math.min(1, azm / 150) * 25 + (planned ? done / planned * 20 : 10) + (hrv && hrvP ? (hrv >= hrvP * .95 ? 10 : 5) : 6);
+  score = Math.round(Math.min(100, score));
+  return { at: Date.now(), end: K(d), score: score, title: score >= 80 ? 'Tuần rất tốt' : score >= 65 ? 'Tuần ổn' : score >= 50 ? 'Tuần trung bình' : 'Tuần cần hồi phục', lines: lines, goal: g };
+}
+/* nhắc đo cân & vòng eo: ngày 1 hằng tháng hoặc đã quá 30 ngày */
+function measDue(H, d, K) {
+  var m = (H && H.meas) || []; if (!m.length) return true;
+  var last = m[m.length - 1].d, ld = new Date(last + 'T12:00:00'), td = new Date(K(d) + 'T12:00:00');
+  if (K(d) === last) return false;
+  return (td - ld) / 864e5 >= 30 || (td.getDate() === 1 && last.slice(0, 7) !== K(d).slice(0, 7));
+}
+
 const HPROF={by:2001,sex:'m',h:171,w:68,waist:94};
-function HPro(){const H=H0();H.cfg.prof=Object.assign({},HPROF,H.cfg.prof||{});return H.cfg.prof}
+function HPro(){const H=H0();H.cfg.prof=Object.assign({},HPROF,H.cfg.prof||{});const m=H.meas&&H.meas[H.meas.length-1];if(m){H.cfg.prof.waist=m.waist;H.cfg.prof.w=m.w}return H.cfg.prof}
 function hAge(){return new Date().getFullYear()-HPro().by}
 function hSeries(key,n,off=0){const out=[];for(let i=n-1+off;i>=off;i--){const x=new Date();x.setDate(x.getDate()-i);const d=H0().days[dkey(x)]||{};const v=d[key];out.push({x,k:dkey(x),d,v:typeof v==='number'?v:null})}return out}
 function hBase(key,n=30){const a=hSeries(key,n,1).map(p=>p.v).filter(v=>v!=null);if(a.length<4)return null;const m=a.reduce((s,v)=>s+v,0)/a.length,sd=Math.sqrt(a.reduce((s,v)=>s+(v-m)**2,0)/a.length);return{m,sd:Math.max(sd,Math.abs(m)*.03,key==='tempD'?.15:0),n:a.length}}
@@ -2445,7 +2528,7 @@ function healthPanel(){const r=RM.health,H=H0(),k=dkey(new Date()),d=H.days[k]||
   h+=`<div class="hready"><div class="hscore" style="--p:${rd||0}"><b>${rd??'–'}</b><small>${V('Sẵn sàng','Readiness')}</small></div><div style="flex:1;min-width:0"><p>${advice(rd)}</p>
    <div class="hparts">${hBar(V('Giấc ngủ','Sleep'),rp.ss,'#8e6cf0',rp.ss)}${hBar('HRV',rp.pH,'#17a398',rp.pH)}${hBar(V('Nhịp nghỉ','RHR'),rp.pR,'#ff5a7a',rp.pR)}</div></div></div>
   ${al?`<div class="halert">⚠️ ${al}</div>`:''}
-  ${coachCard()}
+  ${weeklyCard()}${coachCard()}${measCard(true)}
   <div class="hrings">${hRing((d.steps||0)/H.cfg.goalSteps,'#2ecc71',V('bước','steps'),d.steps!=null?hfmtK(d.steps):'–')}${hRing((d.sleepMin||0)/H.cfg.goalSleep,'#8e6cf0',V('ngủ','sleep'),fmtHM(d.sleepMin))}${hRing(wk/150,'#ff9a3c',V('AZM tuần','zone min/wk'),wk+'/150')}${hRing((d.water||0)/H.cfg.goalWater,'#3fb6e8',V('nước','water'),d.water?(d.water/1000).toFixed(1)+'L':'0')}</div>
   <div class="sec"><h3>${V('Tín hiệu cơ thể so với mức nền của bạn','Body signals vs your baseline')}</h3>${sg.length?`<div class="hsig">${sg.map(s=>`<div class="s-${s.s}"><small>${s.label}${s.old?` <em>(${s.old===1?V('hôm qua','yday'):s.old+V(' ngày trước','d ago')})</em>`:''}</small><b>${s.fmt(s.v)}<em>${s.unit}</em></b><i>${s.z!=null&&s.key!=='tempD'?(s.z>.3?'↑ ':s.z<-.3?'↓ ':'≈ '):''}${s.txt}</i></div>`).join('')}</div>`:`<div class="hnone">${V('Chưa có số liệu từ đồng hồ. Sau lần kéo tự động đầu tiên, các chỉ số sẽ hiện ở đây.','No watch data yet.')}</div>`}<small class="note">${V('Mức nền = trung bình 30 ngày của chính bạn. Xanh: trong vùng bình thường · Vàng: lệch nhẹ · Đỏ: lệch rõ.','Baseline = your own 30-day average. Green normal · yellow mild · red notable.')}</small></div>
   ${d.hourly?`<div class="sec"><h3>${V('Bước chân theo giờ hôm nay','Steps by hour today')}</h3><div class="hhour">${d.hourly.map((v,i)=>`<i title="${i}h: ${v}" style="height:${Math.min(40,v/25)+2}px;opacity:${i===new Date().getHours()?1:.6};background:${i>=8&&i<18&&v<250&&i<new Date().getHours()?'#ff9a3c':'#2ecc71'}"></i>`).join('')}</div></div>`:''}
@@ -2477,7 +2560,7 @@ function healthPanel(){const r=RM.health,H=H0(),k=dkey(new Date()),d=H.days[k]||
  if(tab==='move'){const s28=hSeries('azm',28).map(p=>p.v||0),acute=s28.slice(-7).reduce((a,b)=>a+b,0)/7,chronic=s28.reduce((a,b)=>a+b,0)/28,ratio=chronic>2&&hSeries('azm',28).filter(p=>p.v!=null).length>=14?acute/chronic:null,wk=s28.slice(-7).reduce((a,b)=>a+b,0);
   const ex=[];hSeries('steps',14).reverse().forEach(p=>(p.d.ex||[]).forEach(e=>ex.push([p,e])));
   const sedH=d.hourly?d.hourly.slice(8,new Date().getHours()).filter(v=>v<250).length:null;
-  h+=`<div class="sec"><h3>${V('Phút vận động (AZM) 7 ngày','Active zone minutes · 7 days')} <span>${wk}/150</span></h3><div class="hprog"><u style="width:${Math.min(100,wk/150*100)}%"></u></div>${barsN('azm','#ff9a3c',v=>v+' AZM',22,7)}
+  h+=tplanCard()+`<div class="sec"><h3>${V('Phút vận động (AZM) 7 ngày','Active zone minutes · 7 days')} <span>${wk}/150</span></h3><div class="hprog"><u style="width:${Math.min(100,wk/150*100)}%"></u></div>${barsN('azm','#ff9a3c',v=>v+' AZM',22,7)}
    <small class="note">${V('WHO khuyến nghị ≥150 phút vận động vừa/tuần (≈22 phút/ngày); phút cường độ cao tính gấp đôi.','WHO: ≥150 moderate min/week; vigorous counts double.')}</small></div>
   <div class="sec"><h3>${V('Tải vận động: 7 ngày so với 4 tuần','Training load: 7-day vs 4-week')}</h3>${ratio!=null?gauge(Math.round(ratio*100)/100,[[.8,'#7fb2ff',V('Giảm tải','Detraining')],[1.3,'#2ecc71',V('Vùng an toàn','Sweet spot')],[1.5,'#ffb347',V('Tăng nhanh','Ramping')],[2.2,'#ff5a7a',V('Dễ quá tải','Overreach')]],.3,2.2,v=>'×'+v.toFixed(2)):`<div class="hnone">${V('Cần ≥14 ngày dữ liệu AZM để tính.','Needs 14+ days of AZM.')}</div>`}<small class="note">${V('Tỷ lệ "cấp/mãn" (ACWR): giữ 0,8–1,3 để tăng thể lực mà ít chấn thương.','ACWR: keep 0.8–1.3.')}</small></div>
   <div class="sec"><h3>${V('Bước chân 14 ngày','Steps · 14 days')} <span>${V('mục tiêu ','goal ')}${hfmtK(H.cfg.goalSteps)}</span></h3>${barsN('steps','#2ecc71',v=>v.toLocaleString('vi-VN'),H.cfg.goalSteps,14)}</div>
@@ -2485,7 +2568,7 @@ function healthPanel(){const r=RM.health,H=H0(),k=dkey(new Date()),d=H.days[k]||
   <div class="sec"><h3>${V('Buổi tập 14 ngày','Workouts · 14 days')}</h3>${ex.length?`<div class="hex">${ex.slice(0,6).map(([p,e])=>`<div><b>${esc(e.t||V('Tập luyện','Workout'))}</b><small>${p.x.getDate()}/${p.x.getMonth()+1} · ${e.s} · ${e.min}′${e.km?' · '+e.km+' km':''}${e.hr?' · ♥'+e.hr:''}${e.kcal?' · '+e.kcal+' kcal':''}</small></div>`).join('')}</div>`:`<div class="hnone">${V('Chưa có buổi tập nào được ghi lại.','No workouts logged.')}</div>`}</div>`}
  if(tab==='body'){const w=hWeight(),hm=pf.h/100,bmi=w/(hm*hm),lo=(18.5*hm*hm).toFixed(1),hi=(22.9*hm*hm).toFixed(1),hiW=(24.9*hm*hm).toFixed(1),vo=hLatest('vo2'),lvl=(hLatest('vo2lvl')||{}).v;const lvlS=(()=>{const x=hSeries('vo2lvl',30).reverse().find(p=>p.d.vo2lvl);return x?x.d.vo2lvl:null})();
   h+=`<div class="sec"><h3>BMI <span>${w} kg · ${pf.h} cm</span></h3>${gauge(Math.round(bmi*10)/10,[[18.5,'#7fb2ff',V('Thiếu cân','Under')],[23,'#2ecc71',V('Bình thường','Normal')],[25,'#ffb347',V('Thừa cân nhẹ','At risk')],[30,'#ff7a5a',V('Béo phì I','Obese I')],[35,'#e0475f',V('Béo phì II','Obese II')]],15,35,v=>v.toFixed(1))}
-   <small class="note">${V(`Theo ngưỡng cho người châu Á (WHO): cân nặng "bình thường" với chiều cao ${pf.h} cm là ${lo}–${hi} kg (chuẩn quốc tế đến ${hiW} kg). BMI không phân biệt cơ với mỡ: người tập tạ nhiều có thể BMI cao mà vẫn khoẻ, nên xem kèm vòng eo (nam châu Á nên < 90 cm).`,`Asian cut-offs: normal ${lo}–${hi} kg for ${pf.h} cm.`)}</small></div>${waistCard()}
+   <small class="note">${V(`Theo ngưỡng cho người châu Á (WHO): cân nặng "bình thường" với chiều cao ${pf.h} cm là ${lo}–${hi} kg (chuẩn quốc tế đến ${hiW} kg). BMI không phân biệt cơ với mỡ: người tập tạ nhiều có thể BMI cao mà vẫn khoẻ, nên xem kèm vòng eo (nam châu Á nên < 90 cm).`,`Asian cut-offs: normal ${lo}–${hi} kg for ${pf.h} cm.`)}</small></div>${waistCard()}${measCard(false)}
   <div class="sec"><h3>VO₂ max · ${V('thể lực tim phổi','cardio fitness')} <span>${V('nam ','male ')}${age} ${V('tuổi','y')}</span></h3>${vo?gauge(vo.v,[[38,'#e0475f',V('Kém','Poor')],[42,'#ff9a5a',V('Dưới TB','Fair')],[46,'#ffcf5a',V('TB','Avg')],[51,'#8fd06a',V('Khá','Good')],[56,'#2ecc71',V('Rất tốt','V.good')],[70,'#17a398',V('Xuất sắc','Excellent')]],30,65,v=>v.toFixed(1)):`<div class="hnone">${V('Đồng hồ chưa ước tính VO₂ max (cần vài buổi đi bộ nhanh/chạy ngoài trời có GPS).','No VO₂ max yet — needs outdoor runs/walks with GPS.')}</div>`}
    ${lvlS?`<p class="hgcur" style="--gc:#17a398">Fitbit: ${VO2L(lvlS)}</p>`:''}<small class="note">${V('VO₂ max là một trong những chỉ số dự báo sức khoẻ lâu dài tốt nhất. Tăng bằng 2–3 buổi cardio/tuần (có 1 buổi interval). Thang tham khảo nam 20–29 tuổi.','One of the strongest longevity markers. Raise it with 2–3 cardio sessions/week.')}</small></div>
   <div class="sec"><h3>${V('Cân nặng','Weight')} <span>${hLatest('wt')?V('từ cân / app Fitbit','from Fitbit'):V('nhập tay','manual')}</span></h3>${hSeries('wt',30).filter(p=>p.v).length>1?bandChart('wt','#8e6cf0',v=>v.toFixed(1)):''}
@@ -2504,7 +2587,8 @@ function coachPlan(){const H=H0();const c=H.coach;if(c&&c.date===dkey(new Date()
  else if((R!=null&&R<50)||(sl&&sl<360)||(ratio!=null&&ratio>1.5)){level=1;title=V('Tập nhẹ để hồi phục','Easy recovery');body=lastSwim?V(`Chạy chậm 25–30′ ở nhịp ${z(.4)}–${z(.59)} bpm (vẫn nói chuyện được), rồi giãn cơ 10′.`,`Easy run 25–30′ at ${z(.4)}–${z(.59)} bpm.`):V('Bơi thả lỏng 20–30′ (ếch/sải chậm, nghỉ thoải mái), không ép nhịp.','Easy swim 20–30′.')}
  else if((R!=null&&R<70)||(ratio!=null&&ratio>1.3)){level=2;title=V('Tập vừa · nền sức bền','Moderate · aerobic base');body=lastRun?V('Bơi đều 35–40′: 4×200m vừa sức, nghỉ 30″ giữa các lượt.','Steady swim 35–40′: 4×200m.'):V(`Chạy Z2 35–45′ ở nhịp ${z(.6)}–${z(.7)} bpm, cuối buổi 4×20″ tăng tốc nhẹ.`,`Zone-2 run 35–45′ at ${z(.6)}–${z(.7)} bpm.`)}
  else{level=3;if((yd.azm||0)>45){title=V('Tập vừa–nặng','Moderate–hard');body=lastRun?V('Bơi 40′ có 8×50m nhanh (nghỉ 30″) xen bơi chậm.','Swim 40′ with 8×50m fast.'):V(`Chạy tempo 20′ ở ~${z(.75)} bpm, khởi động và thả lỏng mỗi phần 10′.`,`Tempo run 20′ at ~${z(.75)} bpm.`)}else{title=V('Sung sức · tập nặng được','Fresh · go hard');body=lastRun?V('Bơi interval: 10×100m nhanh, nghỉ 20″ (khởi động 300m).','Swim 10×100m fast.'):V(`Chạy interval 6×3′ ở ${z(.8)}–${z(.9)} bpm, nghỉ chạy chậm 2′ giữa các hiệp.`,`Run 6×3′ at ${z(.8)}–${z(.9)} bpm.`)}}
- return{level,title,body,why:why.join(' · '),R,local:true}}
+ const ps=planSession(H,new Date(),dkey,level,{z1:z(.4)+'–'+z(.59),z2:z(.6)+'–'+z(.7)});if(ps){title=ps.title;body=ps.body}
+ return{level,title,body,why:why.join(' · '),R,local:true,plan:!!ps}}
 const PUSH_VAPID='BJ0WhW-6zP8t1MUX62waCIs0aO60RzrSu5nlm3vbPbpcnlFF-LWt8hJQ8inn8m1Mgjpg6c1-dXjG5okarsZVa1M';
 const isIOS=/iPad|iPhone|iPod/.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1),isStandalone=matchMedia('(display-mode: standalone)').matches||navigator.standalone===true;
 function pushState(){if(localStorage.getItem('acad-push')==='1'&&window.Notification&&Notification.permission==='granted')return 'on';if(isIOS&&!isStandalone)return 'ios-home';if(!('serviceWorker' in navigator)||!window.Notification||!('PushManager' in window))return 'nosupport';if(Notification.permission==='denied')return 'denied';return 'off'}
@@ -2529,6 +2613,32 @@ function coachCard(){const h=new Date().getHours(),c=coachPlan();if(h<14&&!(H0()
 function waistCard(){const p=HPro();if(!p.waist)return '';const r=p.waist/p.h;
  return `<div class="sec"><h3>${V('Vòng eo','Waist')} <span>${p.waist} cm · ${V('tỷ lệ eo/chiều cao','waist/height')} ${r.toFixed(2)}</span></h3>${gauge(Math.round(r*100)/100,[[.43,'#7fb2ff',V('Rất gọn','Slim')],[.5,'#2ecc71',V('Khoẻ mạnh','Healthy')],[.6,'#ffb347',V('Tăng nguy cơ','Increased')],[.75,'#ff5a7a',V('Nguy cơ cao','High')]],.35,.75,v=>v.toFixed(2))}
  <small class="note">${V(`Giữ vòng eo dưới một nửa chiều cao (≤ ${Math.round(p.h/2)} cm) là mốc đơn giản, phản ánh mỡ bụng tốt hơn BMI. Ngưỡng cho nam châu Á: dưới 90 cm. Đo ngang rốn, buổi sáng, thở ra nhẹ. Bơi + chạy Z2 đều đặn và ngủ đủ là cách giảm mỡ bụng bền nhất.`,`Keep waist under half your height (≤ ${Math.round(p.h/2)} cm).`)}</small></div>`}
+function confirmTap(b){if(b.dataset.sure){return true}b.dataset.sure=1;b.textContent=V('Bấm lần nữa để dừng','Tap again to confirm');setTimeout(()=>{delete b.dataset.sure},4000);return false}
+function nextMonday(){const d=new Date(),g=d.getDay();const x=new Date(d);if(g>=1&&g<=3)x.setDate(d.getDate()-(g-1));else x.setDate(d.getDate()+((8-g)%7||7));return x}
+function tplanCard(){const H=H0(),p=H.tplan,today=new Date();
+ if(!p||!p.start){const m=nextMonday();return `<div class="sec"><h3>${V('Giáo án bơi + chạy 8 tuần','8-week swim + run plan')}</h3><div class="box tpl"><p>${V('4 buổi/tuần sau giờ làm: <b>T2</b> chạy nền · <b>T4</b> bơi kỹ thuật · <b>T6</b> chạy chất lượng · <b>CN</b> bơi dài. Tuần 4 nhẹ để hồi phục. Tuần 8 kiểm tra: <b>chạy 5 km</b> và <b>bơi liền 1.500m</b>. Lúc 17h Bắp tự chỉnh buổi tập theo độ hồi phục của bạn.','4 sessions/week. Week 8 tests: 5 km run + 1,500 m swim.')}</p><button class="btn pri" data-act="tplstart" data-d="${dkey(m)}">▶ ${V('Bắt đầu từ thứ 2, ','Start Monday ')}${m.getDate()}/${m.getMonth()+1}</button></div></div>`}
+ const st=new Date(p.start+'T12:00:00'),wkNow=Math.floor(Math.round((new Date(dkey(today)+'T12:00:00')-st)/864e5)/7);
+ if(wkNow>7)return `<div class="sec"><h3>${V('Giáo án 8 tuần · đã xong','8-week plan · done')}</h3><div class="box tpl"><p>${V('Hoàn thành giáo án! Ghi lại thành tích 5 km và 1.500m rồi bắt đầu chu kỳ mới với mục tiêu cao hơn.','Plan complete!')}</p><button class="btn pri" data-act="tplstart" data-d="${dkey(nextMonday())}">${V('Chu kỳ mới','New cycle')}</button></div></div>`;
+ const dows=[1,3,5,0],lbl={1:'T2',3:'T4',5:'T6',0:'CN'};let grid='',done=0,planned=0;
+ for(let w=0;w<8;w++){grid+=`<div class="tw${w===wkNow?' now':''}"><small>${w+1}</small>`;for(const g of dows){const d=new Date(st);d.setDate(st.getDate()+w*7+(g===0?6:g-1));const k=dkey(d),past=k<dkey(today),isT=k===dkey(today),ok=planDone(H,d,dkey),inf=planInfo(H,d,dkey);if(past||isT){planned+=past||ok?1:0;if(ok)done++}
+  grid+=`<i class="${ok?'ok':past?'miss':isT?'today':''} ${inf&&inf.type}" title="${lbl[g]} ${d.getDate()}/${d.getMonth()+1}: ${inf?esc(inf.name+' · '+inf.base):''}">${ok?'✓':inf&&inf.type==='swim'?'🏊':'🏃'}</i>`}grid+='</div>'}
+ const c=coachPlan(),ti=planInfo(H,today,dkey),tdone=planDone(H,today,dkey);
+ return `<div class="sec"><h3>${V('Giáo án 8 tuần','8-week plan')} <span>${wkNow<0?V('bắt đầu ','starts ')+st.getDate()+'/'+(st.getMonth()+1):V('Tuần ','Week ')+(wkNow+1)+'/8 · '+done+'/'+planned+V(' buổi',' done')}</span></h3>
+ <div class="tgrid"><div class="tw hd"><small></small>${dows.map(g=>`<b>${lbl[g]}</b>`).join('')}</div>${grid}</div>
+ ${wkNow>=0?`<div class="hcoach" style="--cc:${tdone?'#2ecc71':'#ff9a3c'}"><small>${V('Hôm nay','Today')}${ti&&ti.type?' · '+esc(ti.name):''}</small><b>${tdone?'✓ '+V('Đã tập xong','Done'):esc(c.title)}</b>${tdone?'':`<p>${esc(c.body)}</p>`}</div>`:''}
+ <div class="row" style="margin-top:8px">${ti&&ti.type&&!tdone?`<button class="btn sm" data-act="tpldone">✓ ${V('Đánh dấu đã tập','Mark done')}</button>`:''}<button class="btn sm" data-act="tplstop">${V('Dừng giáo án','Stop plan')}</button></div>
+ <small class="note">${V('Buổi tập tự đánh dấu ✓ khi đồng hồ ghi nhận bài chạy/bơi ≥10 phút trong ngày (cập nhật 9h · 17h · 21h).','Sessions auto-tick from your watch.')}</small></div>`}
+function weeklyCard(){const w=H0().weekly;if(!w||Date.now()-(w.at||0)>3.2*864e5)return '';const col=w.score>=80?'#2ecc71':w.score>=65?'#8fd06a':w.score>=50?'#ffb347':'#ff7a5a';
+ return `<div class="hweek" style="--cc:${col}"><div class="hw-h"><small>📊 ${V('Báo cáo tuần','Weekly report')} · ${V('đến','to')} ${w.end.slice(8)}/${w.end.slice(5,7)}</small><b>${w.score}<em>/100</em></b></div><h4>${esc(w.title)}</h4><ul>${w.lines.map(l=>`<li>${esc(l)}</li>`).join('')}</ul><p>🎯 ${V('Mục tiêu tuần tới','Next week')}: <b>${esc(w.goal)}</b></p></div>`}
+function measCard(compact){const H=H0(),p=HPro(),m=H.meas||[],due=measDue(H,new Date(),dkey),last=m[m.length-1];
+ if(compact&&!due)return '';
+ const form=`<div class="add hform"><div class="row"><label><small>${V('Cân nặng (kg)','Weight (kg)')}</small><input name="mw" type="number" step="0.1" value="${last?last.w:p.w}"></label><label><small>${V('Vòng eo (cm)','Waist (cm)')}</small><input name="mwa" type="number" step="0.5" value="${last?last.waist:p.waist}"></label></div><button class="btn sm pri" data-act="meas">${V('Lưu số đo hôm nay','Save today')}</button></div>`;
+ if(compact)return `<div class="hcoach" style="--cc:#8e6cf0"><small>📏 ${V('Đến ngày đo hàng tháng','Monthly check-in')}</small><b>${V('Đo cân & vòng eo','Weigh & measure waist')}</b><p>${V('Buổi sáng, trước ăn, đo eo ngang rốn khi thở ra nhẹ.','Morning, before eating, waist at navel.')}</p>${form}</div>`;
+ let chart='';if(m.length>1){const W=360,Hh=90,xs=m.map(x=>x.waist),lo=Math.min(84,...xs)-1,hi=Math.max(...xs)+1,X=i=>10+i*(W-20)/(m.length-1),Y=v=>Hh-8-(v-lo)/(hi-lo)*(Hh-18);
+  chart=`<svg class="hband" viewBox="0 0 ${W} ${Hh}"><line x1="0" x2="${W}" y1="${Y(86)}" y2="${Y(86)}" stroke="#2ecc71" stroke-dasharray="4 4"/><text x="${W-4}" y="${Y(86)-4}" text-anchor="end" font-size="10" fill="#2ecc71">${V('mục tiêu 86','goal 86')}</text><path d="${m.map((x,i)=>(i?'L':'M')+X(i)+' '+Y(x.waist)).join('')}" fill="none" stroke="#8e6cf0" stroke-width="2.4"/>${m.map((x,i)=>`<circle cx="${X(i)}" cy="${Y(x.waist)}" r="3.5" fill="#8e6cf0"><title>${x.d}: ${x.waist} cm · ${x.w} kg</title></circle>`).join('')}</svg>`}
+ return `<div class="sec"><h3>${V('Đo hàng tháng','Monthly check-in')} <span>${last?V('lần cuối ','last ')+last.d.slice(8)+'/'+last.d.slice(5,7)+(due?' · '+V('đến hạn đo','due'):''):''}</span></h3>${chart}
+ ${m.length?`<div class="hmeas">${m.slice(-4).reverse().map((x,i,a)=>{const pv=m[m.length-2-i];return `<div><small>${x.d.slice(8)}/${x.d.slice(5,7)}/${x.d.slice(2,4)}</small><b>${x.waist} cm</b><i>${x.w} kg${pv?` · ${x.waist-pv.waist>0?'+':''}${(x.waist-pv.waist).toFixed(1)} cm`:''}</i></div>`}).join('')}</div>`:''}
+ ${form}<small class="note">${V('Bắp nhắc ngày 1 hằng tháng (hoặc khi đã quá 30 ngày) trong thông báo 9h.','Reminder on the 1st of each month at 9am.')}</small></div>`}
 function hBMR(){const p=HPro(),w=hWeight();return Math.round(10*w+6.25*p.h-5*hAge()+(p.sex==='f'?-161:5))}
 
 function renderHealthUI(){if(panelState&&panelState.kind==='health')renderPanel()}
@@ -2537,6 +2647,10 @@ function healthAct(a,b){const H=H0(),d=hdd(dkey(new Date()));
  if(a==='hsync'){hSync(true);return true}
  if(a==='hprof'){const p=HPro();p.by=Math.max(1940,Math.min(2015,+fval(b,'hpby')||p.by));p.h=Math.max(120,Math.min(230,+fval(b,'hph')||p.h));const w=+fval(b,'hpw');if(w>30&&w<250){p.w=w;d.wt=w}const wa=+fval(b,'hpwa');if(wa>40&&wa<200)p.waist=wa;save();renderPanel();return true}
  if(a==='pushon'){pushEnable();return true}
+ if(a==='tplstart'){H.tplan={start:b.dataset.d,manual:{}};save();renderPanel();toast(V('Đã lên giáo án 8 tuần','Plan started'));return true}
+ if(a==='tplstop'){if(!confirmTap(b))return true;delete H.tplan;save();renderPanel();return true}
+ if(a==='tpldone'){H.tplan.manual=H.tplan.manual||{};H.tplan.manual[dkey(new Date())]=1;save();renderPanel();return true}
+ if(a==='meas'){const w=+fval(b,'mw'),wa=+fval(b,'mwa');if(!(w>30&&w<250)||!(wa>40&&wa<200)){toast(V('Số đo chưa hợp lệ','Invalid values'));return true}H.meas=(H.meas||[]).filter(x=>x.d!==dkey(new Date()));H.meas.push({d:dkey(new Date()),w,waist:wa});H.meas.sort((x,y)=>x.d<y.d?-1:1);const p=HPro();p.w=w;p.waist=wa;d.wt=w;save();renderPanel();toast(V('Đã lưu số đo','Saved'));return true}
  if(a==='pushoff'){pushDisable();return true}
  if(a==='hcfg'){const id=fval(b,'hcid');H.cfg.clientId=id;H.cfg.goalSteps=Math.max(1000,+fval(b,'hgs')||8000);H.cfg.goalSleep=Math.round(Math.max(4,+fval(b,'hgl')||8)*60);save();renderPanel();return true}
  if(a==='hman'){const sl=fval(b,'hsl');if(sl){const m=sl.match(/(\d+)\s*[h:.,]?\s*(\d+)?/);if(m)d.sleepMin=(+m[1])*60+(+(m[2]||0))}const s=+fval(b,'hst');if(s)d.steps=s;const rh=+fval(b,'hrh');if(rh)d.rhr=rh;const hv=+fval(b,'hhv');if(hv)d.hrv=hv;d.src=d.src||'manual';save();renderPanel();updateTags();drawHealthScreen();return true}
@@ -2585,11 +2699,11 @@ function healthBrief(slot){const H=H0(),n=new Date(),d=H.days[dkey(n)]||{},rd=re
  let tip='';if(wakes.length){const w=wakes.reduce((a,b)=>a+b,0)/wakes.length,bed=((w-H.cfg.goalSleep-15)%1440+1440)%1440;tip=V(`Muốn ngủ đủ ${fmtHM(H.cfg.goalSleep)} (dậy ~${String(Math.floor(w/60)).padStart(2,'0')}:${String(Math.round(w%60)).padStart(2,'0')}), lên giường lúc ${String(Math.floor(bed/60)).padStart(2,'0')}:${String(Math.round(bed%60)).padStart(2,'0')}.`,`To sleep ${fmtHM(H.cfg.goalSleep)}, be in bed by ${String(Math.floor(bed/60)).padStart(2,'0')}:${String(Math.round(bed%60)).padStart(2,'0')}.`)}
  if(st<goal*.6)tip=V(`Thiếu ${(goal-st).toLocaleString('vi-VN')} bước: đi bộ 10–15 phút trước khi ngủ là đủ đẹp. `,`${goal-st} steps short: a 10–15 min walk tonight helps. `)+tip;else if(st>=goal)tip=V('Đạt mục tiêu bước rồi, giỏi lắm! ','Step goal hit, nice! ')+tip;
  return parts.join(' · ')+'. '+(tip||V('Tắt màn hình sớm 30 phút trước khi ngủ nha.','Screens off 30 min before bed.'))}
-function briefTick(){const n=new Date(),h=n.getHours(),k=dkey(n),slot=h>=21?'pm':h>=17?'coach':h>=9?'am':null;if(!slot)return;const H=H0();H.said=H.said||{};if(H.said[k+slot])return;
- const sh={am:[9,8],coach:[17,16],pm:[21,20]}[slot],start=n.getHours()*60+n.getMinutes()-sh[0]*60,fresh=H.auto&&H.auto.last>=new Date(n).setHours(sh[1],40,0,0);
+function briefTick(){const n=new Date(),h=n.getHours(),k=dkey(n),slot=h>=21?'pm':(n.getDay()===0&&h>=20&&H0().weekly&&H0().weekly.end===k)?'week':h>=17?'coach':h>=9?'am':null;if(!slot)return;const H=H0();H.said=H.said||{};if(H.said[k+slot])return;
+ const sh={am:[9,8],coach:[17,16],week:[20,19],pm:[21,20]}[slot],start=n.getHours()*60+n.getMinutes()-sh[0]*60,fresh=H.auto&&H.auto.last>=new Date(n).setHours(sh[1],40,0,0);
  if(H.auto&&!fresh&&start<50)return;
  H.said[k+slot]=1;const ks=Object.keys(H.said).sort();while(ks.length>21)delete H.said[ks.shift()];save();
- let msg,ttl;if(slot==='coach'){const p=coachPlan();msg=p.title+': '+p.body;ttl=V('Gợi ý tập 17h','5pm workout')}else{msg=healthBrief(slot);ttl=slot==='am'?V('Sức khoẻ sáng nay','This morning'):V('Tổng kết tối nay','Tonight\'s recap')}
+ let msg,ttl;if(slot==='week'){const w=H.weekly;msg=w.title+' ('+w.score+'/100). '+V('Mục tiêu tuần tới: ','Next week: ')+w.goal;ttl=V('Báo cáo tuần','Weekly report')}else if(slot==='coach'){const p=coachPlan();msg=p.title+': '+p.body;ttl=V('Gợi ý tập 17h','5pm workout')}else{msg=healthBrief(slot);ttl=slot==='am'?V('Sức khoẻ sáng nay','This morning'):V('Tổng kết tối nay','Tonight\'s recap')}
  setTimeout(()=>{catSay(msg,16000);meowSound('meow')},1500);if(localStorage.getItem('acad-push')==='1'){toast(msg)}else notify(catName()+' · '+ttl,msg)}
 function healthTip(){const H=H0(),n=new Date(),d=H.days[dkey(n)]||{},h=n.getHours();if(h<9||h>22)return null;
  const wantWater=H.cfg.goalWater*Math.min(1,(h-8)/13);if((d.water||0)<wantWater-400)return V(`Mới uống ${((d.water||0)/1000).toFixed(1)}L, làm 1 cốc nước nhé (bấm +250 ở Quầy sức khoẻ)`,`Only ${((d.water||0)/1000).toFixed(1)}L so far, have a glass of water`);

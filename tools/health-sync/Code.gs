@@ -11,6 +11,7 @@ function setup() {
   ScriptApp.requireAllScopes(ScriptApp.AuthMode.FULL);
   ScriptApp.getProjectTriggers().forEach(t => ScriptApp.deleteTrigger(t));
   [['am', 9, 0], ['coach', 17, 0], ['pm', 21, 0], ['newsPush', 8, 30]].forEach(([f, h, m]) => ScriptApp.newTrigger(f).timeBased().atHour(h).nearMinute(m).everyDays(1).inTimezone(TZ).create());
+  ScriptApp.newTrigger('weekly').timeBased().onWeekDay(ScriptApp.WeekDay.SUNDAY).atHour(20).nearMinute(0).inTimezone(TZ).create();
   try { pull(); } catch (e) { console.log('pull: ' + e.message); }
   try { news(); } catch (e) { console.log('news: ' + e.message); }
 }
