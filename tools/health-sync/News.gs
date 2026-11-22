@@ -38,7 +38,7 @@ function fetchFeeds_() {
     if (r.getResponseCode() !== 200) return;
     let doc; try { doc = XmlService.parse(r.getContentText()); } catch (e) { return; }
     const ch = doc.getRootElement().getChild('channel'); if (!ch) return;
-    ch.getChildren('item').slice(0, 18).forEach(it => {
+    ch.getChildren('item').slice(0, 10).forEach(it => {
       const g = n => (it.getChildText(n) || '').trim();
       let title = g('title'), link = g('link'), src = '';
       const s = it.getChild('source'); if (s) src = s.getText();
@@ -48,7 +48,7 @@ function fetchFeeds_() {
       if (t < cutoff) return;
       const key = title.toLowerCase().replace(/[^\p{L}\p{N} ]/gu, '').slice(0, 70);
       if (!title || seen[key]) return; seen[key] = 1;
-      const desc = g('description').replace(/<[^>]+>/g, ' ').replace(/&nbsp;|&amp;|&quot;|&#39;/g, ' ').replace(/\s+/g, ' ').trim().slice(0, 220);
+      const desc = g('description').replace(/<[^>]+>/g, ' ').replace(/&nbsp;|&amp;|&quot;|&#39;/g, ' ').replace(/\s+/g, ' ').trim().slice(0, 160);
       out.push({ id: out.length, cat: FEEDS[i][0], t: title.slice(0, 200), d: desc, src: src || 'Google News', url: link, time: t });
     });
   });
@@ -71,7 +71,7 @@ function pickModel_(key) {
 function gemini_(items) {
   const key = (PropertiesService.getScriptProperties().getProperty('GEMINI_KEY') || '').trim();
   if (!key) return null;
-  const list = items.map(x => `[${x.id}] (${x.cat}) ${x.t} — ${x.src}${x.d ? ' :: ' + x.d : ''}`).join('\n').slice(0, 60000);
+  const list = items.map(x => `[${x.id}] (${x.cat}) ${x.t} — ${x.src}${x.d ? ' :: ' + x.d : ''}`).join('\n').slice(0, 36000);
   const prompt = `Bạn là biên tập viên bản tin buổi sáng cho Tuấn: Head of Marketing ở một công ty môi giới bất động sản tại TP.HCM, đang tự học Marketing Engineering (AI agent, dữ liệu) và có quan tâm đầu tư.
 Dưới đây là danh sách tiêu đề báo trong 24–36 giờ qua (mã [id], (nhóm), tiêu đề — nguồn :: mô tả).
 Hãy chọn 12–15 tin quan trọng và hữu ích nhất, phủ đủ các nhóm nếu có tin: mkt, ai, world, macro, stock, crypto, invest, bds, law, hot. Ưu tiên tin có tác động tới thị trường BĐS Việt Nam, marketing/quảng cáo, AI ứng dụng, chính sách và luật mới có hiệu lực. Bỏ tin giải trí, tin trùng lặp, tin quá vụn.
@@ -84,10 +84,12 @@ ${list}`;
     items: { type: 'ARRAY', items: { type: 'OBJECT', properties: { id: { type: 'INTEGER' }, cat: { type: 'STRING' }, title: { type: 'STRING' }, sum: { type: 'STRING' }, why: { type: 'STRING' }, hot: { type: 'BOOLEAN' } }, required: ['id', 'cat', 'title', 'sum', 'why'] } } },
     required: ['head', 'takes', 'items'] };
   let model = pickModel_(key), lastErr = '';
-  for (let attempt = 0; attempt < 3; attempt++) {
+  const t0 = Date.now();
+  let think = m => /gemini-2\./.test(m) ? { thinkingBudget: 0 } : { thinkingLevel: 'low' };
+  for (let attempt = 0; attempt < 3 && Date.now() - t0 < 150e3; attempt++) {
     const r = UrlFetchApp.fetch('https://generativelanguage.googleapis.com/v1beta/models/' + model + ':generateContent', {
       method: 'post', headers: { 'x-goog-api-key': key }, contentType: 'application/json', muteHttpExceptions: true,
-      payload: JSON.stringify({ contents: [{ role: 'user', parts: [{ text: prompt }] }], generationConfig: { temperature: 0.3, responseMimeType: 'application/json', responseSchema: schema } })
+      payload: JSON.stringify({ contents: [{ role: 'user', parts: [{ text: prompt }] }], generationConfig: { temperature: 0.3, maxOutputTokens: 8192, responseMimeType: 'application/json', responseSchema: schema, thinkingConfig: think(model) } })
     });
     const code = r.getResponseCode();
     if (code === 200) {
@@ -97,8 +99,9 @@ ${list}`;
       out.model = model; return out;
     }
     lastErr = code + ' ' + r.getContentText().slice(0, 160);
+    if (code === 400 && /thinking/i.test(r.getContentText())) { think = () => undefined; continue; }
     if (code === 404 || code === 400) { PropertiesService.getScriptProperties().deleteProperty('GEMINI_MODEL'); model = pickModel_(key); }
-    Utilities.sleep(4000 * (attempt + 1));
+    if (code === 429 || code >= 500) Utilities.sleep(5000 * (attempt + 1));
   }
   throw new Error('Gemini ' + lastErr);
 }
