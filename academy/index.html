@@ -2374,7 +2374,7 @@ function healthPanel(){const r=RM.health,H=H0(),k=dkey(new Date()),d=H.days[k]||
  const debt=(()=>{let s=0,n=0;for(let i=0;i<7;i++){const x=new Date();x.setDate(x.getDate()-i);const dd=H.days[dkey(x)];if(dd&&dd.sleepMin){s+=H.cfg.goalSleep-dd.sleepMin;n++}}return n?s:null})();
  const beds=[];for(let i=0;i<7;i++){const x=new Date();x.setDate(x.getDate()-i);const dd=H.days[dkey(x)];if(dd&&dd.bed){let [hh,mm]=dd.bed.split(':').map(Number);if(hh<12)hh+=24;beds.push(hh*60+mm)}}
  const bAvg=beds.length?beds.reduce((a,b)=>a+b,0)/beds.length:null,bSd=beds.length>2?Math.sqrt(beds.reduce((a,b)=>a+(b-bAvg)**2,0)/beds.length):null;
- const st=d.sleepMin?['deep','rem','light','awake'].map(s=>[s,d[s]||0]):[];const stT=st.reduce((a,b)=>a+b[1],0)||1;
+ const st=d.sleepMin&&(d.deep||d.rem||d.light)?['deep','rem','light','awake'].map(s=>[s,d[s]||0]):[];const stT=st.reduce((a,b)=>a+b[1],0)||1;
  const status=!H.cfg.clientId?V('Chưa nối Google Health · đang dùng số nhập tay','Not linked to Google Health · manual mode'):hBusy?V('Đang lấy dữ liệu…','Syncing…'):hErr==='relink'?V('Cần bấm "Cập nhật" để Google cấp quyền lại (mỗi giờ 1 lần)','Tap Refresh to re-authorise (hourly)'):hErr&&!hErr.startsWith('partial')?V('Lỗi: ','Error: ')+esc(hErr):H.last?V('Cập nhật lúc ','Updated ')+new Date(H.last).toLocaleTimeString(L==='vi'?'vi-VN':'en-GB',{hour:'2-digit',minute:'2-digit'}):'';
  let h=head(r.hex,r.short,tr(r.title),status);
  h+=`<div class="pb hp" style="--c:${r.hex}">
