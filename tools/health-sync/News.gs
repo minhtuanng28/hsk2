@@ -58,7 +58,7 @@ function fetchFeeds_() {
 function pickModel_(key) {
   const cached = PropertiesService.getScriptProperties().getProperty('GEMINI_MODEL');
   if (cached) return cached;
-  const r = UrlFetchApp.fetch('https://generativelanguage.googleapis.com/v1beta/models?pageSize=200&key=' + key, { muteHttpExceptions: true });
+  const r = UrlFetchApp.fetch('https://generativelanguage.googleapis.com/v1beta/models?pageSize=200', { headers: { 'x-goog-api-key': key }, muteHttpExceptions: true });
   if (r.getResponseCode() !== 200) throw new Error('Gemini models ' + r.getResponseCode() + ' ' + r.getContentText().slice(0, 150));
   const ms = (JSON.parse(r.getContentText()).models || []).filter(m => (m.supportedGenerationMethods || []).includes('generateContent'))
     .map(m => m.name.replace('models/', '')).filter(n => /flash/.test(n) && !/image|tts|audio|live|embed|thinking-exp|robotics/.test(n));
@@ -69,7 +69,7 @@ function pickModel_(key) {
 }
 
 function gemini_(items) {
-  const key = PropertiesService.getScriptProperties().getProperty('GEMINI_KEY');
+  const key = (PropertiesService.getScriptProperties().getProperty('GEMINI_KEY') || '').trim();
   if (!key) return null;
   const list = items.map(x => `[${x.id}] (${x.cat}) ${x.t} — ${x.src}${x.d ? ' :: ' + x.d : ''}`).join('\n').slice(0, 60000);
   const prompt = `Bạn là biên tập viên bản tin buổi sáng cho Tuấn: Head of Marketing ở một công ty môi giới bất động sản tại TP.HCM, đang tự học Marketing Engineering (AI agent, dữ liệu) và có quan tâm đầu tư.
@@ -85,8 +85,8 @@ ${list}`;
     required: ['head', 'takes', 'items'] };
   let model = pickModel_(key), lastErr = '';
   for (let attempt = 0; attempt < 3; attempt++) {
-    const r = UrlFetchApp.fetch('https://generativelanguage.googleapis.com/v1beta/models/' + model + ':generateContent?key=' + key, {
-      method: 'post', contentType: 'application/json', muteHttpExceptions: true,
+    const r = UrlFetchApp.fetch('https://generativelanguage.googleapis.com/v1beta/models/' + model + ':generateContent', {
+      method: 'post', headers: { 'x-goog-api-key': key }, contentType: 'application/json', muteHttpExceptions: true,
       payload: JSON.stringify({ contents: [{ role: 'user', parts: [{ text: prompt }] }], generationConfig: { temperature: 0.3, responseMimeType: 'application/json', responseSchema: schema } })
     });
     const code = r.getResponseCode();
