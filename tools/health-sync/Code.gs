@@ -98,6 +98,12 @@ function pull() {
   });
   roll('total-calories', 'cal', ['kcalSum', 'caloriesKcalSum'], /kcal|calor|sum|value/i);
   roll('weight', 'wt', ['weightGramsAvg', 'weightGramsLast', 'weightGrams'], /weight|grams|avg|mean/i, v => Math.round(v / 100) / 10);
+  tryIt('hourly', () => {
+    const st = new Date(key_(now) + 'T00:00:00+07:00'), arr = new Array(24).fill(0);
+    const j = call_('steps/dataPoints:rollUp', { range: { startTime: st.toISOString(), endTime: now.toISOString() }, windowSize: '3600s' });
+    (j.rollupDataPoints || []).forEach(p => { const h = +Utilities.formatDate(new Date(p.startTime), TZ, 'H'); arr[h] = Math.round(+((p.steps || {}).countSum) || 0); });
+    day(key_(now)).hourly = arr;
+  });
   tryIt('sleep', () => {
     const f = encodeURIComponent('sleep.interval.civil_end_time >= "' + key_(start) + '" AND sleep.interval.civil_end_time < "' + key_(end) + '"');
     let pageToken = '', n = 0;
@@ -147,9 +153,7 @@ function pull() {
   Object.keys(days).forEach(k => { days[k].src = 'auto'; days[k].at = stamp; });
   save_(days, errs);
   console.log(JSON.stringify({ n: Object.keys(days).length, errs }));
-  Object.keys(peek).forEach(k => console.log('PEEK ' + k + ': ' + peek[k]));
-  const tk = key_(now); console.log('TODAY ' + JSON.stringify(days[tk] || {}));
-  const yk = key_(new Date(now.getTime() - 864e5)); console.log('YDAY ' + JSON.stringify(days[yk] || {}));
+  // không ghi số liệu sức khoẻ vào log (riêng tư)
 }
 
 function save_(days, errs) {

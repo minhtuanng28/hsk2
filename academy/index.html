@@ -535,7 +535,7 @@ const toM=s=>{const[a,b]=s.split(':').map(Number);return a*60+b};
 function defaults(){
  const classes={};
  for(const id of ['me1','me2','me3','me4','zh'])classes[id]={lessons:(SEED[id]||[]).map((x,i)=>({id:id+'-l'+i,t:x[0],url:x[1],done:false})),docs:(SEED_DOCS[id]||[]).map((x,i)=>({id:id+'-d'+i,t:x[0],url:x[1],note:''})),certs:[],notes:'',gate:false};
- return {v:1,updatedAt:0,lang:'vi',settings:{focus:25,brk:5,lbrk:15,zhUrl:ZH_URL,realtime:true,simHour:12,notify:true,before:10,theme:'campus',music:{on:false,vol:.55,mode:'gen',yt:'',beats:true,amb:true,pomo:false},crmUrl:'https://script.google.com/macros/s/AKfycbwAQLgzNAllPBin53K4o6kZ6h3pJRFrWxvEBePX1E3X411CcS8jpYWTyEl3DjtH5mU/exec',crmEmbed:false,quality:'auto',catOn:true,catName:'Bắp',catSound:true},classes,crm:{links:[],log:{},notes:''},
+ return {v:1,updatedAt:0,lang:'vi',settings:{focus:25,brk:5,lbrk:15,zhUrl:ZH_URL,realtime:true,simHour:12,notify:true,before:10,theme:'campus',music:{on:false,vol:.55,mode:'gen',yt:'',beats:true,amb:true,pomo:false},crmUrl:'',crmEmbed:false,quality:'auto',catOn:true,catName:'Bắp',catSound:true},classes,crm:{links:[],log:{},notes:''},
   work:{tasks:[{id:'w1',t:{vi:'Hoàn thiện báo cáo Meta Ads → Sheets (bài build Lớp 1)',en:'Finish the Meta Ads → Sheets report (Class 1 build)'},done:false},{id:'w2',t:{vi:'Cập nhật CRM fanpage cho sale',en:'Update the fanpage CRM for sales'},done:false}],
    links:[{id:'k1',t:'Meta Ads Manager',url:'https://adsmanager.facebook.com/'},{id:'k2',t:'Meta Business Suite',url:'https://business.facebook.com/'},{id:'k3',t:'Meta Ad Library',url:'https://www.facebook.com/ads/library/'},{id:'k4',t:'Google Sheets',url:'https://docs.google.com/spreadsheets/'}],checks:{},notes:''},
   plan:{cards:[],posts:[],pages:[]},totals:{},sessions:[]};
@@ -2364,43 +2364,8 @@ function addMin(hm,m){const [h,mm]=hm.split(':').map(Number);const t2=h*60+mm+m;
 /* ================= Quầy sức khoẻ (Google Health) ================= */
 function H0(){if(!S.health||typeof S.health!=='object')S.health={};const H=S.health;H.cfg=Object.assign({clientId:'',goalSteps:8000,goalSleep:480,goalWater:2000},H.cfg||{});H.days=H.days||{};return H}
 function hdd(k){const H=H0();return H.days[k]||(H.days[k]={})}
-const HSCOPES=['https://www.googleapis.com/auth/googlehealth.activity_and_fitness.readonly','https://www.googleapis.com/auth/googlehealth.sleep.readonly','https://www.googleapis.com/auth/googlehealth.health_metrics_and_measurements.readonly'].join(' ');
-const HAPI='https://health.googleapis.com/v4/users/me/dataTypes/';
-let hTok=null,hTokExp=0,gisP=null,hBusy=false,hErr='',hLast=0;window.__hraw={};
-function gisLoad(){return gisP||(gisP=new Promise((res,rej)=>{const s=document.createElement('script');s.src='https://accounts.google.com/gsi/client';s.async=true;s.onload=res;s.onerror=()=>{gisP=null;rej('gis')};document.head.appendChild(s)}))}
-async function hAuth(){const id=H0().cfg.clientId.trim();if(!id)throw 'noclient';await gisLoad();
- return new Promise((res,rej)=>{const tc=google.accounts.oauth2.initTokenClient({client_id:id,scope:HSCOPES,hint:fb&&fb.user&&fb.user.email||undefined,callback:r=>{if(r.error){rej(r.error);return}hTok=r.access_token;hTokExp=Date.now()+((+r.expires_in||3600)-90)*1000;H0().linked=true;res()},error_callback:e=>rej((e&&e.type)||'popup')});tc.requestAccessToken({prompt:H0().linked?'':'consent'})})}
-async function hFetch(path,body){const r=await fetch(HAPI+path,{method:body?'POST':'GET',headers:{Authorization:'Bearer '+hTok,'Content-Type':'application/json',Accept:'application/json'},body:body?JSON.stringify(body):undefined});
- if(r.status===401){hTok=null;throw 'auth'}const j=await r.json().catch(()=>({}));if(!r.ok)throw `${r.status} ${(j.error&&j.error.message)||''}`.slice(0,160);return j}
-const civ=d=>({date:{year:d.getFullYear(),month:d.getMonth()+1,day:d.getDate()},time:{hours:0,minutes:0,seconds:0,nanos:0}});
-const civKey=c=>{const d=c&&(c.date||c);if(!d)return null;if(typeof d==='string')return d.slice(0,10);return `${d.year}-${String(d.month).padStart(2,'0')}-${String(d.day).padStart(2,'0')}`};
-function deepNum(o,re,skip=/date|time|offset|year|month|day|hour|minute|second|nano/i){let f=null;(function w(x,k){if(f!=null||x==null)return;if(typeof x==='number'||(typeof x==='string'&&/^-?\d+(\.\d+)?$/.test(x))){if(k&&re.test(k)&&!skip.test(k))f=+x;return}if(typeof x==='object')for(const kk in x)w(x[kk],kk)})(o,'');return f}
-const hm2=iso=>{const d=new Date(iso);return isNaN(d)?'':String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0')};
-async function hDaily(type,field,start,end,days){const filters=[`${field}.date >= "${dkey(start)}"`,`${field.replace(/[A-Z]/g,m=>'_'+m.toLowerCase())}.date >= "${dkey(start)}"`];let last;
- for(const f of filters){try{return await hFetch(`${type}/dataPoints?filter=${encodeURIComponent(f)}&pageSize=${days+2}`)}catch(e){last=e;if(String(e).startsWith('auth'))throw e}}throw last}
-async function hSync(interactive){
- if(hBusy)return;const H=H0();if(!H.cfg.clientId){hErr='noclient';return}
- hBusy=true;hErr='';renderHealthUI();
- try{if(!hTok||Date.now()>hTokExp){if(!interactive){hErr='relink';return}await hAuth()}
-  const now=new Date(),start=new Date(now);start.setDate(start.getDate()-6);start.setHours(0,0,0,0);const end=new Date(now);end.setDate(end.getDate()+1);end.setHours(0,0,0,0);
-  const jobs={
-   steps:hFetch('steps/dataPoints:dailyRollUp',{range:{start:civ(start),end:civ(end)},windowSizeDays:1}).then(j=>{window.__hraw.steps=j;for(const p of j.rollupDataPoints||[]){const k=civKey(p.civilStartTime);if(k)hdd(k).steps=Math.round(deepNum(p.steps||p,/countSum|count|sum|value/i)||0)}}),
-   azm:hFetch('active-zone-minutes/dataPoints:dailyRollUp',{range:{start:civ(start),end:civ(end)},windowSizeDays:1}).then(j=>{window.__hraw.azm=j;for(const p of j.rollupDataPoints||[]){const k=civKey(p.civilStartTime);const v=deepNum(p.activeZoneMinutes||p,/sum|minutes|value|total/i);if(k&&v!=null)hdd(k).azm=Math.round(v)}}),
-   cal:hFetch('total-calories/dataPoints:dailyRollUp',{range:{start:civ(start),end:civ(end)},windowSizeDays:1}).then(j=>{window.__hraw.cal=j;for(const p of j.rollupDataPoints||[]){const k=civKey(p.civilStartTime);const v=deepNum(p.totalCalories||p,/sum|kcal|calor|value/i);if(k&&v!=null)hdd(k).cal=Math.round(v)}}),
-   sleep:hFetch(`sleep/dataPoints:reconcile?pageSize=25&filter=${encodeURIComponent(`sleep.interval.civil_end_time >= "${dkey(start)}" AND sleep.interval.civil_end_time < "${dkey(end)}"`)}`).then(j=>{window.__hraw.sleep=j;
-    for(const dp of j.dataPoints||[]){const s=dp.sleep;if(!s||!s.interval)continue;if(s.metadata&&s.metadata.mainSleep===false)continue;const k=dkey(new Date(s.interval.endTime));const d=hdd(k),sm=s.summary||{};
-     d.sleepMin=+sm.minutesAsleep||d.sleepMin||0;d.inBed=+sm.minutesInSleepPeriod||0;d.bed=hm2(s.interval.startTime);d.wake=hm2(s.interval.endTime);d.toSleep=+sm.minutesToFallAsleep||0;
-     for(const st of sm.stagesSummary||[]){const ty=String(st.type||'').toLowerCase();if(['deep','rem','light','awake'].includes(ty))d[ty]=+st.minutes||0}}}),
-   rhr:hDaily('daily-resting-heart-rate','dailyRestingHeartRate',start,end,7).then(j=>{window.__hraw.rhr=j;for(const dp of j.dataPoints||[]){const o=dp.dailyRestingHeartRate||dp;const k=civKey(o.date)||null;const v=deepNum(o,/beats|bpm|rate|value/i);if(k&&v)hdd(k).rhr=Math.round(v)}}),
-   hrv:hDaily('daily-heart-rate-variability','dailyHeartRateVariability',start,end,7).then(j=>{window.__hraw.hrv=j;for(const dp of j.dataPoints||[]){const o=dp.dailyHeartRateVariability||dp;const k=civKey(o.date)||null;const v=deepNum(o,/rmssd|millis|average|value/i);if(k&&v)hdd(k).hrv=Math.round(v)}}),
-   hourly:hFetch('steps/dataPoints:rollUp',{range:{startTime:new Date(new Date().setHours(0,0,0,0)).toISOString(),endTime:new Date().toISOString()},windowSize:'3600s'}).then(j=>{window.__hraw.hourly=j;const arr=new Array(24).fill(0);for(const p of j.rollupDataPoints||[]){const h=new Date(p.startTime).getHours();arr[h]=Math.round(deepNum(p.steps||p,/countSum|count|sum|value/i)||0)}hdd(dkey(new Date())).hourly=arr})};
-  const res=await Promise.allSettled(Object.values(jobs));const bad=res.map((r,i)=>r.status==='rejected'?Object.keys(jobs)[i]+': '+r.reason:null).filter(Boolean);
-  if(bad.some(b=>/auth/.test(b))){hErr='relink'}else if(bad.length===res.length){hErr=bad[0]}else hErr=bad.length?'partial:'+bad.join(' | '):'';
-  H.last=Date.now();for(const k of Object.keys(H.days)){if(k<dkey(new Date(Date.now()-45*864e5)))delete H.days[k]}
-  for(const k in H.days)H.days[k].src=H.days[k].src||'api';save();updateTags();drawHealthScreen();healthNudge()}
- catch(e){hErr=String(e)}finally{hBusy=false;renderHealthUI()}}
-setInterval(()=>{if(!document.hidden&&hTok&&Date.now()<hTokExp)hSync(false)},5*60*1000);
-addEventListener('focus',()=>{if(hTok&&Date.now()<hTokExp&&Date.now()-(H0().last||0)>120000)hSync(false)});
+/* Google Health được kéo tự động bởi Apps Script (9h · 17h · 21h) — app chỉ đọc dữ liệu đã đồng bộ. */
+let hBusy=false,hErr='';function hSync(){toast(V('Số sức khoẻ tự cập nhật lúc 9h · 17h · 21h','Health data auto-syncs at 9 · 17 · 21'))}
 function avgOf(key,n,skipToday){const a=[];for(let k=skipToday?1:0;k<n+(skipToday?1:0);k++){const x=new Date();x.setDate(x.getDate()-k);const d=H0().days[dkey(x)];if(d&&d[key])a.push(d[key])}return a.length?a.reduce((s,v)=>s+v,0)/a.length:null}
 function advice(r){if(r==null)return V('Kết nối Google Health hoặc nhập giấc ngủ hôm nay để có gợi ý.','Connect Google Health or log last night\'s sleep for tips.');
  if(r>=80)return V('Sẵn sàng cao: dồn việc khó (học Lớp, phân tích số) vào buổi sáng · gợi ý 4 Pomodoro.','High readiness: do the hard work this morning · 4 Pomodoros.');
@@ -2573,11 +2538,11 @@ function healthAct(a,b){const H=H0(),d=hdd(dkey(new Date()));
  if(a==='hprof'){const p=HPro();p.by=Math.max(1940,Math.min(2015,+fval(b,'hpby')||p.by));p.h=Math.max(120,Math.min(230,+fval(b,'hph')||p.h));const w=+fval(b,'hpw');if(w>30&&w<250){p.w=w;d.wt=w}const wa=+fval(b,'hpwa');if(wa>40&&wa<200)p.waist=wa;save();renderPanel();return true}
  if(a==='pushon'){pushEnable();return true}
  if(a==='pushoff'){pushDisable();return true}
- if(a==='hcfg'){const id=fval(b,'hcid');H.cfg.clientId=id;H.cfg.goalSteps=Math.max(1000,+fval(b,'hgs')||8000);H.cfg.goalSleep=Math.round(Math.max(4,+fval(b,'hgl')||8)*60);hTok=null;save();renderPanel();if(id)hSync(true);return true}
+ if(a==='hcfg'){const id=fval(b,'hcid');H.cfg.clientId=id;H.cfg.goalSteps=Math.max(1000,+fval(b,'hgs')||8000);H.cfg.goalSleep=Math.round(Math.max(4,+fval(b,'hgl')||8)*60);save();renderPanel();return true}
  if(a==='hman'){const sl=fval(b,'hsl');if(sl){const m=sl.match(/(\d+)\s*[h:.,]?\s*(\d+)?/);if(m)d.sleepMin=(+m[1])*60+(+(m[2]||0))}const s=+fval(b,'hst');if(s)d.steps=s;const rh=+fval(b,'hrh');if(rh)d.rhr=rh;const hv=+fval(b,'hhv');if(hv)d.hrv=hv;d.src=d.src||'manual';save();renderPanel();updateTags();drawHealthScreen();return true}
  return false}
-let lastNudge=0;
-function healthNudge(){const n=new Date(),hr=n.getHours(),d=H0().days[dkey(n)];if(!d||!d.hourly||n.getDay()===0||n.getDay()===6)return;if(hr<9||hr>17||Date.now()-lastNudge<50*60000)return;const prev=d.hourly[hr-1]||0;if(prev<250){lastNudge=Date.now();catSay&&catSay(V(`Giờ trước mới ${prev} bước. Đứng dậy đi một vòng 5 phút nha!`,`Only ${prev} steps last hour. Take a 5-minute walk!`),8000);meowSound&&meowSound('meow')}}
+let lastNudge=0;setInterval(()=>{try{healthNudge()}catch(e){}},10*60000);
+function healthNudge(){const n=new Date(),hr=n.getHours(),d=H0().days[dkey(n)],au=H0().auto;if(!au||Date.now()-(au.last||0)>70*60000)return;if(!d||!d.hourly||n.getDay()===0||n.getDay()===6)return;if(hr<9||hr>17||Date.now()-lastNudge<50*60000)return;const prev=d.hourly[hr-1]||0;if(prev<250){lastNudge=Date.now();catSay&&catSay(V(`Giờ trước mới ${prev} bước. Đứng dậy đi một vòng 5 phút nha!`,`Only ${prev} steps last hour. Take a 5-minute walk!`),8000);meowSound&&meowSound('meow')}}
 function healthTag(){const d=H0().days[dkey(new Date())]||{};const parts=[];if(d.steps!=null)parts.push((d.steps>=1000?(d.steps/1000).toFixed(1)+'k':d.steps)+V(' bước',' steps'));if(d.sleepMin)parts.push(V('ngủ ','sleep ')+fmtHM(d.sleepMin));if(!parts.length)parts.push(V('Bước · ngủ · nhịp tim','Steps · sleep · heart'));return parts.join(' · ')}
 function drawHealthScreen(){const r=RM.health;if(!r||!r.hcv)return;const c=r.hcv,x=c.getContext('2d'),W=c.width,Hh=c.height,H=H0(),d=H.days[dkey(new Date())]||{},rd=readiness();
  x.fillStyle='#0f1622';x.fillRect(0,0,W,Hh);x.fillStyle='#ff5a7a';x.fillRect(0,0,W,30);x.fillStyle='#fff';x.font='700 18px system-ui';x.fillText(V('SỨC KHOẺ HÔM NAY','TODAY\'S HEALTH'),12,21);

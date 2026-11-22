@@ -114,7 +114,7 @@ function coach() {
   try { pull(); } catch (e) { console.log(e.message); }
   let pl = null; mutate_(a => { const H = a.health = a.health || { days: {} }; H.days = H.days || {}; pl = plan_(H); H.coach = pl; });
   push_('🏃 17h · ' + pl.title, pl.body + (pl.why ? ' (' + pl.why + ')' : ''), 'health');
-  console.log(JSON.stringify(pl));
+  console.log('coach: level ' + pl.level);
 }
 function pm() { try { pull(); } catch (e) { console.log(e.message); } const a = readAcad_(); push_('🌙 Tổng kết tối nay', briefPm_(a.health || { days: {} }), 'health', a); }
 function newsPush() { news(); const a = readAcad_(), n = a.news; if (n && n.items) push_('📰 Quầy báo sáng · ' + n.items.length + ' tin', n.head || n.items.slice(0, 2).map(x => x.t).join(' · '), 'news', a); }
