@@ -43,35 +43,72 @@ function deepNum_(o, re) {
 }
 
 function pull() {
-  const now = new Date(), start = new Date(now.getTime() - 6 * 864e5), end = new Date(now.getTime() + 864e5);
-  const days = {}, errs = [], day = k => days[k] || (days[k] = {});
+  const DAYS = 30, now = new Date(), start = new Date(now.getTime() - (DAYS - 1) * 864e5), end = new Date(now.getTime() + 864e5);
+  const days = {}, errs = [], peek = {}, day = k => days[k] || (days[k] = {});
   const range = { start: civ_(start), end: civ_(end) };
   const tryIt = (name, fn) => { try { fn(); } catch (e) { errs.push(name + ': ' + e.message); } };
-  tryIt('steps', () => { (call_('steps/dataPoints:dailyRollUp', { range, windowSizeDays: 1 }).rollupDataPoints || []).forEach(p => { const k = civKey_(p.civilStartTime); if (k) day(k).steps = Math.round(deepNum_(p.steps || p, /countSum|count|sum|value/i) || 0); }); });
-  tryIt('azm', () => { (call_('active-zone-minutes/dataPoints:dailyRollUp', { range, windowSizeDays: 1 }).rollupDataPoints || []).forEach(p => { const k = civKey_(p.civilStartTime), v = deepNum_(p.activeZoneMinutes || p, /sum|minutes|value|total/i); if (k && v != null) day(k).azm = Math.round(v); }); });
+  const num = (o, keys, re) => { for (const k of keys) if (o && o[k] != null && !isNaN(+o[k])) return +o[k]; return re ? deepNum_(o, re) : null; };
+  const roll = (type, out, keys, re, f) => tryIt(out, () => {
+    const j = call_(type + '/dataPoints:dailyRollUp', { range, windowSizeDays: 1 }), a = j.rollupDataPoints || [];
+    if (a[0]) peek[out] = JSON.stringify(a[0]).slice(0, 260);
+    a.forEach(p => { const k = civKey_(p.civilStartTime); if (!k) return; const inner = Object.keys(p).filter(x => !/civil|time|interval/i.test(x)).map(x => p[x])[0] || p; const v = num(inner, keys, re); if (v != null) day(k)[out] = f ? f(v) : Math.round(v); });
+  });
+  roll('steps', 'steps', ['countSum', 'count'], /count|sum|value/i);
+  roll('active-zone-minutes', 'azm', ['activeZoneMinutesSum', 'sum'], /sum|minutes|value|total/i);
+  roll('total-calories', 'cal', ['kcalSum', 'caloriesKcalSum'], /kcal|calor|sum|value/i);
+  roll('weight', 'wt', ['weightGramsAvg', 'weightGramsLast', 'weightGrams'], /weight|grams|avg|mean/i, v => Math.round(v / 100) / 10);
+  tryIt('zones', () => {
+    const j = call_('time-in-heart-rate-zone/dataPoints:dailyRollUp', { range, windowSizeDays: 1 }), a = j.rollupDataPoints || [];
+    if (a[0]) peek.zones = JSON.stringify(a[0]).slice(0, 300);
+    const sec = s => s == null ? 0 : (typeof s === 'object' ? +(s.seconds || 0) : parseFloat(String(s))) || 0;
+    a.forEach(p => { const k = civKey_(p.civilStartTime); if (!k) return; const t = JSON.stringify(p), z = {};
+      ['light', 'moderate', 'vigorous', 'peak'].forEach(n => { const m = t.match(new RegExp('"' + n + '[A-Za-z]*"\\s*:\\s*"?([\\d.]+)s?"?', 'i')); if (m) z[n[0]] = Math.round(parseFloat(m[1]) / 60); });
+      if (Object.keys(z).length) day(k).hz = z; });
+  });
   tryIt('sleep', () => {
     const f = encodeURIComponent('sleep.interval.civil_end_time >= "' + key_(start) + '" AND sleep.interval.civil_end_time < "' + key_(end) + '"');
-    (call_('sleep/dataPoints:reconcile?pageSize=25&filter=' + f).dataPoints || []).forEach(dp => {
-      const s = dp.sleep; if (!s || !s.interval || (s.metadata && s.metadata.mainSleep === false)) return;
-      const d = day(key_(new Date(s.interval.endTime))), sm = s.summary || {};
-      d.sleepMin = +sm.minutesAsleep || 0; d.inBed = +sm.minutesInSleepPeriod || 0; d.bed = hm_(s.interval.startTime); d.wake = hm_(s.interval.endTime);
-      (sm.stagesSummary || []).forEach(st => { const t = String(st.type || '').toLowerCase(); if (['deep', 'rem', 'light', 'awake'].includes(t)) d[t] = +st.minutes || 0; });
-    });
+    let pageToken = '', n = 0;
+    do {
+      const j = call_('sleep/dataPoints:reconcile?pageSize=25&filter=' + f + (pageToken ? '&pageToken=' + encodeURIComponent(pageToken) : ''));
+      (j.dataPoints || []).forEach(dp => {
+        const s = dp.sleep; if (!s || !s.interval || (s.metadata && s.metadata.mainSleep === false)) return;
+        const d = day(key_(new Date(s.interval.endTime))), sm = s.summary || {};
+        d.sleepMin = +sm.minutesAsleep || 0; d.inBed = +sm.minutesInSleepPeriod || 0; d.toSleep = +sm.minutesToFallAsleep || 0;
+        d.bed = hm_(s.interval.startTime); d.wake = hm_(s.interval.endTime);
+        (sm.stagesSummary || []).forEach(st => { const t = String(st.type || '').toLowerCase(); if (['deep', 'rem', 'light', 'awake'].includes(t)) d[t] = +st.minutes || 0; });
+      });
+      pageToken = j.nextPageToken || ''; n++;
+    } while (pageToken && n < 4);
   });
-  const daily = (type, field, re, out) => tryIt(out, () => {
+  const daily = (type, field, out, keys, re, f) => tryIt(out, () => {
     let j = null, last = null;
-    for (const f of [field + '.date >= "' + key_(start) + '"', field.replace(/[A-Z]/g, m => '_' + m.toLowerCase()) + '.date >= "' + key_(start) + '"']) {
-      try { j = call_(type + '/dataPoints?pageSize=10&filter=' + encodeURIComponent(f)); break; } catch (e) { last = e; }
+    const snake = field.replace(/[A-Z]/g, m => '_' + m.toLowerCase());
+    for (const flt of [snake + '.date >= "' + key_(start) + '"', field + '.date >= "' + key_(start) + '"']) {
+      try { j = call_(type + '/dataPoints?pageSize=40&filter=' + encodeURIComponent(flt)); break; } catch (e) { last = e; }
     }
     if (!j) throw last;
-    (j.dataPoints || []).forEach(dp => { const o = dp[field] || dp, k = civKey_(o.date), v = deepNum_(o, re); if (k && v) day(k)[out] = Math.round(v); });
+    const a = j.dataPoints || []; if (a[0]) peek[out] = JSON.stringify(a[0]).slice(0, 260);
+    a.forEach(dp => { const o = dp[field] || dp, k = civKey_(o.date); if (!k) return; const v = f ? f(o) : num(o, keys, re); if (v != null && v !== false) day(k)[out] = v; });
   });
-  daily('daily-resting-heart-rate', 'dailyRestingHeartRate', /beats|bpm|rate|value/i, 'rhr');
-  daily('daily-heart-rate-variability', 'dailyHeartRateVariability', /rmssd|millis|average|value/i, 'hrv');
+  daily('daily-resting-heart-rate', 'dailyRestingHeartRate', 'rhr', ['beatsPerMinute'], /beats|bpm/i, o => { const v = num(o, ['beatsPerMinute'], /beats|bpm/i); return v ? Math.round(v) : null; });
+  daily('daily-heart-rate-variability', 'dailyHeartRateVariability', 'hrv', null, null, o => { const v = num(o, ['averageHeartRateVariabilityMilliseconds', 'deepSleepRootMeanSquareOfSuccessiveDifferencesMilliseconds'], /average|rmssd|millis/i); return v ? Math.round(v) : null; });
+  daily('daily-oxygen-saturation', 'dailyOxygenSaturation', 'spo2', null, null, o => { const v = num(o, ['averagePercentage'], /average|percent/i); return v ? Math.round(v * 10) / 10 : null; });
+  daily('daily-respiratory-rate', 'dailyRespiratoryRate', 'br', null, null, o => { const v = num(o, ['breathsPerMinute'], /breaths/i); return v ? Math.round(v * 10) / 10 : null; });
+  daily('daily-sleep-temperature-derivations', 'dailySleepTemperatureDerivations', 'tempD', null, null, o => { const n = num(o, ['nightlyTemperatureCelsius']), b = num(o, ['baselineTemperatureCelsius']); return n != null && b != null ? Math.round((n - b) * 100) / 100 : null; });
+  daily('daily-vo2-max', 'dailyVo2Max', 'vo2', null, null, o => { const v = num(o, ['vo2Max'], /vo2/i); return v ? Math.round(v * 10) / 10 : null; });
+  daily('daily-vo2-max', 'dailyVo2Max', 'vo2lvl', null, null, o => o.cardioFitnessLevel ? String(o.cardioFitnessLevel).replace('CARDIO_FITNESS_LEVEL_', '') : null);
+  tryIt('ex', () => {
+    const f = encodeURIComponent('exercise.interval.civil_end_time >= "' + key_(new Date(now.getTime() - 13 * 864e5)) + '"');
+    const j = call_('exercise/dataPoints?pageSize=30&filter=' + f), a = j.dataPoints || [];
+    if (a[0]) peek.ex = JSON.stringify(a[0]).slice(0, 300);
+    a.forEach(dp => { const e = dp.exercise; if (!e || !e.interval) return; const k = key_(new Date(e.interval.endTime)), m = e.metricsSummary || {};
+      const d = day(k); d.ex = d.ex || [];
+      d.ex.push({ t: e.displayName || e.exerciseType || '', s: hm_(e.interval.startTime), min: Math.round((parseFloat(e.activeDuration) || ((new Date(e.interval.endTime) - new Date(e.interval.startTime)) / 1000)) / 60), kcal: Math.round(+m.caloriesKcal || 0), hr: Math.round(+m.averageHeartRateBeatsPerMinute || 0), km: Math.round((+m.distanceMillimeters || 0) / 1e4) / 100, azm: +m.activeZoneMinutes || 0 }); });
+  });
   const stamp = Date.now();
   Object.keys(days).forEach(k => { days[k].src = 'auto'; days[k].at = stamp; });
   save_(days, errs);
-  console.log(JSON.stringify({ days, errs }));
+  console.log(JSON.stringify({ n: Object.keys(days).length, errs, peek }));
 }
 
 function save_(days, errs) {
@@ -86,7 +123,8 @@ function save_(days, errs) {
     const H = acad.health = acad.health || {};
     H.days = H.days || {};
     Object.keys(days).forEach(k => { H.days[k] = Object.assign({}, H.days[k] || {}, days[k]); });
-    H.auto = { last: Date.now(), err: errs.length === 5 ? errs[0].slice(0, 120) : '' };
+    H.auto = { last: Date.now(), err: errs.length >= 10 ? errs[0].slice(0, 120) : '', errs: errs.map(e => e.slice(0, 90)).slice(0, 12) };
+    Object.keys(H.days).sort().slice(0, -45).forEach(k => delete H.days[k]);
     acad.updatedAt = Math.max(Date.now(), (acad.updatedAt || 0) + 1);
     st.acad = acad; st.updated = Math.max(Date.now(), (st.updated || 0) + 1);
     const body = { fields: { s: { stringValue: JSON.stringify(st) }, updated: { timestampValue: new Date().toISOString() } } };
