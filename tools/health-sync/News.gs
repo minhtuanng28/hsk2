@@ -65,12 +65,15 @@ function pickModel_(key) {
   const ver = n => { const m = n.match(/gemini-(\d+(?:\.\d+)?)/); return m ? +m[1] : 0; };
   ms.sort((a, b) => (ver(b) - ver(a)) || ((/lite/.test(a) ? 1 : 0) - (/lite/.test(b) ? 1 : 0)) || ((/preview|exp/.test(a) ? 1 : 0) - (/preview|exp/.test(b) ? 1 : 0)) || (a.length - b.length));
   if (!ms.length) throw new Error('Không tìm thấy model Gemini Flash');
-  PropertiesService.getScriptProperties().setProperty('GEMINI_ALT', JSON.stringify(ms.slice(0, 5)));
+  const all = (JSON.parse(r.getContentText()).models || []).map(m => m.name.replace('models/', ''));
+  const lites = all.filter(x => /flash-lite/.test(x) && !/image|tts|audio|live/.test(x)).sort((a, b) => ver(b) - ver(a));
+  const alt = ms.slice(0, 4).concat(['gemini-flash-latest', 'gemini-flash-lite-latest'].filter(x => all.indexOf(x) >= 0), lites.slice(0, 2));
+  PropertiesService.getScriptProperties().setProperty('GEMINI_ALT', JSON.stringify(alt.filter((x, i) => alt.indexOf(x) === i)));
   return ms[0];
 }
 function altModel_(cur) {
   let a = []; try { a = JSON.parse(PropertiesService.getScriptProperties().getProperty('GEMINI_ALT') || '[]'); } catch (e) {}
-  return a.find(m => m !== cur) || cur;
+  const i = a.indexOf(cur); return a[(i + 1) % a.length] || cur;
 }
 
 function gemini_(items) {
@@ -91,7 +94,7 @@ ${list}`;
   let model = pickModel_(key), lastErr = '';
   const t0 = Date.now();
   let think = m => /gemini-2\./.test(m) ? { thinkingBudget: 0 } : { thinkingLevel: 'low' };
-  for (let attempt = 0; attempt < 3 && Date.now() - t0 < 150e3; attempt++) {
+  for (let attempt = 0; attempt < 5 && Date.now() - t0 < 170e3; attempt++) {
     const r = UrlFetchApp.fetch('https://generativelanguage.googleapis.com/v1beta/models/' + model + ':generateContent', {
       method: 'post', headers: { 'x-goog-api-key': key }, contentType: 'application/json', muteHttpExceptions: true,
       payload: JSON.stringify({ contents: [{ role: 'user', parts: [{ text: prompt }] }], generationConfig: { temperature: 0.3, maxOutputTokens: 8192, responseMimeType: 'application/json', responseSchema: schema, thinkingConfig: think(model) } })
@@ -103,7 +106,7 @@ ${list}`;
       const out = JSON.parse((txt || []).map(p => p.text || '').join(''));
       out.model = model; return out;
     }
-    lastErr = code + ' ' + r.getContentText().slice(0, 160);
+    lastErr = model + ' ' + code + ' ' + r.getContentText().slice(0, 120);
     if (code === 400 && /thinking/i.test(r.getContentText())) { think = () => undefined; continue; }
     if (code === 404 || code === 400) { PropertiesService.getScriptProperties().deleteProperty('GEMINI_MODEL'); model = pickModel_(key); }
     if (code === 429 || code >= 500) { if (attempt >= 0) model = altModel_(model); Utilities.sleep(3000 * (attempt + 1)); }
