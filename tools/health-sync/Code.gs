@@ -90,17 +90,14 @@ function pull() {
     a.forEach(p => { const k = civKey_(p.civilStartTime); if (!k) return; const inner = Object.keys(p).filter(x => !/civil|time|interval/i.test(x)).map(x => p[x])[0] || p; const v = num(inner, keys, re); if (v != null) day(k)[out] = f ? f(v) : Math.round(v); });
   });
   roll('steps', 'steps', ['countSum', 'count'], /count|sum|value/i);
-  roll('active-zone-minutes', 'azm', ['activeZoneMinutesSum', 'sum'], /sum|minutes|value|total/i);
+  tryIt('azm', () => {
+    const j = call_('active-zone-minutes/dataPoints:dailyRollUp', { range, windowSizeDays: 1 }), a = j.rollupDataPoints || [];
+    a.forEach(p => { const k = civKey_(p.civilStartTime), o = p.activeZoneMinutes || {}; if (!k) return;
+      const fb = +o.sumInFatBurnHeartZone || 0, ca = +o.sumInCardioHeartZone || 0, pk = +o.sumInPeakHeartZone || 0;
+      day(k).azm = Math.round(fb + 2 * (ca + pk)); day(k).hz = { l: Math.round(fb), m: Math.round(ca), p: Math.round(pk) }; });
+  });
   roll('total-calories', 'cal', ['kcalSum', 'caloriesKcalSum'], /kcal|calor|sum|value/i);
   roll('weight', 'wt', ['weightGramsAvg', 'weightGramsLast', 'weightGrams'], /weight|grams|avg|mean/i, v => Math.round(v / 100) / 10);
-  tryIt('zones', () => {
-    const j = call_('time-in-heart-rate-zone/dataPoints:dailyRollUp', { range, windowSizeDays: 1 }), a = j.rollupDataPoints || [];
-    if (a[0]) peek.zones = JSON.stringify(a[0]).slice(0, 300);
-    const sec = s => s == null ? 0 : (typeof s === 'object' ? +(s.seconds || 0) : parseFloat(String(s))) || 0;
-    a.forEach(p => { const k = civKey_(p.civilStartTime); if (!k) return; const t = JSON.stringify(p), z = {};
-      ['light', 'moderate', 'vigorous', 'peak'].forEach(n => { const m = t.match(new RegExp('"' + n + '[A-Za-z]*"\\s*:\\s*"?([\\d.]+)s?"?', 'i')); if (m) z[n[0]] = Math.round(parseFloat(m[1]) / 60); });
-      if (Object.keys(z).length) day(k).hz = z; });
-  });
   tryIt('sleep', () => {
     const f = encodeURIComponent('sleep.interval.civil_end_time >= "' + key_(start) + '" AND sleep.interval.civil_end_time < "' + key_(end) + '"');
     let pageToken = '', n = 0;
@@ -134,8 +131,12 @@ function pull() {
   daily('daily-vo2-max', 'dailyVo2Max', 'vo2', null, null, o => { const v = num(o, ['vo2Max'], /vo2/i); return v ? Math.round(v * 10) / 10 : null; });
   daily('daily-vo2-max', 'dailyVo2Max', 'vo2lvl', null, null, o => o.cardioFitnessLevel ? String(o.cardioFitnessLevel).replace('CARDIO_FITNESS_LEVEL_', '') : null);
   tryIt('ex', () => {
-    const f = encodeURIComponent('exercise.interval.civil_end_time >= "' + key_(new Date(now.getTime() - 13 * 864e5)) + '"');
-    const j = call_('exercise/dataPoints?pageSize=30&filter=' + f), a = j.dataPoints || [];
+    const s14 = new Date(now.getTime() - 13 * 864e5); let j = null, last = null;
+    for (const flt of ['exercise.interval.civil_start_time >= "' + key_(s14) + '"', 'exercise.interval.start_time >= "' + s14.toISOString() + '"', '']) {
+      try { j = call_('exercise/dataPoints' + (flt ? ':reconcile?pageSize=30&filter=' + encodeURIComponent(flt) : '?pageSize=30')); break; } catch (e) { last = e; }
+    }
+    if (!j) throw last;
+    const a = j.dataPoints || [];
     if (a[0]) peek.ex = JSON.stringify(a[0]).slice(0, 300);
     a.forEach(dp => { const e = dp.exercise; if (!e || !e.interval) return; const k = key_(new Date(e.interval.endTime)), m = e.metricsSummary || {};
       const d = day(k); d.ex = d.ex || [];
@@ -144,7 +145,10 @@ function pull() {
   const stamp = Date.now();
   Object.keys(days).forEach(k => { days[k].src = 'auto'; days[k].at = stamp; });
   save_(days, errs);
-  console.log(JSON.stringify({ n: Object.keys(days).length, errs, peek }));
+  console.log(JSON.stringify({ n: Object.keys(days).length, errs }));
+  Object.keys(peek).forEach(k => console.log('PEEK ' + k + ': ' + peek[k]));
+  const tk = key_(now); console.log('TODAY ' + JSON.stringify(days[tk] || {}));
+  const yk = key_(new Date(now.getTime() - 864e5)); console.log('YDAY ' + JSON.stringify(days[yk] || {}));
 }
 
 function save_(days, errs) {
