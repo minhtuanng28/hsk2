@@ -142,6 +142,7 @@ function pull() {
       const d = day(k); d.ex = d.ex || [];
       d.ex.push({ t: e.displayName || e.exerciseType || '', s: hm_(e.interval.startTime), min: Math.round((parseFloat(e.activeDuration) || ((new Date(e.interval.endTime) - new Date(e.interval.startTime)) / 1000)) / 60), kcal: Math.round(+m.caloriesKcal || 0), hr: Math.round(+m.averageHeartRateBeatsPerMinute || 0), km: Math.round((+m.distanceMillimeters || 0) / 1e4) / 100, azm: +m.activeZoneMinutes || 0 }); });
   });
+  Object.keys(days).forEach(k => { if (days[k].ex) days[k].ex.sort((a, b) => a.s < b.s ? -1 : 1); });
   const stamp = Date.now();
   Object.keys(days).forEach(k => { days[k].src = 'auto'; days[k].at = stamp; });
   save_(days, errs);
