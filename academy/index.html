@@ -269,6 +269,20 @@ body.eco #hud-tl,body.eco #pomo,body.eco .ib,body.eco #dockbtn,body.eco #dockgri
 #labels.far .tag small,#labels.far .tag .bar{display:none}
 #labels.far .tag{font-size:10.5px;padding:2px 7px;border-radius:8px}
 #labels.far .tag.arch{display:none}
+.hp .hready{display:flex;gap:14px;align-items:center;background:linear-gradient(135deg,rgba(255,90,122,.12),rgba(142,108,240,.12));border-radius:16px;padding:12px 14px}
+.hscore{--p:0;width:84px;height:84px;border-radius:50%;flex:none;display:grid;place-items:center;align-content:center;background:conic-gradient(#ff5a7a calc(var(--p)*1%),rgba(127,127,127,.18) 0);position:relative}
+.hscore::before{content:'';position:absolute;inset:8px;border-radius:50%;background:var(--panel)}.hscore b,.hscore small{position:relative}.hscore b{font-size:26px;line-height:1}.hscore small{font-size:10.5px;color:var(--mute)}
+.hready p{margin:0;font-size:13px;line-height:1.45}
+.hrings{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:12px}.hring{position:relative;text-align:center}.hring svg{width:100%;max-width:74px;fill:none;stroke-width:7;stroke-linecap:round}
+.hring b{position:absolute;left:0;right:0;top:calc(50% - 18px);font-size:13.5px}.hring small{display:block;font-size:11px;color:var(--mute);margin-top:-2px}
+.hgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}.hgrid>div{background:light-dark(rgba(0,0,0,.035),rgba(255,255,255,.05));border-radius:12px;padding:9px 11px}
+.hgrid small{display:block;font-size:11.5px;color:var(--mute)}.hgrid b{font-size:18px}.hgrid em{font-style:normal;font-size:11px;color:var(--mute);font-weight:600}.hgrid i{display:block;font-style:normal;font-size:11px;margin-top:2px;color:var(--mute)}.hgrid i.ok{color:#1f9e6a}.hgrid i.warn{color:#e3a21a}
+.hstage{display:flex;height:14px;border-radius:7px;overflow:hidden;gap:2px}.hstage i.s-deep,.hleg .s-deep::before{background:#3d3aa8}.hstage i.s-rem,.hleg .s-rem::before{background:#8e6cf0}.hstage i.s-light,.hleg .s-light::before{background:#7fb2ff}.hstage i.s-awake,.hleg .s-awake::before{background:#ff9a7a}
+.hleg{display:flex;flex-wrap:wrap;gap:4px 12px;font-size:11.5px;margin-top:6px;color:var(--mute)}.hleg span::before{content:'';display:inline-block;width:8px;height:8px;border-radius:2px;margin-right:4px}
+.hhour{display:flex;align-items:flex-end;gap:2px;height:44px}.hhour i{flex:1;border-radius:2px 2px 0 0}
+.hcharts{display:grid;grid-template-columns:1fr 1fr;gap:10px}.hcharts small{font-size:11.5px;color:var(--mute)}
+.hsp{position:relative;display:flex;align-items:flex-end;gap:3px;height:62px}.hsp>div{flex:1;text-align:center}.hsp i{display:block;border-radius:3px 3px 0 0}.hsp small{font-size:9.5px!important}.hsp>b{position:absolute;left:0;right:0;border-top:1px dashed rgba(127,127,127,.6)}
+#b-today{position:relative}#b-today[data-n]:not([data-n=''])::after{content:attr(data-n);position:absolute;top:-4px;right:-4px;min-width:16px;height:16px;border-radius:9px;background:#e8553a;color:#fff;font:700 10px/16px system-ui;padding:0 3px}
 </style>
 <script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js"}}</script>
 </head>
@@ -289,6 +303,7 @@ body.eco #hud-tl,body.eco #pomo,body.eco .ib,body.eco #dockbtn,body.eco #dockgri
  <span id="savebadge">…</span>
  <button class="ib" id="b-more" data-t="more" title="Thêm" aria-expanded="false"><svg viewBox="0 0 24 24"><circle cx="6" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="18" cy="12" r="1.6"/></svg></button>
  <div id="moreset">
+ <button class="ib" id="b-today" title="Việc hôm nay (N)"><svg viewBox="0 0 24 24"><path d="M5 4h14v11l-5 5H5z"/><path d="M14 20v-5h5"/><path d="M8.5 9.5l1.5 1.5 3-3"/></svg></button>
  <button class="ib" id="b-find" data-t="find" title="Tìm"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4.5 4.5"/></svg></button>
  <button class="ib" id="b-theme" data-t="theme" title="Đổi khung cảnh"><svg viewBox="0 0 24 24"><path d="M12 21V11"/><path d="M12 11c-2-3-6-3.5-8-2 2.5 0 5 .8 8 2zM12 11c2-3 6-3.5 8-2-2.5 0-5 .8-8 2zM12 11c-1-3.5 1-6 4-6.5-1.5 1.5-3 3.5-4 6.5zM12 11c1-3.5-1-6-4-6.5 1.5 1.5 3 3.5 4 6.5z"/><path d="M5 21h14"/></svg></button>
  <button class="ib" id="b-inst" data-t="install" title="Cài app" hidden><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4M12 7v6M9.5 10.5 12 13l2.5-2.5"/></svg></button>
@@ -428,18 +443,19 @@ const ROOMS=[
  {id:'crm',kind:'crm',pos:[-8,6.5],rot:Math.PI/2,size:[4,3.6],hex:'#ff7a00',dark:'#c25a00',short:'CRM',title:{vi:'Phòng CRM',en:'CRM room'},dates:{vi:'Lead · số liệu ngày',en:'Leads · daily numbers'}},
  {id:'cert',kind:'cert',pos:[8,6.5],rot:-Math.PI/2,size:[4,3.6],hex:'#c9a227',dark:'#8f7215',short:'★',title:{vi:'Tủ chứng chỉ',en:'Certificates hall'},dates:{vi:'Chứng chỉ đã đạt',en:'Earned certificates'}},
  {id:'tower',kind:'pomo',pos:[0,-1],rot:0,size:[2.6,2.6],hex:'#e8553a',short:'25',title:{vi:'Tháp Pomodoro',en:'Pomodoro Tower'},dates:{vi:'Giờ thực + bộ đếm tập trung',en:'Real time + focus timer'}},
- {id:'board',kind:'board',pos:[0,2.8],rot:0,size:[2.6,.4],hex:'#1d2a4d',short:'7',title:{vi:'Bảng lịch tuần',en:'Weekly plan board'},dates:{vi:'Lịch học + nhắc nhở',en:'Schedule + reminders'}}];
+ {id:'board',kind:'board',pos:[0,2.8],rot:0,size:[2.6,.4],hex:'#1d2a4d',short:'7',title:{vi:'Bảng lịch tuần',en:'Weekly plan board'},dates:{vi:'Lịch học + nhắc nhở',en:'Schedule + reminders'}},
+ {id:'health',kind:'health',pos:[6.4,4.2],rot:.1,size:[3.6,2.4],hex:'#ff5a7a',short:'♥',title:{vi:'Quầy sức khoẻ',en:'Health bar'},dates:{vi:'Bước · giấc ngủ · nhịp tim',en:'Steps · sleep · heart'}}];
 const RM=Object.fromEntries(ROOMS.map(r=>[r.id,r]));
 const THEME0=(()=>{try{const th=(JSON.parse(localStorage.getItem('tuan-academy-v1')||'{}').settings||{}).theme;return th==='beach'||th==='library'?th:'campus'}catch(e){return 'campus'}})(),BEACH=THEME0==='beach',LIB=THEME0==='library';
 if(BEACH){RM.tower.title={vi:'Đồng hồ trung tâm',en:'Central clock'};RM.tower.dates={vi:'Giờ thực · Pomodoro',en:'Real time · Pomodoro'};RM.tower.short='⏱';for(const id of ['me1','me2','me3','me4'])RM[id].dates2={vi:'Quầy nước',en:'Drinks bar'}}
-if(LIB){const P0={me1:[[-11,-9.2],.55],me2:[[-5.8,-10.4],0],me3:[[3.6,-9.8],-.12],me4:[[9,-10.6],.1],work:[[-10.6,9.2],1.35],plan:[[9.6,-2.6],-.3],zh:[[-4.2,9.8],.25],crm:[[5.6,8.4],.3],cert:[[13.2,-8.8],-.45],tower:[[-1.8,-12.05],0],board:[[-6.2,-4.6],.35]};
+if(LIB){const P0={me1:[[-11,-9.2],.55],me2:[[-5.8,-10.4],0],me3:[[3.6,-9.8],-.12],me4:[[9,-10.6],.1],work:[[-10.6,9.2],1.35],plan:[[9.6,-2.6],-.3],zh:[[-4.2,9.8],.25],crm:[[5.6,8.4],.3],cert:[[13.2,-8.8],-.45],tower:[[-1.8,-12.05],0],board:[[-6.2,-4.6],.35],health:[[10.6,8.4],-.35]};
  for(const k in P0){RM[k].pos=P0[k][0];RM[k].rot=P0[k][1]}
  RM.tower.title={vi:'Đồng hồ quả lắc',en:'Grandfather clock'};RM.tower.dates={vi:'Giờ thực · Pomodoro',en:'Real time · Pomodoro'};RM.tower.short='⏱';
  RM.board.title={vi:'Bảng phấn lịch tuần',en:'Weekly chalkboard'};RM.work.title={vi:'Bàn làm việc MKT',en:'MKT work desk'};RM.plan.title={vi:'Bàn kế hoạch',en:'Planning table'};
  RM.crm.title={vi:'Quầy thủ thư · CRM',en:'Front desk · CRM'};RM.zh.title={vi:'Góc trà tiếng Trung',en:'Chinese tea corner'};RM.cert.title={vi:'Tủ kính chứng chỉ',en:'Certificate cabinet'};
  for(const id of ['me1','me2','me3','me4'])RM[id].dates2={vi:'Bàn học',en:'Study desk'}}
-if(!LIB){const P1=BEACH?{me1:[[-11,-6],.8],me2:[[-5.5,-11.5],.3],me3:[[1.5,-11],0],me4:[[-13,2.5],1.3],tower:[[9.5,-10],.2],work:[[8.8,-2.8],-.5],plan:[[-9.5,8.5],.9],cert:[[-5.5,5.5],.45],crm:[[2.5,10],.1],zh:[[12.5,5.2],-.8],board:[[3.2,-2.6],.5]}
- :{me1:[[-12,-7],.9],me2:[[-7,-12.3],.35],me3:[[1.5,-12],-.1],me4:[[7.5,-8.5],-.45],tower:[[-3.4,-7.4],.5],work:[[-13.2,1.8],1.45],plan:[[8.6,-1.6],-.7],cert:[[-10,10.2],1.0],crm:[[-2.2,10.6],.25],zh:[[9.4,11.4],-.55],board:[[3.3,2.6],.6]};
+if(!LIB){const P1=BEACH?{me1:[[-11,-6],.8],me2:[[-5.5,-11.5],.3],me3:[[1.5,-11],0],me4:[[-13,2.5],1.3],tower:[[9.5,-10],.2],work:[[8.8,-2.8],-.5],plan:[[-9.5,8.5],.9],cert:[[-5.5,5.5],.45],crm:[[2.5,10],.1],zh:[[12.5,5.2],-.8],board:[[3.2,-2.6],.5],health:[[6.8,4.6],-.3]}
+ :{me1:[[-12,-7],.9],me2:[[-7,-12.3],.35],me3:[[1.5,-12],-.1],me4:[[7.5,-8.5],-.45],tower:[[-3.4,-7.4],.5],work:[[-13.2,1.8],1.45],plan:[[8.6,-1.6],-.7],cert:[[-10,10.2],1.0],crm:[[-2.2,10.6],.25],zh:[[9.4,11.4],-.55],board:[[3.3,2.6],.6],health:[[6.4,4.2],.1]};
  for(const k in P1){RM[k].pos=P1[k][0];RM[k].rot=P1[k][1]}
  if(BEACH){RM.tower.title={vi:'Hải đăng đồng hồ',en:'Clock lighthouse'}}else{RM.tower.title={vi:'Tháp đồng hồ',en:'Clock tower'};RM.tower.dates={vi:'Giờ thực · Pomodoro',en:'Real time · Pomodoro'};RM.tower.short='⏱'}}
 const DATA_ROOMS=['me1','me2','me3','me4','zh','work'];
@@ -1134,9 +1150,9 @@ function cabana(r){
 }
 const lampLights=[];
 for(const r of ROOMS){
- if(LIB){const k=r.kind;if(k==='class')studyDesk(r,+r.id.slice(2)-1);else if(k==='work')workDesk(r);else if(k==='plan')planTable(r);else if(k==='zh')zhNook(r);else if(k==='crm')crmDesk(r);else if(k==='cert')certCabinet(r);else if(k==='pomo')grandClock(r);else if(k==='board')chalkBoard(r)}
- else if(BEACH){const k=r.kind;if(k==='class')tikiBar(r,+r.id.slice(2)-1);else if(k==='work')villa(r,'#2f5fd0');else if(k==='plan')surfShack(r);else if(k==='zh')teaPagoda(r);else if(k==='crm')kiosk(r);else if(k==='cert')cabana(r);else if(k==='pomo')lighthouse(r);else if(k==='board')surfBoard(r)}
- else{const k=r.kind;if(k==='class')cottage(r,+r.id.slice(2)-1);else if(k==='work')brickOffice(r);else if(k==='plan')greenhouse(r);else if(k==='zh')teaPagoda(r);else if(k==='crm')shopFront(r);else if(k==='cert')museum(r);else if(k==='pomo')clockTower(r);else if(k==='board')noticeBoard(r)}
+ if(LIB){const k=r.kind;if(k==='class')studyDesk(r,+r.id.slice(2)-1);else if(k==='work')workDesk(r);else if(k==='plan')planTable(r);else if(k==='zh')zhNook(r);else if(k==='crm')crmDesk(r);else if(k==='cert')certCabinet(r);else if(k==='pomo')grandClock(r);else if(k==='board')chalkBoard(r);else if(k==='health')healthKiosk(r)}
+ else if(BEACH){const k=r.kind;if(k==='class')tikiBar(r,+r.id.slice(2)-1);else if(k==='work')villa(r,'#2f5fd0');else if(k==='plan')surfShack(r);else if(k==='zh')teaPagoda(r);else if(k==='crm')kiosk(r);else if(k==='cert')cabana(r);else if(k==='pomo')lighthouse(r);else if(k==='board')surfBoard(r);else if(k==='health')healthKiosk(r)}
+ else{const k=r.kind;if(k==='class')cottage(r,+r.id.slice(2)-1);else if(k==='work')brickOffice(r);else if(k==='plan')greenhouse(r);else if(k==='zh')teaPagoda(r);else if(k==='crm')shopFront(r);else if(k==='cert')museum(r);else if(k==='pomo')clockTower(r);else if(k==='board')noticeBoard(r);else if(k==='health')healthKiosk(r)}
 }
 const GW={y:()=>0,ok:null,hub:[0,6]};
 if(!LIB){
@@ -1589,6 +1605,8 @@ function meowSound(kind){if(!S.settings.catSound)return;try{if(!MU.ctx)muInit();
  o.connect(f);f.connect(g);g.connect(C.destination);o.start(t);o.stop(t+(kind==='purr'?1.25:.55))}catch(e){}}
 const CAT_LINES={vi:['Meo~','Uống ngụm nước đi Tuấn ơi','Đứng dậy vươn vai 1 phút nha','Hôm nay học được gì rồi?','Bắp canh giờ cho, cứ tập trung','Meo! Đừng lướt điện thoại nữa','Làm xong 1 việc nhỏ trước đã'],en:['Meow~','Have a sip of water','Stand up and stretch for a minute','What did you learn today?','I\'ll keep time, you focus','Meow! Put the phone down','Finish one small task first']};
 function catTalk(){const i=nowInfo(),n=new Date(),mins=n.getHours()*60+n.getMinutes(),h=hskStats(),V=L==='vi';
+ {const left=(S.today&&S.today.items||[]).filter(x=>!x.done);if(left.length&&n.getHours()>=15&&Math.random()<.55)return catSay(V?`Còn ${left.length} việc hôm nay, ví dụ: "${left[0].t}"`:`${left.length} tasks left today, e.g. "${left[0].t}"`)}
+ {const d=S.health&&S.health.days&&S.health.days[dkey(n)];if(d&&d.sleepMin&&n.getHours()<11&&Math.random()<.5)return catSay(V?`Đêm qua ngủ ${Math.floor(d.sleepMin/60)}h${String(d.sleepMin%60).padStart(2,'0')}${d.sleepMin>=450?', sung sức rồi đó!':', hôm nay làm nhẹ nhàng thôi nha'}`:`You slept ${Math.floor(d.sleepMin/60)}h${String(d.sleepMin%60).padStart(2,'0')} last night`)}
  if(i.b&&i.b.d.includes(n.getDay())){const s=toM(i.b.s)-mins;if(s>0&&s<=30)return catSay(V?`Meo! ${s} phút nữa tới "${tr(i.b.t)}" (${i.b.s}) đó`:`Meow! "${tr(i.b.t)}" starts in ${s} min`);if(s<=0&&mins<toM(i.b.e))return catSay(V?`Đang giờ "${tr(i.b.t)}" nè, vào học thôi!`:`It's time for "${tr(i.b.t)}"!`)}
  if(h&&h.due>20&&Math.random()<.5)return catSay(V?`Còn ${h.due} từ HSK cần ôn, ôn 10 phút nha`:`${h.due} HSK words are due, 10 minutes?`);
  const L2=CAT_LINES[V?'vi':'en'];catSay(L2[(Math.random()*L2.length)|0])}
@@ -1642,6 +1660,7 @@ function updateTags(){
   else if(r.kind==='crm'){const lg=S.crm.log[dkey(new Date())]||{};el.innerHTML=`${esc(tr(r.title))}<small>${L==='vi'?'Hôm nay':'Today'}: ${+lg.lead||0} lead · ${+lg.mess||0} ${L==='vi'?'tin':'msgs'}</small>`}
   else if(r.kind==='cert'){let n=0;for(const id of ['me1','me2','me3','me4','zh'])n+=S.classes[id].certs.length;el.innerHTML=`${esc(tr(r.title))}<small>${n} ${L==='vi'?'chứng chỉ':'certificates'}</small>`}
   else if(BEACH&&r.kind==='class'){}
+  else if(r.kind==='health'){el.innerHTML=`${esc(tr(r.title))}<small>${esc(healthTag())}</small>`}
   else if(r.kind==='plan'){const open=S.plan.cards.filter(c=>c.col!=='done').length;el.innerHTML=`${esc(tr(r.title))}<small>${open} ${L==='vi'?'việc mở':'open tasks'}</small>`}
   else el.innerHTML=`${esc(tr(r.title))}<small>${esc(tr(r.dates))}</small>`}
  archTag.el.textContent=t('arch');meTag.el.textContent=t('you');for(const o of tags)o.w=0;
@@ -1748,6 +1767,7 @@ function frame(now){
  if(window.__dust&&!reduce){window.__dust.position.y=Math.sin(now/2600)*.15;window.__dust.rotation.y=Math.sin(now/5000)*.01}
  if(GW.clouds&&!reduce){for(const c of GW.clouds){c.userData.a+=dt*.008;c.position.x=Math.cos(c.userData.a)*c.userData.r;c.position.z=Math.sin(c.userData.a)*c.userData.r}for(const m of GW.smoke){const d=m.userData,t=((now/3200)+d.ph)%1;m.position.set(d.x+t*.6,d.y+t*2.2,d.z-t*.3);m.scale.setScalar(.6+t*1.6);m.material.opacity=.55*(1-t)}for(const [i,d] of GW.ducks.entries()){d.position.y=-.1+Math.sin(now/600+i)*.03;d.rotation.y+=dt*.12*(i?1:-1)}}
  if(window.__beam)window.__beam.rotation.y=now/1800;
+ if(window.__heart){const ph=(now/1000*1.2)%1;window.__heart.scale.setScalar(1+(ph<.12?Math.sin(ph/.12*Math.PI)*.22:0))}
  if(window.__spout)window.__spout.scale.y=1+Math.sin(now/180)*.12;
  if(window.__water&&tick%3===0)window.__water.emissiveIntensity=.12+Math.sin(now/900)*.06;
  if(window.__boat){window.__boat.position.y=-1.0+Math.sin(now/900)*.07;window.__boat.rotation.z=Math.sin(now/1300)*.05}
@@ -1945,7 +1965,7 @@ $('#pcls').addEventListener('change',e=>{PM.cls=e.target.value;savePM()});
 
 /* ---------------- panel ---------------- */
 const panel=$('#panel');let panelState=null;
-function openRoom(id){const r=RM[id];if(LIB&&r.seat&&!SIT&&Math.hypot(P.x-r.door[0],P.z-r.door[1])<2.6)sitAt(r.seat);if(r.kind==='board')openPanel({kind:'board'});else if(r.kind==='pomo')openPanel({kind:'pomo'});else if(r.kind==='plan')openPanel({kind:'plan',tab:'board'});else if(r.kind==='crm')openPanel({kind:'crm'});else if(r.kind==='cert')openPanel({kind:'certs'});else openPanel({kind:r.kind,id,tab:'syllabus'})}
+function openRoom(id){const r=RM[id];if(LIB&&r.seat&&!SIT&&Math.hypot(P.x-r.door[0],P.z-r.door[1])<2.6)sitAt(r.seat);if(r.kind==='board')openPanel({kind:'board'});else if(r.kind==='pomo')openPanel({kind:'pomo'});else if(r.kind==='plan')openPanel({kind:'plan',tab:'board'});else if(r.kind==='crm')openPanel({kind:'crm'});else if(r.kind==='cert')openPanel({kind:'certs'});else if(r.kind==='health')openPanel({kind:'health'});else openPanel({kind:r.kind,id,tab:'syllabus'})}
 function openPanel(st){panelState=st;panel.classList.remove('wide');renderPanel();panel.classList.add('open');document.body.classList.add('popen');$('#prompt').classList.remove('on');walk=null;if(st.kind==='find')setTimeout(()=>{const i=$('#fq');if(i)i.focus()},60)}
 function closePanel(){if(!panelState)return;panel.classList.remove('wide');panelState=null;panel.classList.remove('open');document.body.classList.remove('popen');near=null;canvas.focus({preventScroll:true})}
 const head=(hex,k,title,sub)=>`<div class="grab"></div><header class="ph" style="--c:${hex}"><div class="pk">${esc(k)}</div><div><h2>${esc(title)}</h2><p>${sub}</p></div><button class="x" data-act="close" aria-label="${t('close')}">×</button></header>`;
@@ -1987,7 +2007,7 @@ function classPanel(){
 function workPanel(){
  const r=RM.work,w=S.work,today=dkey(new Date()),ck=w.checks[today]||{},done=SLOTS.filter(s=>ck[s.id]).length;
  let h=head(r.hex,r.short,tr(r.title),`${t('workHours')} · ${t('checked',{a:done,b:SLOTS.length})}`);
- h+=`<div class="pb" style="--c:${r.hex}"><div class="pbar"><i style="width:${done/SLOTS.length*100}%"></i></div>
+ h+=`<div class="pb" style="--c:${r.hex}"><div class="sec" style="margin-top:0"><h3>${V('Việc hôm nay','Today')}</h3><div class="todaybox">${todayHTML(true)}</div><div class="row" style="margin-top:8px"><button class="btn sm" data-act="stickyShow">${V('Hiện tờ note trên màn hình','Show the sticky note')}</button><button class="btn sm" data-act="stickyPip">${V('⧉ Ghim nổi ngoài app','⧉ Float outside the app')}</button></div></div><div class="pbar"><i style="width:${done/SLOTS.length*100}%"></i></div>
  <div class="sec"><h3>${t('workChecks')}</h3><ul class="list">${SLOTS.map(s=>`<li class="${ck[s.id]?'done':''}"><input type="checkbox" data-act="wc" data-id="${s.id}" ${ck[s.id]?'checked':''} aria-label="${esc(tr(s.t))}"><div class="lt"><b>${s.time}</b> · ${esc(tr(s.t))}</div></li>`).join('')}</ul></div>
  <div class="sec"><h3>${t('tasks')}</h3><ul class="list">${w.tasks.map(k=>`<li class="${k.done?'done':''}"><input type="checkbox" data-act="td" data-id="${k.id}" ${k.done?'checked':''} aria-label="${esc(tr(k.t))}"><div class="lt">${esc(tr(k.t))}</div><button class="del" data-act="delT" data-id="${k.id}" aria-label="${t('del')}">×</button></li>`).join('')}</ul>
  <div class="add"><div class="row"><input name="t" placeholder="${t('addTask')}"><button class="btn sm pri" data-act="addT">${t('add')}</button></div></div></div>
@@ -2111,7 +2131,7 @@ function findResults(){
 }
 function renderPanel(){
  if(!panelState)return;const k=panelState.kind;const y=panel.scrollTop;
- panel.innerHTML=k==='class'||k==='zh'?classPanel():k==='work'?workPanel():k==='plan'?planPanel():k==='crm'?crmPanel():k==='board'?boardPanel():k==='pomo'?pomoPanel():k==='certs'?certsPanel():k==='acct'?acctPanel():k==='find'?findPanel():settingsPanel();
+ panel.innerHTML=k==='class'||k==='zh'?classPanel():k==='work'?workPanel():k==='health'?healthPanel():k==='plan'?planPanel():k==='crm'?crmPanel():k==='board'?boardPanel():k==='pomo'?pomoPanel():k==='certs'?certsPanel():k==='acct'?acctPanel():k==='find'?findPanel():settingsPanel();
  panel.scrollTop=y;
 }
 const fval=(b,n)=>{const f=b.closest('.add');const el=f&&f.querySelector(`[name=${n}]`);return el?el.value.trim():''};
@@ -2120,7 +2140,10 @@ panel.addEventListener('click',e=>{
  const b=e.target.closest('[data-act]');if(!b||b.tagName==='INPUT'||b.tagName==='TEXTAREA'||b.tagName==='SELECT')return;
  const a=b.dataset.act,st=panelState,c=st&&st.id&&S.classes[st.id],id=b.dataset.id;
  const done=()=>{save();renderPanel();updateTags()};
+ if(healthAct(a,b))return;
  switch(a){
+  case 'stickyShow':stickyMode('show');break;
+  case 'stickyPip':openPip();break;
   case 'close':closePanel();break;
   case 'tab':st.tab=b.dataset.tab;st.page=null;panel.scrollTop=0;renderPanel();break;
   case 'addL':{const ti=fval(b,'t');if(!ti)return;c.lessons.push({id:uid(),t:ti,url:safeUrl(fval(b,'u')),done:false});done();break}
@@ -2216,6 +2239,196 @@ setInterval(()=>{drawClock();updateStats()},15000);
 setInterval(drawBoard,60000);
 if(document.fonts&&document.fonts.ready)document.fonts.ready.then(()=>{drawBoard()});
 window.__acad={RM,get P(){return P},get walk(){return walk},get SIT(){return SIT},walkable,navPath,SEATS,NAV,get cat(){return CAT}};
+/* ================= Việc hôm nay (daily notes) ================= */
+function V(vi,en){return L==='vi'?vi:en}
+const MKT_SUGG=[['Check ngân sách & CPL các camp','Check budgets & CPL'],['Trả lời lead tồn + giao sale','Clear lead backlog'],['Duyệt content đăng hôm nay','Approve today\'s posts'],['Họp nhanh team 15\'','15-min team stand-up'],['Báo cáo số cuối ngày','End-of-day numbers'],['Lên content ngày mai','Plan tomorrow\'s content'],['1 Pomodoro học Lớp hiện tại','1 Pomodoro for current class'],['Ôn HSK 10 phút','HSK review 10 min']];
+function T0(){if(!S.today||typeof S.today!=='object')S.today={d:'',items:[],hist:{},rec:[]};const T=S.today;T.items=T.items||[];T.hist=T.hist||{};T.rec=T.rec||[];return T}
+function dayRoll(){const T=T0(),k=dkey(new Date());if(T.d===k)return false;
+ if(T.d){const tot=T.items.length,dn=T.items.filter(i=>i.done).length;if(tot)T.hist[T.d]=[dn,tot];const ks=Object.keys(T.hist).sort();while(ks.length>60)delete T.hist[ks.shift()]}
+ const carry=T.items.filter(i=>!i.done&&!i.rec).map(i=>Object.assign({},i,{carried:(i.carried||0)+1}));
+ const dow=new Date().getDay();const rec=T.rec.filter(r=>(r.days||[1,2,3,4,5]).includes(dow)).map(r=>({id:uid(),t:r.t,done:false,p:r.p||0,at:r.at||'',rec:r.id}));
+ T.items=[...rec,...carry];T.d=k;return true}
+function todayItems(){const T=T0();return T.items.slice().sort((a,b)=>(a.done-b.done)||((b.p||0)-(a.p||0))||((a.at||'99')>(b.at||'99')?1:(a.at||'99')<(b.at||'99')?-1:0))}
+function addToday(txt){txt=(txt||'').trim();if(!txt)return;let p=0,at='';if(txt[0]==='!'){p=1;txt=txt.slice(1).trim()}const m=txt.match(/^(\d{1,2})[:h](\d{2})?\s+(.+)$/);if(m){at=String(+m[1]).padStart(2,'0')+':'+(m[2]||'00');txt=m[3]}T0().items.push({id:uid(),t:txt.slice(0,140),done:false,p,at});save();todayRefresh()}
+function todayAct(a,id,val){const T=T0(),it=T.items.find(i=>i.id===id);
+ if(a==='tg'&&it){it.done=!it.done;it.doneAt=it.done?Date.now():0;if(it.done&&T.items.every(i=>i.done))catSay&&catSay(V('Xong hết việc hôm nay rồi! Giỏi quá 🎉','All done for today! 🎉'))}
+ else if(a==='del'&&it){T.items=T.items.filter(i=>i!==it)}
+ else if(a==='pri'&&it){it.p=it.p?0:1}
+ else if(a==='rec'&&it){if(it.rec){T.rec=T.rec.filter(r=>r.id!==it.rec);it.rec=0}else{const r={id:uid(),t:it.t,p:it.p||0,at:it.at||'',days:[1,2,3,4,5]};T.rec.push(r);it.rec=r.id}}
+ else if(a==='sugg'){addToday(val);return}
+ else if(a==='clear'){T.items=T.items.filter(i=>!i.done)}
+ save();todayRefresh()}
+function todayHTML(big){const T=T0(),its=todayItems(),dn=its.filter(i=>i.done).length,d=new Date();
+ const row=i=>`<li class="${i.done?'dn':''}${i.p?' pr':''}"><input type="checkbox" data-td="tg" data-id="${i.id}" ${i.done?'checked':''}><span class="tx">${i.at?`<b>${i.at}</b> `:''}${esc(i.t)}${i.carried?`<em title="${V('Dời từ hôm trước','Carried over')}">↪${i.carried}</em>`:''}</span><button data-td="pri" data-id="${i.id}" title="${V('Ưu tiên','Priority')}" class="${i.p?'on':''}">★</button>${big?`<button data-td="rec" data-id="${i.id}" title="${V('Lặp lại T2–T6','Repeat Mon–Fri')}" class="${i.rec?'on':''}">↻</button>`:''}<button data-td="del" data-id="${i.id}" title="${V('Xoá','Delete')}">×</button></li>`;
+ const used=new Set(T.items.map(i=>i.t));
+ return `<div class="tdh"><b>${V('Hôm nay','Today')} · ${d.getDate()}/${d.getMonth()+1}</b><span>${dn}/${its.length}</span></div><div class="tdbar"><i style="width:${its.length?dn/its.length*100:0}%"></i></div>
+ <ul class="tdl">${its.map(row).join('')||`<li class="empty">${V('Chưa có việc. Gõ việc rồi Enter. Mẹo: "!" = ưu tiên, "14:00 họp" = có giờ nhắc.','No tasks yet. Type and press Enter. Tip: "!" = priority, "14:00 meeting" = timed reminder.')}</li>`}</ul>
+ <input class="tdin" data-td="in" placeholder="${V('+ Thêm việc (Enter)','+ Add a task (Enter)')}" maxlength="140">
+ <div class="tdch">${MKT_SUGG.filter(s=>!used.has(V(s[0],s[1]))).slice(0,big?8:3).map(s=>`<button data-td="sugg" data-v="${esc(V(s[0],s[1]))}">+ ${esc(V(s[0],s[1]))}</button>`).join('')}</div>
+ ${big?(()=>{const ks=[];for(let k=13;k>=0;k--){const x=new Date();x.setDate(x.getDate()-k);ks.push(dkey(x))}return `<div class="tdhist">${ks.map(k=>{const h=k===T.d?[dn,its.length]:T.hist[k];const p=h&&h[1]?h[0]/h[1]:0;return `<i title="${k}: ${h?h[0]+'/'+h[1]:'–'}" style="height:${Math.max(3,p*34)}px;opacity:${h?1:.25}"></i>`}).join('')}</div><small class="tdnote">${V('14 ngày gần nhất · việc chưa xong tự dời sang hôm sau · ↻ = lặp lại mỗi ngày làm việc','Last 14 days · unfinished tasks roll over · ↻ = repeats every workday')}</small>`})():''}`}
+const STICKY_CSS=`#sticky,.pipnote{font:500 13px/1.4 system-ui,-apple-system,"Segoe UI",sans-serif;color:#3a2e12}
+#sticky{position:fixed;left:calc(12px + var(--sl,0px));top:calc(96px + var(--st,0px));width:min(262px,calc(100vw - 24px));z-index:22;background:linear-gradient(180deg,#fff6b8,#ffeb8a);border-radius:4px 4px 16px 4px;box-shadow:0 10px 26px rgba(40,30,0,.28),0 1px 0 rgba(255,255,255,.6) inset;transform:rotate(-.7deg);transition:transform .2s}
+#sticky:hover{transform:rotate(0)}#sticky.hide{display:none}
+#sticky .sth{display:flex;align-items:center;gap:6px;padding:7px 8px 5px 12px;cursor:grab;touch-action:none;user-select:none}
+#sticky .sth b{flex:1;font-size:12.5px;letter-spacing:.02em}#sticky .sth button{border:0;background:rgba(0,0,0,.07);border-radius:7px;width:24px;height:24px;cursor:pointer;color:#3a2e12;font-weight:700}
+#sticky .pin{position:absolute;top:-7px;left:50%;width:14px;height:14px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#ff8a8a,#c8322a);box-shadow:0 2px 3px rgba(0,0,0,.35)}
+#sticky.min .stb{display:none}
+.stb{padding:0 12px 12px}.pipnote{padding:12px;background:linear-gradient(180deg,#fff6b8,#ffeb8a);min-height:100vh;box-sizing:border-box;margin:0}
+.tdh{display:flex;justify-content:space-between;align-items:baseline;margin:2px 0 6px}.tdh span{font-weight:800;color:#8a6a12}
+.tdbar{height:4px;border-radius:4px;background:rgba(0,0,0,.08);overflow:hidden;margin-bottom:6px}.tdbar i{display:block;height:100%;background:#e8553a;border-radius:4px;transition:width .3s}
+.tdl{list-style:none;margin:0;padding:0;max-height:46vh;overflow:auto}.tdl li{display:flex;align-items:flex-start;gap:6px;padding:5px 0;border-bottom:1px dashed rgba(90,70,10,.2)}
+.tdl li input{margin-top:3px;accent-color:#e8553a;width:15px;height:15px;flex:none}.tdl .tx{flex:1;word-break:break-word}.tdl .tx b{color:#c8322a}.tdl .tx em{font-style:normal;font-size:10.5px;color:#a0781a;margin-left:4px}
+.tdl li.dn .tx{text-decoration:line-through;opacity:.5}.tdl li.pr .tx{font-weight:700}.tdl li.empty{opacity:.65;font-size:12px;border:0}
+.tdl button{border:0;background:none;cursor:pointer;color:rgba(58,46,18,.35);font-size:13px;padding:0 2px;line-height:1.4}.tdl button.on{color:#e8a21a}.tdl button:hover{color:#3a2e12}
+.tdin{width:100%;box-sizing:border-box;margin-top:8px;border:0;border-bottom:1.5px solid rgba(90,70,10,.35);background:transparent;padding:6px 2px;font:inherit;color:inherit;outline:none}
+.tdch{display:flex;flex-wrap:wrap;gap:4px;margin-top:8px}.tdch button{border:1px solid rgba(90,70,10,.25);background:rgba(255,255,255,.45);border-radius:20px;padding:3px 8px;font:600 11px inherit;cursor:pointer;color:#5a4410}
+.tdhist{display:flex;align-items:flex-end;gap:3px;height:38px;margin-top:12px}.tdhist i{flex:1;background:#e8553a;border-radius:3px 3px 0 0}.tdnote{display:block;font-size:11px;opacity:.7;margin-top:4px}
+.pb .todaybox{background:linear-gradient(180deg,#fff6b8,#ffeb8a);color:#3a2e12;border-radius:6px 6px 18px 6px;padding:12px 14px;box-shadow:0 6px 16px rgba(40,30,0,.15)}`;
+document.head.insertAdjacentHTML('beforeend',`<style>${STICKY_CSS}</style>`);
+document.body.insertAdjacentHTML('beforeend',`<aside id="sticky" class="hide" aria-label="Việc hôm nay"><i class="pin"></i><div class="sth"><b id="stTitle">${V('📌 Việc hôm nay','📌 Today')}</b><button data-s="pip" title="${V('Ghim nổi trên mọi cửa sổ','Float on top of all windows')}">⧉</button><button data-s="min" title="${V('Thu gọn','Collapse')}">–</button><button data-s="off" title="${V('Ẩn','Hide')}">×</button></div><div class="stb"></div></aside>`);
+const stickyEl=$('#sticky');let pipWin=null;
+const UIK2='tuan-academy-ui';function uiGet(){try{return JSON.parse(localStorage.getItem(UIK2))||{}}catch(e){return{}}}function uiSet(k,v){const u=uiGet();u[k]=v;try{localStorage.setItem(UIK2,JSON.stringify(u))}catch(e){}}
+function todayRefresh(){const keepFocus=document.activeElement&&document.activeElement.classList.contains('tdin');stickyEl.querySelector('.stb').innerHTML=todayHTML(false);if(keepFocus)stickyEl.querySelector('.tdin').focus();
+ if(pipWin&&!pipWin.closed){const f=pipWin.document.activeElement&&pipWin.document.activeElement.classList.contains('tdin');pipWin.document.getElementById('pn').innerHTML=todayHTML(false);if(f)pipWin.document.querySelector('.tdin').focus()}
+ if(panelState&&panelState.kind==='work'){const tb=panel.querySelector('.todaybox');if(tb){const f=document.activeElement&&tb.contains(document.activeElement);tb.innerHTML=todayHTML(true);if(f)tb.querySelector('.tdin').focus()}}
+ const T=T0(),left=T.items.filter(i=>!i.done).length;$('#b-today')&&$('#b-today').setAttribute('data-n',left||'');}
+function bindToday(root){root.addEventListener('click',e=>{const b=e.target.closest('[data-td]');if(!b||b.dataset.td==='in')return;e.stopPropagation();todayAct(b.dataset.td,b.dataset.id,b.dataset.v)});
+ root.addEventListener('change',e=>{const b=e.target.closest('input[type=checkbox][data-td]');if(b){}},true);
+ root.addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target.classList&&e.target.classList.contains('tdin')){e.preventDefault();e.stopPropagation();const v=e.target.value;e.target.value='';addToday(v)}},true)}
+bindToday(stickyEl);
+function stickyMode(m){stickyEl.classList.toggle('hide',m==='off');stickyEl.classList.toggle('min',m==='min');uiSet('sticky',m)}
+stickyEl.querySelector('.sth').addEventListener('click',e=>{const b=e.target.closest('[data-s]');if(!b)return;const k=b.dataset.s;if(k==='min')stickyMode(stickyEl.classList.contains('min')?'show':'min');else if(k==='off')stickyMode('off');else if(k==='pip')openPip()});
+{let dr=null;const h=stickyEl.querySelector('.sth');h.addEventListener('pointerdown',e=>{if(e.target.closest('button'))return;dr=[e.clientX-stickyEl.offsetLeft,e.clientY-stickyEl.offsetTop];h.setPointerCapture(e.pointerId)});
+ h.addEventListener('pointermove',e=>{if(!dr)return;const x=Math.max(0,Math.min(innerWidth-80,e.clientX-dr[0])),y=Math.max(0,Math.min(innerHeight-40,e.clientY-dr[1]));stickyEl.style.left=x+'px';stickyEl.style.top=y+'px'});
+ h.addEventListener('pointerup',()=>{if(dr){uiSet('stickyPos',[stickyEl.offsetLeft,stickyEl.offsetTop]);dr=null}});
+ const u=uiGet();if(u.stickyPos&&u.stickyPos[0]<innerWidth-60&&u.stickyPos[1]<innerHeight-30){stickyEl.style.left=u.stickyPos[0]+'px';stickyEl.style.top=u.stickyPos[1]+'px'}
+ stickyMode(u.sticky||(innerWidth<760?'min':'show'))}
+async function openPip(){
+ if(pipWin&&!pipWin.closed){pipWin.focus();return}
+ if('documentPictureInPicture' in window){try{pipWin=await documentPictureInPicture.requestWindow({width:300,height:440});
+  const d=pipWin.document;d.title=V('Việc hôm nay','Today');d.head.insertAdjacentHTML('beforeend',`<meta name="color-scheme" content="light"><style>${STICKY_CSS} body{margin:0}</style>`);d.body.innerHTML='<div class="pipnote" id="pn"></div>';d.getElementById('pn').innerHTML=todayHTML(false);bindToday(d.body);
+  pipWin.addEventListener('pagehide',()=>{pipWin=null});toast(V('Đã ghim nổi: tờ note luôn nằm trên các cửa sổ khác','Pinned: the note now floats above other windows'));return}catch(e){}}
+ window.open('/hsk2/note/','tuan-note','popup,width=320,height=480');
+ toast(V('Mở cửa sổ note riêng (trình duyệt này chưa hỗ trợ ghim nổi)','Opened the note in its own window'))}
+addEventListener('storage',e=>{if(e.key!==LS||!e.newValue)return;try{const r=JSON.parse(e.newValue);if(r&&r.v===1&&(r.updatedAt||0)>(S.updatedAt||0)){S=merge(r);todayRefresh();updateTags();if(panelState)renderPanel()}}catch(x){}});
+addEventListener('keydown',e=>{if(e.target.closest&&e.target.closest('input,textarea,select'))return;if(e.key==='n'&&!e.metaKey&&!e.ctrlKey){stickyMode(stickyEl.classList.contains('hide')?'show':'off')}});
+// timed reminders for today's tasks
+const tdNotified=new Set();
+function todayTick(){if(dayRoll()){save()}todayRefresh();const n=new Date(),hm=String(n.getHours()).padStart(2,'0')+':'+String(n.getMinutes()).padStart(2,'0');
+ for(const i of T0().items){if(i.done||!i.at||tdNotified.has(i.id+i.at))continue;if(hm>=i.at&&hm<=addMin(i.at,5)){tdNotified.add(i.id+i.at);notify(V('Tới giờ: ','Now: ')+i.t,i.at);catSay&&catSay(V(`Tới giờ "${i.t}" rồi nè`,`Time for "${i.t}"`))}}}
+function addMin(hm,m){const [h,mm]=hm.split(':').map(Number);const t2=h*60+mm+m;return String(Math.floor(t2/60)%24).padStart(2,'0')+':'+String(t2%60).padStart(2,'0')}
+
+/* ================= Quầy sức khoẻ (Google Health) ================= */
+function H0(){if(!S.health||typeof S.health!=='object')S.health={};const H=S.health;H.cfg=Object.assign({clientId:'',goalSteps:8000,goalSleep:480,goalWater:2000},H.cfg||{});H.days=H.days||{};return H}
+function hdd(k){const H=H0();return H.days[k]||(H.days[k]={})}
+const HSCOPES=['https://www.googleapis.com/auth/googlehealth.activity_and_fitness.readonly','https://www.googleapis.com/auth/googlehealth.sleep.readonly','https://www.googleapis.com/auth/googlehealth.health_metrics_and_measurements.readonly'].join(' ');
+const HAPI='https://health.googleapis.com/v4/users/me/dataTypes/';
+let hTok=null,hTokExp=0,gisP=null,hBusy=false,hErr='',hLast=0;window.__hraw={};
+function gisLoad(){return gisP||(gisP=new Promise((res,rej)=>{const s=document.createElement('script');s.src='https://accounts.google.com/gsi/client';s.async=true;s.onload=res;s.onerror=()=>{gisP=null;rej('gis')};document.head.appendChild(s)}))}
+async function hAuth(){const id=H0().cfg.clientId.trim();if(!id)throw 'noclient';await gisLoad();
+ return new Promise((res,rej)=>{const tc=google.accounts.oauth2.initTokenClient({client_id:id,scope:HSCOPES,hint:fb&&fb.user&&fb.user.email||undefined,callback:r=>{if(r.error){rej(r.error);return}hTok=r.access_token;hTokExp=Date.now()+((+r.expires_in||3600)-90)*1000;H0().linked=true;res()},error_callback:e=>rej((e&&e.type)||'popup')});tc.requestAccessToken({prompt:H0().linked?'':'consent'})})}
+async function hFetch(path,body){const r=await fetch(HAPI+path,{method:body?'POST':'GET',headers:{Authorization:'Bearer '+hTok,'Content-Type':'application/json',Accept:'application/json'},body:body?JSON.stringify(body):undefined});
+ if(r.status===401){hTok=null;throw 'auth'}const j=await r.json().catch(()=>({}));if(!r.ok)throw `${r.status} ${(j.error&&j.error.message)||''}`.slice(0,160);return j}
+const civ=d=>({date:{year:d.getFullYear(),month:d.getMonth()+1,day:d.getDate()},time:{hours:0,minutes:0,seconds:0,nanos:0}});
+const civKey=c=>{const d=c&&(c.date||c);if(!d)return null;if(typeof d==='string')return d.slice(0,10);return `${d.year}-${String(d.month).padStart(2,'0')}-${String(d.day).padStart(2,'0')}`};
+function deepNum(o,re,skip=/date|time|offset|year|month|day|hour|minute|second|nano/i){let f=null;(function w(x,k){if(f!=null||x==null)return;if(typeof x==='number'||(typeof x==='string'&&/^-?\d+(\.\d+)?$/.test(x))){if(k&&re.test(k)&&!skip.test(k))f=+x;return}if(typeof x==='object')for(const kk in x)w(x[kk],kk)})(o,'');return f}
+const hm2=iso=>{const d=new Date(iso);return isNaN(d)?'':String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0')};
+async function hDaily(type,field,start,end,days){const filters=[`${field}.date >= "${dkey(start)}"`,`${field.replace(/[A-Z]/g,m=>'_'+m.toLowerCase())}.date >= "${dkey(start)}"`];let last;
+ for(const f of filters){try{return await hFetch(`${type}/dataPoints?filter=${encodeURIComponent(f)}&pageSize=${days+2}`)}catch(e){last=e;if(String(e).startsWith('auth'))throw e}}throw last}
+async function hSync(interactive){
+ if(hBusy)return;const H=H0();if(!H.cfg.clientId){hErr='noclient';return}
+ hBusy=true;hErr='';renderHealthUI();
+ try{if(!hTok||Date.now()>hTokExp){if(!interactive){hErr='relink';return}await hAuth()}
+  const now=new Date(),start=new Date(now);start.setDate(start.getDate()-6);start.setHours(0,0,0,0);const end=new Date(now);end.setDate(end.getDate()+1);end.setHours(0,0,0,0);
+  const jobs={
+   steps:hFetch('steps/dataPoints:dailyRollUp',{range:{start:civ(start),end:civ(end)},windowSizeDays:1}).then(j=>{window.__hraw.steps=j;for(const p of j.rollupDataPoints||[]){const k=civKey(p.civilStartTime);if(k)hdd(k).steps=Math.round(deepNum(p.steps||p,/countSum|count|sum|value/i)||0)}}),
+   azm:hFetch('active-zone-minutes/dataPoints:dailyRollUp',{range:{start:civ(start),end:civ(end)},windowSizeDays:1}).then(j=>{window.__hraw.azm=j;for(const p of j.rollupDataPoints||[]){const k=civKey(p.civilStartTime);const v=deepNum(p.activeZoneMinutes||p,/sum|minutes|value|total/i);if(k&&v!=null)hdd(k).azm=Math.round(v)}}),
+   cal:hFetch('total-calories/dataPoints:dailyRollUp',{range:{start:civ(start),end:civ(end)},windowSizeDays:1}).then(j=>{window.__hraw.cal=j;for(const p of j.rollupDataPoints||[]){const k=civKey(p.civilStartTime);const v=deepNum(p.totalCalories||p,/sum|kcal|calor|value/i);if(k&&v!=null)hdd(k).cal=Math.round(v)}}),
+   sleep:hFetch(`sleep/dataPoints:reconcile?pageSize=25&filter=${encodeURIComponent(`sleep.interval.civil_end_time >= "${dkey(start)}" AND sleep.interval.civil_end_time < "${dkey(end)}"`)}`).then(j=>{window.__hraw.sleep=j;
+    for(const dp of j.dataPoints||[]){const s=dp.sleep;if(!s||!s.interval)continue;if(s.metadata&&s.metadata.mainSleep===false)continue;const k=dkey(new Date(s.interval.endTime));const d=hdd(k),sm=s.summary||{};
+     d.sleepMin=+sm.minutesAsleep||d.sleepMin||0;d.inBed=+sm.minutesInSleepPeriod||0;d.bed=hm2(s.interval.startTime);d.wake=hm2(s.interval.endTime);d.toSleep=+sm.minutesToFallAsleep||0;
+     for(const st of sm.stagesSummary||[]){const ty=String(st.type||'').toLowerCase();if(['deep','rem','light','awake'].includes(ty))d[ty]=+st.minutes||0}}}),
+   rhr:hDaily('daily-resting-heart-rate','dailyRestingHeartRate',start,end,7).then(j=>{window.__hraw.rhr=j;for(const dp of j.dataPoints||[]){const o=dp.dailyRestingHeartRate||dp;const k=civKey(o.date)||null;const v=deepNum(o,/beats|bpm|rate|value/i);if(k&&v)hdd(k).rhr=Math.round(v)}}),
+   hrv:hDaily('daily-heart-rate-variability','dailyHeartRateVariability',start,end,7).then(j=>{window.__hraw.hrv=j;for(const dp of j.dataPoints||[]){const o=dp.dailyHeartRateVariability||dp;const k=civKey(o.date)||null;const v=deepNum(o,/rmssd|millis|average|value/i);if(k&&v)hdd(k).hrv=Math.round(v)}}),
+   hourly:hFetch('steps/dataPoints:rollUp',{range:{startTime:new Date(new Date().setHours(0,0,0,0)).toISOString(),endTime:new Date().toISOString()},windowSize:'3600s'}).then(j=>{window.__hraw.hourly=j;const arr=new Array(24).fill(0);for(const p of j.rollupDataPoints||[]){const h=new Date(p.startTime).getHours();arr[h]=Math.round(deepNum(p.steps||p,/countSum|count|sum|value/i)||0)}hdd(dkey(new Date())).hourly=arr})};
+  const res=await Promise.allSettled(Object.values(jobs));const bad=res.map((r,i)=>r.status==='rejected'?Object.keys(jobs)[i]+': '+r.reason:null).filter(Boolean);
+  if(bad.some(b=>/auth/.test(b))){hErr='relink'}else if(bad.length===res.length){hErr=bad[0]}else hErr=bad.length?'partial:'+bad.join(' | '):'';
+  H.last=Date.now();for(const k of Object.keys(H.days)){if(k<dkey(new Date(Date.now()-45*864e5)))delete H.days[k]}
+  for(const k in H.days)H.days[k].src=H.days[k].src||'api';save();updateTags();drawHealthScreen();healthNudge()}
+ catch(e){hErr=String(e)}finally{hBusy=false;renderHealthUI()}}
+setInterval(()=>{if(!document.hidden&&hTok&&Date.now()<hTokExp)hSync(false)},5*60*1000);
+addEventListener('focus',()=>{if(hTok&&Date.now()<hTokExp&&Date.now()-(H0().last||0)>120000)hSync(false)});
+function avgOf(key,n,skipToday){const a=[];for(let k=skipToday?1:0;k<n+(skipToday?1:0);k++){const x=new Date();x.setDate(x.getDate()-k);const d=H0().days[dkey(x)];if(d&&d[key])a.push(d[key])}return a.length?a.reduce((s,v)=>s+v,0)/a.length:null}
+function readiness(){const H=H0(),d=H.days[dkey(new Date())]||{};if(!d.sleepMin&&!d.rhr&&!d.hrv)return null;
+ let sc=5;const sl=d.sleepMin?Math.min(1,d.sleepMin/H.cfg.goalSleep):.7;sc+=sl*40;if(d.deep!=null&&d.rem!=null&&d.sleepMin)sc+=Math.min(1,(d.deep+d.rem)/(d.sleepMin*.4))*5;
+ const hb=avgOf('hrv',7,true);sc+=d.hrv&&hb?Math.max(0,Math.min(1,(d.hrv/hb-.8)/.4))*28:18;const rb=avgOf('rhr',7,true);sc+=d.rhr&&rb?Math.max(0,Math.min(1,(rb-d.rhr+5)/10))*22:14;return Math.round(Math.min(100,sc))}
+function advice(r){if(r==null)return V('Kết nối Google Health hoặc nhập giấc ngủ hôm nay để có gợi ý.','Connect Google Health or log last night\'s sleep for tips.');
+ if(r>=80)return V('Sẵn sàng cao: dồn việc khó (học Lớp, phân tích số) vào buổi sáng · gợi ý 4 Pomodoro.','High readiness: do the hard work this morning · 4 Pomodoros.');
+ if(r>=62)return V('Ổn định: 2–3 Pomodoro, nghỉ đúng giờ, đi bộ sau bữa trưa.','Steady: 2–3 Pomodoros, take breaks on time.');
+ return V('Cần hồi phục: việc nhẹ, đi bộ 15 phút, ngủ sớm hơn 30 phút tối nay.','Recover: lighter tasks, a 15-min walk, bed 30 min earlier tonight.')}
+function fmtHM(m){return m?`${Math.floor(m/60)}h${String(Math.round(m%60)).padStart(2,'0')}`:'–'}
+function spark(key,color,fmt,goal){const pts=[];for(let k=6;k>=0;k--){const x=new Date();x.setDate(x.getDate()-k);const d=H0().days[dkey(x)]||{};pts.push([x,d[key]||0])}const mx=Math.max(goal||0,...pts.map(p=>p[1]))||1;
+ return `<div class="hsp">${pts.map(([x,v],i)=>`<div title="${x.getDate()}/${x.getMonth()+1}: ${v?fmt(v):'–'}"><i style="height:${Math.max(2,v/mx*44)}px;background:${color};opacity:${i===6?1:.55}"></i><small>${'CN T2 T3 T4 T5 T6 T7'.split(' ')[x.getDay()]}</small></div>`).join('')}${goal?`<b style="bottom:${goal/mx*44+14}px"></b>`:''}</div>`}
+function hRing(p,c,label,val){const r=26,C=2*Math.PI*r,o=C*(1-Math.min(1,p));return `<div class="hring"><svg viewBox="0 0 64 64"><circle cx="32" cy="32" r="${r}" stroke="rgba(127,127,127,.18)"/><circle cx="32" cy="32" r="${r}" stroke="${c}" stroke-dasharray="${C}" stroke-dashoffset="${o}" transform="rotate(-90 32 32)"/></svg><b>${val}</b><small>${label}</small></div>`}
+function healthPanel(){const r=RM.health,H=H0(),k=dkey(new Date()),d=H.days[k]||{},y=(()=>{const x=new Date();x.setDate(x.getDate()-1);return H.days[dkey(x)]||{}})(),rd=readiness();
+ const debt=(()=>{let s=0,n=0;for(let i=0;i<7;i++){const x=new Date();x.setDate(x.getDate()-i);const dd=H.days[dkey(x)];if(dd&&dd.sleepMin){s+=H.cfg.goalSleep-dd.sleepMin;n++}}return n?s:null})();
+ const beds=[];for(let i=0;i<7;i++){const x=new Date();x.setDate(x.getDate()-i);const dd=H.days[dkey(x)];if(dd&&dd.bed){let [hh,mm]=dd.bed.split(':').map(Number);if(hh<12)hh+=24;beds.push(hh*60+mm)}}
+ const bAvg=beds.length?beds.reduce((a,b)=>a+b,0)/beds.length:null,bSd=beds.length>2?Math.sqrt(beds.reduce((a,b)=>a+(b-bAvg)**2,0)/beds.length):null;
+ const st=d.sleepMin?['deep','rem','light','awake'].map(s=>[s,d[s]||0]):[];const stT=st.reduce((a,b)=>a+b[1],0)||1;
+ const status=!H.cfg.clientId?V('Chưa nối Google Health · đang dùng số nhập tay','Not linked to Google Health · manual mode'):hBusy?V('Đang lấy dữ liệu…','Syncing…'):hErr==='relink'?V('Cần bấm "Cập nhật" để Google cấp quyền lại (mỗi giờ 1 lần)','Tap Refresh to re-authorise (hourly)'):hErr&&!hErr.startsWith('partial')?V('Lỗi: ','Error: ')+esc(hErr):H.last?V('Cập nhật lúc ','Updated ')+new Date(H.last).toLocaleTimeString(L==='vi'?'vi-VN':'en-GB',{hour:'2-digit',minute:'2-digit'}):'';
+ let h=head(r.hex,r.short,tr(r.title),status);
+ h+=`<div class="pb hp" style="--c:${r.hex}">
+ <div class="hready"><div class="hscore" style="--p:${rd||0}"><b>${rd??'–'}</b><small>${V('Sẵn sàng','Readiness')}</small></div><p>${advice(rd)}</p></div>
+ <div class="hrings">${hRing((d.steps||0)/H.cfg.goalSteps,'#2ecc71',V('bước','steps'),d.steps!=null?(d.steps>=1000?(d.steps/1000).toFixed(1)+'k':d.steps):'–')}${hRing((d.sleepMin||0)/H.cfg.goalSleep,'#8e6cf0',V('ngủ','sleep'),fmtHM(d.sleepMin))}${hRing((d.azm||0)/22,'#ff9a3c',V('phút vận động','zone min'),d.azm??'–')}${hRing((d.water||0)/H.cfg.goalWater,'#3fb6e8',V('nước','water'),d.water?(d.water/1000).toFixed(1)+'L':'0')}</div>
+ <div class="hgrid"><div><small>${V('Nhịp tim nghỉ','Resting HR')}</small><b>${d.rhr||y.rhr||'–'}<em> bpm</em></b>${(()=>{const b=avgOf('rhr',7,true);const v=d.rhr||y.rhr;return v&&b?`<i class="${v<=b?'ok':'warn'}">${v<=b?'↓':'↑'} ${V('so với 7 ngày','vs 7-day')} ${Math.round(b)}</i>`:''})()}</div>
+  <div><small>HRV</small><b>${d.hrv||y.hrv||'–'}<em> ms</em></b>${(()=>{const b=avgOf('hrv',7,true);const v=d.hrv||y.hrv;return v&&b?`<i class="${v>=b*.95?'ok':'warn'}">${v>=b?'↑':'↓'} ${V('so với 7 ngày','vs 7-day')} ${Math.round(b)}</i>`:''})()}</div>
+  <div><small>${V('Lên giường → dậy','Bed → wake')}</small><b>${d.bed||'–'} → ${d.wake||'–'}</b>${bSd!=null?`<i class="${bSd<40?'ok':'warn'}">${V('Giờ ngủ lệch','Bedtime spread')} ±${Math.round(bSd)}′</i>`:''}</div>
+  <div><small>${V('Nợ ngủ 7 ngày','7-day sleep debt')}</small><b>${debt==null?'–':debt>0?fmtHM(debt):V('Không nợ','None')}</b>${d.cal?`<i>${d.cal} kcal ${V('hôm nay','today')}</i>`:''}</div></div>
+ ${st.length?`<div class="sec"><h3>${V('Giai đoạn ngủ đêm qua','Last night\'s stages')}</h3><div class="hstage">${st.map(([s,m])=>`<i class="s-${s}" style="flex:${m||.01}" title="${s}: ${m}′"></i>`).join('')}</div><div class="hleg">${st.map(([s,m])=>`<span class="s-${s}">${({deep:V('Sâu','Deep'),rem:'REM',light:V('Nông','Light'),awake:V('Thức','Awake')})[s]} ${m}′ · ${Math.round(m/stT*100)}%</span>`).join('')}</div></div>`:''}
+ ${d.hourly?`<div class="sec"><h3>${V('Bước chân theo giờ hôm nay','Steps by hour today')}</h3><div class="hhour">${d.hourly.map((v,i)=>`<i title="${i}h: ${v}" style="height:${Math.min(40,v/25)+2}px;opacity:${i===new Date().getHours()?1:.6};background:${i>=8&&i<18&&v<250&&i<new Date().getHours()?'#ff9a3c':'#2ecc71'}"></i>`).join('')}</div><small class="note">${V('Cam = giờ làm việc ngồi yên dưới 250 bước. Bắp sẽ nhắc bạn đứng dậy.','Orange = work hours under 250 steps. Bắp will nudge you.')}</small></div>`:''}
+ <div class="sec"><h3>${V('7 ngày','7 days')}</h3><div class="hcharts"><div><small>${V('Bước chân','Steps')}</small>${spark('steps','#2ecc71',v=>v,H.cfg.goalSteps)}</div><div><small>${V('Giấc ngủ','Sleep')}</small>${spark('sleepMin','#8e6cf0',fmtHM,H.cfg.goalSleep)}</div><div><small>${V('Nhịp tim nghỉ','Resting HR')}</small>${spark('rhr','#ff5a7a',v=>v+' bpm')}</div><div><small>HRV</small>${spark('hrv','#17a398',v=>v+' ms')}</div></div></div>
+ <div class="sec"><h3>${V('Uống nước','Water')}</h3><div class="row">${[250,500].map(v=>`<button class="btn sm" data-act="hw" data-v="${v}">+${v} ml</button>`).join('')}<button class="btn sm" data-act="hw" data-v="-250">−250</button></div></div>
+ <div class="sec"><h3>Google Health</h3><div class="box">
+  ${H.cfg.clientId?`<div class="row"><button class="btn sm pri" data-act="hsync">${hTok&&Date.now()<hTokExp?V('Cập nhật ngay','Refresh now'):V('Kết nối / Cập nhật','Connect / refresh')}</button><span class="note">${V('Tự cập nhật 5 phút/lần khi đang mở app','Auto-refresh every 5 min while open')}</span></div>`:`<p class="note">${V('Cần 1 mã OAuth Client ID (Google Cloud) để đọc dữ liệu từ đồng hồ. Có mã rồi thì dán vào đây.','Needs an OAuth Client ID (Google Cloud) to read your watch data. Paste it here.')}</p>`}
+  ${hErr&&hErr.startsWith('partial')?`<p class="note">${V('Một số mục chưa đọc được: ','Some items failed: ')}${esc(hErr.slice(8,240))}</p>`:''}
+  <details style="margin-top:8px"><summary class="note" style="cursor:pointer">${V('Cài đặt kết nối & mục tiêu','Connection & goals')}</summary><div class="add"><input name="hcid" value="${esc(H.cfg.clientId)}" placeholder="xxxx.apps.googleusercontent.com"><div class="row"><input name="hgs" type="number" value="${H.cfg.goalSteps}" title="${V('Mục tiêu bước','Step goal')}"><input name="hgl" type="number" value="${H.cfg.goalSleep/60}" step="0.25" title="${V('Mục tiêu ngủ (giờ)','Sleep goal (h)')}"><button class="btn sm pri" data-act="hcfg">${V('Lưu','Save')}</button></div></div></details></div></div>
+ <div class="sec"><h3>${V('Nhập tay hôm nay','Log manually')}</h3><div class="add"><div class="row"><input name="hsl" placeholder="${V('Ngủ (vd 8h28)','Sleep (e.g. 8h28)')}"><input name="hst" type="number" placeholder="${V('Bước','Steps')}"></div><div class="row"><input name="hrh" type="number" placeholder="${V('Nhịp nghỉ','Resting HR')}"><input name="hhv" type="number" placeholder="HRV ms"><button class="btn sm pri" data-act="hman">${V('Lưu','Save')}</button></div></div></div>
+ <p class="note">${V('Gợi ý mang tính tham khảo, không thay cho lời khuyên y tế.','Tips are informational, not medical advice.')}</p></div>`;return h}
+function renderHealthUI(){if(panelState&&panelState.kind==='health')renderPanel()}
+function healthAct(a,b){const H=H0(),d=hdd(dkey(new Date()));
+ if(a==='hw'){d.water=Math.max(0,(d.water||0)+(+b.dataset.v));save();renderPanel();drawHealthScreen();return true}
+ if(a==='hsync'){hSync(true);return true}
+ if(a==='hcfg'){const id=fval(b,'hcid');H.cfg.clientId=id;H.cfg.goalSteps=Math.max(1000,+fval(b,'hgs')||8000);H.cfg.goalSleep=Math.round(Math.max(4,+fval(b,'hgl')||8)*60);hTok=null;save();renderPanel();if(id)hSync(true);return true}
+ if(a==='hman'){const sl=fval(b,'hsl');if(sl){const m=sl.match(/(\d+)\s*[h:.,]?\s*(\d+)?/);if(m)d.sleepMin=(+m[1])*60+(+(m[2]||0))}const s=+fval(b,'hst');if(s)d.steps=s;const rh=+fval(b,'hrh');if(rh)d.rhr=rh;const hv=+fval(b,'hhv');if(hv)d.hrv=hv;d.src=d.src||'manual';save();renderPanel();updateTags();drawHealthScreen();return true}
+ return false}
+let lastNudge=0;
+function healthNudge(){const n=new Date(),hr=n.getHours(),d=H0().days[dkey(n)];if(!d||!d.hourly||n.getDay()===0||n.getDay()===6)return;if(hr<9||hr>17||Date.now()-lastNudge<50*60000)return;const prev=d.hourly[hr-1]||0;if(prev<250){lastNudge=Date.now();catSay&&catSay(V(`Giờ trước mới ${prev} bước. Đứng dậy đi một vòng 5 phút nha!`,`Only ${prev} steps last hour. Take a 5-minute walk!`),8000);meowSound&&meowSound('meow')}}
+function healthTag(){const d=H0().days[dkey(new Date())]||{};const parts=[];if(d.steps!=null)parts.push((d.steps>=1000?(d.steps/1000).toFixed(1)+'k':d.steps)+V(' bước',' steps'));if(d.sleepMin)parts.push(V('ngủ ','sleep ')+fmtHM(d.sleepMin));if(!parts.length)parts.push(V('Bước · ngủ · nhịp tim','Steps · sleep · heart'));return parts.join(' · ')}
+function drawHealthScreen(){const r=RM.health;if(!r||!r.hcv)return;const c=r.hcv,x=c.getContext('2d'),W=c.width,Hh=c.height,H=H0(),d=H.days[dkey(new Date())]||{},rd=readiness();
+ x.fillStyle='#0f1622';x.fillRect(0,0,W,Hh);x.fillStyle='#ff5a7a';x.fillRect(0,0,W,30);x.fillStyle='#fff';x.font='700 18px system-ui';x.fillText(V('SỨC KHOẺ HÔM NAY','TODAY\'S HEALTH'),12,21);
+ const rg=(cx,p,col,val,lab)=>{x.lineWidth=12;x.strokeStyle='rgba(255,255,255,.12)';x.beginPath();x.arc(cx,98,40,0,7);x.stroke();x.strokeStyle=col;x.beginPath();x.arc(cx,98,40,-Math.PI/2,-Math.PI/2+Math.PI*2*Math.min(1,p));x.stroke();x.fillStyle='#fff';x.font='800 20px system-ui';x.textAlign='center';x.fillText(val,cx,104);x.font='600 13px system-ui';x.fillStyle='#9fb0c8';x.fillText(lab,cx,158);x.textAlign='left'};
+ rg(64,(d.steps||0)/H.cfg.goalSteps,'#2ecc71',d.steps!=null?(d.steps>=1000?(d.steps/1000).toFixed(1)+'k':String(d.steps)):'–',V('bước','steps'));rg(170,(d.sleepMin||0)/H.cfg.goalSleep,'#8e6cf0',fmtHM(d.sleepMin),V('ngủ','sleep'));rg(276,(rd||0)/100,'#ffb347',rd!=null?String(rd):'–',V('sẵn sàng','ready'));
+ x.fillStyle='#ff5a7a';x.font='700 16px system-ui';x.fillText(`♥ ${d.rhr||'–'} bpm   HRV ${d.hrv||'–'} ms`,14,190);if(r.htex)r.htex.needsUpdate=true}
+function healthKiosk(r){
+ const g=new THREE.Group(),TH=LIB?'lib':BEACH?'beach':'campus',acc=r.hex;
+ const base=LIB?'#6b4129':BEACH?'#c99a63':'#f3efe6',top=LIB?'#8a5a3a':BEACH?'#a8774a':'#ffffff';
+ if(LIB)rug(g,0,.1,3.6,3,acc);else box(3.8,.16,3,BEACH?'#b98a55':'#d9d0bf',0,.08,0,g);
+ box(2.6,1,.8,base,0,.66,.35,g);box(2.75,.08,.95,top,0,1.2,.35,g);box(2.62,.12,.02,acc,0,1.0,.76,g,{cast:false});
+ const cv=document.createElement('canvas');cv.width=340;cv.height=200;r.hcv=cv;const tex=new THREE.CanvasTexture(cv);tex.colorSpace=THREE.SRGBColorSpace;r.htex=tex;
+ const sg=new THREE.Group();sg.position.set(0,0,-.6);g.add(sg);box(.12,2.2,.12,'#2b2f36',-1.1,1.1,0,sg);box(.12,2.2,.12,'#2b2f36',1.1,1.1,0,sg);box(2.5,1.55,.12,'#1b1f27',0,2.2,0,sg);
+ const sc=new THREE.Mesh(new THREE.PlaneGeometry(2.35,1.38),new THREE.MeshLambertMaterial({map:tex,emissive:'#ffffff',emissiveMap:tex,emissiveIntensity:.85}));sc.position.set(0,2.2,.065);sg.add(sc);
+ const hrt=new THREE.Group();hrt.position.set(0,3.25,0);sg.add(hrt);for(const s of [-1,1]){const b=new THREE.Mesh(new THREE.SphereGeometry(.16,12,8),M('#ff5a7a'));b.position.set(s*.12,.05,0);hrt.add(b)}const cn=new THREE.Mesh(new THREE.ConeGeometry(.24,.32,12),M('#ff5a7a'));cn.rotation.z=Math.PI;cn.position.y=-.15;hrt.add(cn);window.__heart=hrt;
+ const bt=new THREE.Mesh(new THREE.CylinderGeometry(.09,.09,.32,10),new THREE.MeshLambertMaterial({color:'#7fd3f0',transparent:true,opacity:.75}));bt.position.set(-.9,1.4,.4);g.add(bt);
+ for(const [x2,c] of [[-.3,'#ff9a3c'],[.1,'#2ecc71'],[.5,'#ff5a7a']]){const f=new THREE.Mesh(new THREE.SphereGeometry(.09,8,6),M(c));f.position.set(x2,1.32,.45);g.add(f)}
+ const mat=box(.7,.03,1.7,'#7fd3c7',1.75,.03,.5,g,{cast:false});mat.rotation.y=.2;for(const z of [.1,.5]){box(.3,.08,.08,'#2b2f36',1.75,.12,z+.4,g);for(const s of [-1,1])box(.12,.16,.16,'#555',1.75+s*.17,.12,z+.4,g)}
+ if(!LIB){const um=new THREE.Mesh(new THREE.ConeGeometry(2.3,.7,BEACH?10:4),M(BEACH?'#d9b46a':'#7fd3c7'));if(!BEACH)um.rotation.y=Math.PI/4;um.position.y=4.2;um.castShadow=true;g.add(um);const pl=new THREE.Mesh(new THREE.CylinderGeometry(.06,.06,4,8),M('#ffffff'));pl.position.set(-1.55,2,1.2);g.add(pl);const pl2=pl.clone();pl2.position.x=1.55;g.add(pl2)}
+ potPlant(g,-1.6,-.5,.6,0,LIB?'#2f4a3a':'#ffffff');
+ place(r,g,3.6,2.4,1.75,LIB?3.9:4.8);setTimeout(drawHealthScreen,50);
+}
+
+bindToday(panel);dayRoll();todayRefresh();setInterval(todayTick,30000);
+$('#b-today').addEventListener('click',e=>{e.stopPropagation();stickyMode(stickyEl.classList.contains('hide')?'show':'off');$('#hud-tr').classList.remove('open')});
+setTimeout(drawHealthScreen,300);
 {const q=new URLSearchParams(location.search).get('room');if(q&&RM[q])setTimeout(()=>goRoom(q),900)}
 catInit();setTimeout(()=>{try{if(!NAV.g)navBuild()}catch(e){}},1200);
 requestAnimationFrame(frame);

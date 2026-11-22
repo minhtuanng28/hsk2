@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#ffe98a">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>Việc hôm nay</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" href="icon-192.png">
+<link rel="apple-touch-icon" href="/hsk2/note/apple-touch-icon.png">
+<style>
+:root{color-scheme:light}
+html,body{margin:0;height:100%}
+body{font:500 14px/1.45 system-ui,-apple-system,"Segoe UI",sans-serif;color:#3a2e12;background:linear-gradient(180deg,#fff6b8,#ffe98a);-webkit-font-smoothing:antialiased}
+.wrap{padding:14px 16px 18px;max-width:520px;margin:0 auto}
+.top{display:flex;align-items:center;gap:6px;margin-bottom:4px}
+.top b{flex:1;font-size:15px}
+.top button,.foot button{border:0;background:rgba(0,0,0,.08);border-radius:8px;height:28px;padding:0 9px;font:700 12px inherit;color:#3a2e12;cursor:pointer}
+.st{font-size:11.5px;color:#8a6a2a;margin-bottom:8px}
+.tdh{display:flex;justify-content:space-between;align-items:baseline;margin:2px 0 6px}.tdh span{font-weight:800;color:#8a6a12}
+.tdbar{height:5px;border-radius:5px;background:rgba(0,0,0,.08);overflow:hidden;margin-bottom:8px}.tdbar i{display:block;height:100%;background:#e8553a;transition:width .3s}
+.tdl{list-style:none;margin:0;padding:0}.tdl li{display:flex;align-items:flex-start;gap:8px;padding:7px 0;border-bottom:1px dashed rgba(90,70,10,.22)}
+.tdl li input{margin-top:3px;accent-color:#e8553a;width:17px;height:17px;flex:none}.tdl .tx{flex:1;word-break:break-word}.tdl .tx b{color:#c8322a}.tdl .tx em{font-style:normal;font-size:11px;color:#a0781a;margin-left:4px}
+.tdl li.dn .tx{text-decoration:line-through;opacity:.5}.tdl li.pr .tx{font-weight:700}.tdl li.empty{opacity:.65;font-size:12.5px;border:0}
+.tdl button{border:0;background:none;cursor:pointer;color:rgba(58,46,18,.35);font-size:14px;padding:0 3px}.tdl button.on{color:#e8a21a}.tdl button:hover{color:#3a2e12}
+.tdin{width:100%;box-sizing:border-box;margin-top:10px;border:0;border-bottom:1.5px solid rgba(90,70,10,.35);background:transparent;padding:8px 2px;font:inherit;color:inherit;outline:none}
+.tdch{display:flex;flex-wrap:wrap;gap:5px;margin-top:10px}.tdch button{border:1px solid rgba(90,70,10,.25);background:rgba(255,255,255,.45);border-radius:20px;padding:4px 9px;font:600 11.5px inherit;cursor:pointer;color:#5a4410}
+.foot{display:flex;gap:6px;margin-top:14px;flex-wrap:wrap}
+.foot a{color:#8a4a12;font-size:12px;align-self:center}
+</style>
+</head>
+<body>
+<div class="wrap">
+ <div class="top"><b>📌 Việc hôm nay</b><button id="pip" title="Ghim nổi trên mọi cửa sổ">⧉ Ghim nổi</button></div>
+ <div class="st" id="st">Đang mở…</div>
+ <div id="list"></div>
+ <div class="foot"><button id="clr">Xoá việc đã xong</button><button id="sign" hidden>Đăng nhập Google để đồng bộ</button><a href="/hsk2/academy/" target="_blank" rel="noopener">Mở Học viện ↗</a></div>
+</div>
+<script type="module">
+const LS='tuan-academy-v1',$=s=>document.querySelector(s);
+const FBCFG={apiKey:"AIzaSyCzG2TNB2fwUSUDycsxQ8a2D1GaWzVHl28",authDomain:"hsk-app-f5201.firebaseapp.com",projectId:"hsk-app-f5201",storageBucket:"hsk-app-f5201.firebasestorage.app",messagingSenderId:"278418991443",appId:"1:278418991443:web:9cb95ad3a99e01b7ae59a6"};
+const SUGG=['Check ngân sách & CPL các camp','Trả lời lead tồn + giao sale','Duyệt content đăng hôm nay','Họp nhanh team 15\'','Báo cáo số cuối ngày','Lên content ngày mai','1 Pomodoro học Lớp hiện tại','Ôn HSK 10 phút'];
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c]);
+const uid=()=>Math.random().toString(36).slice(2,9)+Date.now().toString(36).slice(-3);
+const dkey=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+let S=load(),fb=null,ref=null,pipWin=null;
+function load(){try{const j=JSON.parse(localStorage.getItem(LS)||'null');if(j&&j.v===1)return j}catch(e){}return{v:1,updatedAt:0}}
+function T0(){if(!S.today||typeof S.today!=='object')S.today={d:'',items:[],hist:{},rec:[]};const T=S.today;T.items=T.items||[];T.hist=T.hist||{};T.rec=T.rec||[];return T}
+function dayRoll(){const T=T0(),k=dkey(new Date());if(T.d===k)return false;
+ if(T.d){const tot=T.items.length,dn=T.items.filter(i=>i.done).length;if(tot)T.hist[T.d]=[dn,tot]}
+ const carry=T.items.filter(i=>!i.done&&!i.rec).map(i=>Object.assign({},i,{carried:(i.carried||0)+1}));
+ const dow=new Date().getDay();const rec=T.rec.filter(r=>(r.days||[1,2,3,4,5]).includes(dow)).map(r=>({id:uid(),t:r.t,done:false,p:r.p||0,at:r.at||'',rec:r.id}));
+ T.items=[...rec,...carry];T.d=k;return true}
+function items(){return T0().items.slice().sort((a,b)=>(a.done-b.done)||((b.p||0)-(a.p||0))||((a.at||'99')>(b.at||'99')?1:(a.at||'99')<(b.at||'99')?-1:0))}
+function html(){const its=items(),dn=its.filter(i=>i.done).length,d=new Date(),used=new Set(its.map(i=>i.t));
+ return `<div class="tdh"><b>Hôm nay · ${d.getDate()}/${d.getMonth()+1}</b><span>${dn}/${its.length}</span></div><div class="tdbar"><i style="width:${its.length?dn/its.length*100:0}%"></i></div>
+ <ul class="tdl">${its.map(i=>`<li class="${i.done?'dn':''}${i.p?' pr':''}"><input type="checkbox" data-td="tg" data-id="${i.id}" ${i.done?'checked':''}><span class="tx">${i.at?`<b>${i.at}</b> `:''}${esc(i.t)}${i.carried?`<em>↪${i.carried}</em>`:''}</span><button data-td="pri" data-id="${i.id}" class="${i.p?'on':''}" title="Ưu tiên">★</button><button data-td="rec" data-id="${i.id}" class="${i.rec?'on':''}" title="Lặp lại T2–T6">↻</button><button data-td="del" data-id="${i.id}" title="Xoá">×</button></li>`).join('')||'<li class="empty">Chưa có việc. Gõ việc rồi Enter. Mẹo: "!" đầu dòng = ưu tiên, "14:00 họp" = có giờ.</li>'}</ul>
+ <input class="tdin" placeholder="+ Thêm việc (Enter)" maxlength="140">
+ <div class="tdch">${SUGG.filter(s=>!used.has(s)).slice(0,6).map(s=>`<button data-td="sugg" data-v="${esc(s)}">+ ${esc(s)}</button>`).join('')}</div>`}
+function render(){const f=document.activeElement&&document.activeElement.classList.contains('tdin');$('#list').innerHTML=html();if(f)$('#list .tdin').focus();
+ if(pipWin&&!pipWin.closed){const pf=pipWin.document.activeElement&&pipWin.document.activeElement.classList.contains('tdin');pipWin.document.getElementById('pn').innerHTML=html();if(pf)pipWin.document.querySelector('.tdin').focus()}
+ const left=T0().items.filter(i=>!i.done).length;document.title=left?`(${left}) Việc hôm nay`:'Việc hôm nay';if(navigator.setAppBadge){left?navigator.setAppBadge(left).catch(()=>{}):navigator.clearAppBadge().catch(()=>{})}}
+function commit(){S.updatedAt=Date.now();try{localStorage.setItem(LS,JSON.stringify(S))}catch(e){}render();push()}
+function add(txt){txt=(txt||'').trim();if(!txt)return;let p=0,at='';if(txt[0]==='!'){p=1;txt=txt.slice(1).trim()}const m=txt.match(/^(\d{1,2})[:h](\d{2})?\s+(.+)$/);if(m){at=String(+m[1]).padStart(2,'0')+':'+(m[2]||'00');txt=m[3]}T0().items.push({id:uid(),t:txt.slice(0,140),done:false,p,at});commit()}
+function act(a,id,v){const T=T0(),it=T.items.find(i=>i.id===id);
+ if(a==='tg'&&it){it.done=!it.done;it.doneAt=it.done?Date.now():0}else if(a==='del'&&it){T.items=T.items.filter(i=>i!==it)}else if(a==='pri'&&it){it.p=it.p?0:1}
+ else if(a==='rec'&&it){if(it.rec){T.rec=T.rec.filter(r=>r.id!==it.rec);it.rec=0}else{const r={id:uid(),t:it.t,p:it.p||0,at:it.at||'',days:[1,2,3,4,5]};T.rec.push(r);it.rec=r.id}}
+ else if(a==='sugg'){add(v);return}else return;commit()}
+function bind(root){root.addEventListener('click',e=>{const b=e.target.closest('[data-td]');if(b)act(b.dataset.td,b.dataset.id,b.dataset.v)});
+ root.addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target.classList.contains('tdin')){e.preventDefault();const v=e.target.value;e.target.value='';add(v)}})}
+bind($('#list'));
+$('#clr').onclick=()=>{T0().items=T0().items.filter(i=>!i.done);commit()};
+$('#pip').onclick=async()=>{if(!('documentPictureInPicture' in window)){$('#st').textContent='Trình duyệt này chưa hỗ trợ ghim nổi. Dùng Chrome hoặc Edge trên máy tính.';return}
+ if(pipWin&&!pipWin.closed){pipWin.focus();return}pipWin=await documentPictureInPicture.requestWindow({width:290,height:430});const d=pipWin.document;d.title='Việc hôm nay';
+ [...document.querySelectorAll('style')].forEach(s=>d.head.appendChild(s.cloneNode(true)));d.body.innerHTML='<div class="wrap" style="padding:10px 12px" id="pn"></div>';d.getElementById('pn').innerHTML=html();bind(d.body);pipWin.addEventListener('pagehide',()=>{pipWin=null})};
+addEventListener('storage',e=>{if(e.key!==LS||!e.newValue)return;try{const r=JSON.parse(e.newValue);if(r&&r.v===1&&(r.updatedAt||0)>=(S.updatedAt||0)){S=r;render()}}catch(x){}});
+// Google sync (same account + same Firestore doc as the academy / HSK app); only the "today" block is written
+let pushT=0,busy=false;
+function push(){clearTimeout(pushT);pushT=setTimeout(doPush,900)}
+async function doPush(){if(!fb||!ref||busy)return;busy=true;$('#st').textContent='Đang lưu…';
+ try{await fb.fs.runTransaction(fb.D,async tx=>{const sn=await tx.get(ref);const dd=sn.exists()?sn.data():{};let st=null;if(dd.s){st=JSON.parse(dd.s);if(!st||st.v!==1)throw new Error('hsk-state')}if(!st)st={v:1,cards:{},days:{},newLog:{},updated:0};
+   const base=st.acad&&st.acad.v===1?st.acad:{v:1};base.today=S.today;base.updatedAt=Math.max(Date.now(),(base.updatedAt||0)+1);st.acad=base;st.updated=Math.max(Date.now(),(st.updated||0)+1);
+   tx.set(ref,{s:JSON.stringify(st),v:1,updated:fb.fs.serverTimestamp()},{merge:true});S=Object.assign(JSON.parse(JSON.stringify(base)),{});});
+  try{localStorage.setItem(LS,JSON.stringify(S))}catch(e){}$('#st').textContent='Đã đồng bộ Google · '+new Date().toLocaleTimeString('vi-VN',{hour:'2-digit',minute:'2-digit'})}
+ catch(e){$('#st').textContent='Chưa lưu lên Google ('+((e&&e.code)||e)+'), vẫn lưu trên máy này'}busy=false}
+async function pull(){if(!fb||!ref)return;try{const sn=await fb.fs.getDoc(ref);const dd=sn.exists()?sn.data():{};const st=dd.s?JSON.parse(dd.s):null;const a=st&&st.acad;
+ if(a&&a.v===1&&(a.updatedAt||0)>(S.updatedAt||0)){S=a;try{localStorage.setItem(LS,JSON.stringify(S))}catch(e){}}if(dayRoll())commit();else render();$('#st').textContent='Đã đồng bộ Google · '+new Date().toLocaleTimeString('vi-VN',{hour:'2-digit',minute:'2-digit'})}catch(e){$('#st').textContent='Đang dùng dữ liệu trên máy'}}
+(async()=>{try{const base='https://www.gstatic.com/firebasejs/13.3.0/';const [app,auth,fs]=await Promise.all([import(base+'firebase-app.js'),import(base+'firebase-auth.js'),import(base+'firebase-firestore.js')]);
+ const a=app.initializeApp(FBCFG);fb={auth,fs,A:auth.getAuth(a),D:fs.getFirestore(a)};
+ auth.onAuthStateChanged(fb.A,u=>{if(u){ref=fs.doc(fb.D,'users',u.uid);$('#sign').hidden=true;pull()}else{ref=null;$('#sign').hidden=false;$('#st').textContent='Chưa đăng nhập · lưu trên máy này'}});
+ $('#sign').onclick=()=>auth.signInWithPopup(fb.A,new auth.GoogleAuthProvider()).catch(e=>{$('#st').textContent='Đăng nhập lỗi: '+(e.code||e)})}catch(e){$('#st').textContent='Đang dùng dữ liệu trên máy'}})();
+if(dayRoll())commit();else render();
+addEventListener('focus',pull);document.addEventListener('visibilitychange',()=>{if(!document.hidden)pull()});
+setInterval(()=>{if(dayRoll())commit();else render();if(!document.hidden)pull()},60000);
+if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});
+</script>
+</body>
+</html>
