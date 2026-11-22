@@ -79,7 +79,7 @@ function altModel_(cur) {
 function gemini_(items) {
   const key = (PropertiesService.getScriptProperties().getProperty('GEMINI_KEY') || '').trim();
   if (!key) return null;
-  const list = items.map(x => `[${x.id}] (${x.cat}) ${x.t} — ${x.src}${x.d ? ' :: ' + x.d : ''}`).join('\n').slice(0, 36000);
+  const list = items.map(x => `[${x.id}] (${x.cat}) ${x.t} — ${x.src}${x.d ? ' :: ' + x.d : ''}`).join('\n').slice(0, 24000);
   const prompt = `Bạn là biên tập viên bản tin buổi sáng cho Tuấn: Head of Marketing ở một công ty môi giới bất động sản tại TP.HCM, đang tự học Marketing Engineering (AI agent, dữ liệu) và có quan tâm đầu tư.
 Dưới đây là danh sách tiêu đề báo trong 24–36 giờ qua (mã [id], (nhóm), tiêu đề — nguồn :: mô tả).
 Hãy chọn 12–15 tin quan trọng và hữu ích nhất, phủ đủ các nhóm nếu có tin: mkt, ai, world, macro, stock, crypto, invest, bds, law, hot. Ưu tiên tin có tác động tới thị trường BĐS Việt Nam, marketing/quảng cáo, AI ứng dụng, chính sách và luật mới có hiệu lực. Bỏ tin giải trí, tin trùng lặp, tin quá vụn.
@@ -93,8 +93,8 @@ ${list}`;
     required: ['head', 'takes', 'items'] };
   let model = pickModel_(key), lastErr = '';
   const t0 = Date.now();
-  let think = m => /gemini-2\./.test(m) ? { thinkingBudget: 0 } : { thinkingLevel: 'low' };
-  for (let attempt = 0; attempt < 5 && Date.now() - t0 < 170e3; attempt++) {
+  let think = m => /gemini-2\./.test(m) ? { thinkingBudget: 0 } : { thinkingLevel: 'minimal' };
+  for (let attempt = 0; attempt < 3 && Date.now() - t0 < 120e3; attempt++) {
     const r = UrlFetchApp.fetch('https://generativelanguage.googleapis.com/v1beta/models/' + model + ':generateContent', {
       method: 'post', headers: { 'x-goog-api-key': key }, contentType: 'application/json', muteHttpExceptions: true,
       payload: JSON.stringify({ contents: [{ role: 'user', parts: [{ text: prompt }] }], generationConfig: { temperature: 0.3, maxOutputTokens: 8192, responseMimeType: 'application/json', responseSchema: schema, thinkingConfig: think(model) } })
@@ -116,18 +116,19 @@ ${list}`;
 
 function news() {
   const items = fetchFeeds_(), byId = {}; items.forEach(x => byId[x.id] = x);
+  const date = Utilities.formatDate(new Date(), TZ, 'yyyy-MM-dd');
+  // 1) lưu ngay bản chọn tự động để app luôn có tin, kể cả khi Gemini chậm/quá tải
+  const per = {}, auto = [];
+  items.slice().sort((a, b) => b.time - a.time).forEach(x => { per[x.cat] = (per[x.cat] || 0) + 1; if (per[x.cat] <= (x.cat === 'hot' ? 3 : 1) && auto.length < 12) auto.push({ id: 'n' + x.id, cat: x.cat, t: x.t, s: x.d, w: '', hot: x.cat === 'hot', src: x.src, url: x.url, time: x.time }); });
+  saveNews_({ at: Date.now(), date, head: '', takes: [], items: auto, model: '', err: 'Đang nhờ Gemini tóm tắt…', n: items.length });
+  // 2) Gemini tóm tắt, có giới hạn thời gian
   let ed = null, err = '';
   try { ed = gemini_(items); } catch (e) { err = e.message.slice(0, 200); }
-  let picked;
   if (ed && ed.items && ed.items.length) {
-    picked = ed.items.filter(x => byId[x.id]).slice(0, 15).map(x => { const s = byId[x.id]; return { id: 'n' + x.id, cat: CAT_VI[x.cat] ? x.cat : s.cat, t: x.title || s.t, s: x.sum || s.d, w: x.why || '', hot: !!x.hot, src: s.src, url: s.url, time: s.time, ot: s.t }; });
-  } else {
-    const per = {}; picked = [];
-    items.sort((a, b) => b.time - a.time).forEach(x => { per[x.cat] = (per[x.cat] || 0) + 1; if (per[x.cat] <= (x.cat === 'hot' ? 3 : 1) && picked.length < 12) picked.push({ id: 'n' + x.id, cat: x.cat, t: x.t, s: x.d, w: '', hot: x.cat === 'hot', src: x.src, url: x.url, time: x.time }); });
-  }
-  const pack = { at: Date.now(), date: Utilities.formatDate(new Date(), TZ, 'yyyy-MM-dd'), head: ed ? ed.head : '', takes: ed ? (ed.takes || []).slice(0, 3) : [], items: picked, model: ed ? ed.model : '', err: ed ? '' : (err || 'Chưa có key Gemini: đang chọn tin tự động'), n: items.length };
-  saveNews_(pack);
-  console.log(JSON.stringify({ n: items.length, picked: picked.length, model: pack.model, err: pack.err }));
+    const picked = ed.items.filter(x => byId[x.id]).slice(0, 15).map(x => { const s = byId[x.id]; return { id: 'n' + x.id, cat: CAT_VI[x.cat] ? x.cat : s.cat, t: x.title || s.t, s: x.sum || s.d, w: x.why || '', hot: !!x.hot, src: s.src, url: s.url, time: s.time, ot: s.t }; });
+    saveNews_({ at: Date.now(), date, head: ed.head || '', takes: (ed.takes || []).slice(0, 3), items: picked, model: ed.model || '', err: '', n: items.length });
+  } else saveNews_({ at: Date.now(), date, head: '', takes: [], items: auto, model: '', err: err || 'Chưa có key Gemini: đang chọn tin tự động', n: items.length });
+  console.log(JSON.stringify({ n: items.length, ok: !!ed, err: err.slice(0, 120) }));
 }
 
 function saveNews_(pack) {
