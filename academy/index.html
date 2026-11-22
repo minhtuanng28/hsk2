@@ -448,7 +448,7 @@ const ROOMS=[
 const RM=Object.fromEntries(ROOMS.map(r=>[r.id,r]));
 const THEME0=(()=>{try{const th=(JSON.parse(localStorage.getItem('tuan-academy-v1')||'{}').settings||{}).theme;return th==='beach'||th==='library'?th:'campus'}catch(e){return 'campus'}})(),BEACH=THEME0==='beach',LIB=THEME0==='library';
 if(BEACH){RM.tower.title={vi:'Đồng hồ trung tâm',en:'Central clock'};RM.tower.dates={vi:'Giờ thực · Pomodoro',en:'Real time · Pomodoro'};RM.tower.short='⏱';for(const id of ['me1','me2','me3','me4'])RM[id].dates2={vi:'Quầy nước',en:'Drinks bar'}}
-if(LIB){const P0={me1:[[-11,-9.2],.55],me2:[[-5.8,-10.4],0],me3:[[3.6,-9.8],-.12],me4:[[9,-10.6],.1],work:[[-10.6,9.2],1.35],plan:[[9.6,-2.6],-.3],zh:[[-4.2,9.8],.25],crm:[[5.6,8.4],.3],cert:[[13.2,-8.8],-.45],tower:[[-1.8,-12.05],0],board:[[-6.2,-4.6],.35],health:[[10.6,8.4],-.35]};
+if(LIB){const P0={me1:[[-11,-9.2],.55],me2:[[-5.8,-10.4],0],me3:[[3.6,-9.8],-.12],me4:[[9,-10.6],.1],work:[[-10.6,9.2],1.35],plan:[[9.6,-2.6],-.3],zh:[[-4.2,9.8],.25],crm:[[5.6,8.4],.3],cert:[[13.2,-8.8],-.45],tower:[[-1.8,-12.05],0],board:[[-6.2,-4.6],.35],health:[[10.6,8.4],.55]};
  for(const k in P0){RM[k].pos=P0[k][0];RM[k].rot=P0[k][1]}
  RM.tower.title={vi:'Đồng hồ quả lắc',en:'Grandfather clock'};RM.tower.dates={vi:'Giờ thực · Pomodoro',en:'Real time · Pomodoro'};RM.tower.short='⏱';
  RM.board.title={vi:'Bảng phấn lịch tuần',en:'Weekly chalkboard'};RM.work.title={vi:'Bàn làm việc MKT',en:'MKT work desk'};RM.plan.title={vi:'Bàn kế hoạch',en:'Planning table'};
