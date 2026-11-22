@@ -57,7 +57,7 @@ function fetchFeeds_() {
 
 function pickModel_(key) {
   const cached = PropertiesService.getScriptProperties().getProperty('GEMINI_MODEL');
-  if (cached) return cached;
+  if (cached && PropertiesService.getScriptProperties().getProperty('GEMINI_ALT')) return cached;
   const r = UrlFetchApp.fetch('https://generativelanguage.googleapis.com/v1beta/models?pageSize=200', { headers: { 'x-goog-api-key': key }, muteHttpExceptions: true });
   if (r.getResponseCode() !== 200) throw new Error('Gemini models ' + r.getResponseCode() + ' ' + r.getContentText().slice(0, 150));
   const ms = (JSON.parse(r.getContentText()).models || []).filter(m => (m.supportedGenerationMethods || []).includes('generateContent'))
@@ -65,7 +65,12 @@ function pickModel_(key) {
   const ver = n => { const m = n.match(/gemini-(\d+(?:\.\d+)?)/); return m ? +m[1] : 0; };
   ms.sort((a, b) => (ver(b) - ver(a)) || ((/lite/.test(a) ? 1 : 0) - (/lite/.test(b) ? 1 : 0)) || ((/preview|exp/.test(a) ? 1 : 0) - (/preview|exp/.test(b) ? 1 : 0)) || (a.length - b.length));
   if (!ms.length) throw new Error('Không tìm thấy model Gemini Flash');
+  PropertiesService.getScriptProperties().setProperty('GEMINI_ALT', JSON.stringify(ms.slice(0, 5)));
   return ms[0];
+}
+function altModel_(cur) {
+  let a = []; try { a = JSON.parse(PropertiesService.getScriptProperties().getProperty('GEMINI_ALT') || '[]'); } catch (e) {}
+  return a.find(m => m !== cur) || cur;
 }
 
 function gemini_(items) {
@@ -101,7 +106,7 @@ ${list}`;
     lastErr = code + ' ' + r.getContentText().slice(0, 160);
     if (code === 400 && /thinking/i.test(r.getContentText())) { think = () => undefined; continue; }
     if (code === 404 || code === 400) { PropertiesService.getScriptProperties().deleteProperty('GEMINI_MODEL'); model = pickModel_(key); }
-    if (code === 429 || code >= 500) Utilities.sleep(5000 * (attempt + 1));
+    if (code === 429 || code >= 500) { if (attempt >= 0) model = altModel_(model); Utilities.sleep(3000 * (attempt + 1)); }
   }
   throw new Error('Gemini ' + lastErr);
 }

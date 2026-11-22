@@ -21,10 +21,46 @@ function uid_() {
   if (!u) throw new Error('Thiếu UID trong Script Properties');
   return u;
 }
+/* Google Health API từ chối token có kèm scope khác (Firestore, script…), nên dùng token riêng chỉ có scope Health. */
+const HSCOPES = ['activity_and_fitness', 'sleep', 'health_metrics_and_measurements'].map(s => 'https://www.googleapis.com/auth/googlehealth.' + s + '.readonly');
+const redirect_ = () => 'https://script.google.com/macros/d/' + ScriptApp.getScriptId() + '/usercallback';
+function healthLink() {
+  const id = PropertiesService.getScriptProperties().getProperty('HEALTH_CLIENT_ID');
+  if (!id) throw new Error('Thiếu HEALTH_CLIENT_ID trong Script Properties');
+  const state = ScriptApp.newStateToken().withMethod('healthCallback').withTimeout(3600).createToken();
+  const q = { client_id: id, redirect_uri: redirect_(), response_type: 'code', scope: HSCOPES.join(' '), access_type: 'offline', prompt: 'consent', include_granted_scopes: 'false', state };
+  const url = 'https://accounts.google.com/o/oauth2/v2/auth?' + Object.keys(q).map(k => k + '=' + encodeURIComponent(q[k])).join('&');
+  console.log('MO_LINK_NAY: ' + url);
+  return url;
+}
+function healthCallback(e) {
+  const p = PropertiesService.getScriptProperties();
+  if (!e.parameter.code) return HtmlService.createHtmlOutput('<h3>Chưa cấp quyền: ' + (e.parameter.error || '') + '</h3>');
+  const r = UrlFetchApp.fetch('https://oauth2.googleapis.com/token', { method: 'post', muteHttpExceptions: true, payload: {
+    code: e.parameter.code, client_id: p.getProperty('HEALTH_CLIENT_ID'), client_secret: p.getProperty('HEALTH_CLIENT_SECRET'), redirect_uri: redirect_(), grant_type: 'authorization_code' } });
+  const j = JSON.parse(r.getContentText() || '{}');
+  if (!j.refresh_token) return HtmlService.createHtmlOutput('<h3>Lỗi đổi mã: ' + r.getContentText().slice(0, 300) + '</h3>');
+  p.setProperty('HEALTH_REFRESH', j.refresh_token);
+  CacheService.getScriptCache().put('htok', j.access_token, 3000);
+  let msg = '';
+  try { pull(); msg = 'Đã kéo dữ liệu vào Học viện.'; } catch (err) { msg = 'Kéo thử lỗi: ' + err.message; }
+  return HtmlService.createHtmlOutput('<div style="font:16px system-ui;padding:24px"><h2>✅ Đã nối Google Health với Học viện</h2><p>' + msg + '</p><p>Từ giờ script tự kéo số lúc 9h và 21h. Có thể đóng tab này.</p></div>');
+}
+function hTok_() {
+  const c = CacheService.getScriptCache(), t = c.get('htok'); if (t) return t;
+  const p = PropertiesService.getScriptProperties(), rt = p.getProperty('HEALTH_REFRESH');
+  if (!rt) throw new Error('Chưa nối Google Health: chạy healthLink() rồi mở link trong nhật ký');
+  const r = UrlFetchApp.fetch('https://oauth2.googleapis.com/token', { method: 'post', muteHttpExceptions: true, payload: {
+    client_id: p.getProperty('HEALTH_CLIENT_ID'), client_secret: p.getProperty('HEALTH_CLIENT_SECRET'), refresh_token: rt, grant_type: 'refresh_token' } });
+  const j = JSON.parse(r.getContentText() || '{}');
+  if (!j.access_token) throw new Error('Làm mới token Health lỗi: ' + r.getContentText().slice(0, 160));
+  c.put('htok', j.access_token, Math.max(60, (j.expires_in || 3600) - 300));
+  return j.access_token;
+}
 function call_(path, body) {
   const r = UrlFetchApp.fetch(API + path, {
     method: body ? 'post' : 'get', contentType: 'application/json', muteHttpExceptions: true,
-    headers: { Authorization: 'Bearer ' + ScriptApp.getOAuthToken() },
+    headers: { Authorization: 'Bearer ' + hTok_() },
     payload: body ? JSON.stringify(body) : undefined
   });
   const code = r.getResponseCode(), txt = r.getContentText();
@@ -47,6 +83,7 @@ function pull() {
   const days = {}, errs = [], peek = {}, day = k => days[k] || (days[k] = {});
   const range = { start: civ_(start), end: civ_(end) };
   const tryIt = (name, fn) => { try { fn(); } catch (e) { errs.push(name + ': ' + e.message); } };
+  try { hTok_(); } catch (e) { save_({}, [e.message]); console.log(e.message); return; }
   const num = (o, keys, re) => { for (const k of keys) if (o && o[k] != null && !isNaN(+o[k])) return +o[k]; return re ? deepNum_(o, re) : null; };
   const roll = (type, out, keys, re, f) => tryIt(out, () => {
     const j = call_(type + '/dataPoints:dailyRollUp', { range, windowSizeDays: 1 }), a = j.rollupDataPoints || [];
@@ -123,7 +160,7 @@ function save_(days, errs) {
     const H = acad.health = acad.health || {};
     H.days = H.days || {};
     Object.keys(days).forEach(k => { H.days[k] = Object.assign({}, H.days[k] || {}, days[k]); });
-    H.auto = { last: Date.now(), err: errs.length >= 10 ? errs[0].slice(0, 120) : '', errs: errs.map(e => e.slice(0, 90)).slice(0, 12) };
+    H.auto = { last: Date.now(), err: (!Object.keys(days).length && errs.length) ? errs[0].slice(0, 120) : '', errs: errs.map(e => e.slice(0, 90)).slice(0, 12) };
     Object.keys(H.days).sort().slice(0, -45).forEach(k => delete H.days[k]);
     acad.updatedAt = Math.max(Date.now(), (acad.updatedAt || 0) + 1);
     st.acad = acad; st.updated = Math.max(Date.now(), (st.updated || 0) + 1);
