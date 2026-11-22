@@ -571,6 +571,7 @@ async function fbPull(first){
     const sn=await tx.get(ref);const dd=sn.exists()?sn.data():{};
     let st=null;if(dd.s){st=JSON.parse(dd.s);if(!st||st.v!==1)throw new Error('hsk-state')}
     if(!st)st={v:1,cards:{},days:{},newLog:{},updated:0};
+    {const oh=st.acad&&st.acad.health;if(oh&&oh.days){x.health=x.health||{};x.health.days=x.health.days||{};for(const k in oh.days){const a=oh.days[k],b=x.health.days[k];if(!b||(a.src==='auto'&&(a.at||0)>(b.at||0)))x.health.days[k]=Object.assign({},b||{},a)}if(oh.auto&&(!x.health.auto||(oh.auto.last||0)>(x.health.auto.last||0)))x.health.auto=oh.auto}}
     st.acad=x;st.updated=Math.max(Date.now(),(st.updated||0)+1);
     tx.set(ref,{s:JSON.stringify(st),v:1,updated:fb.fs.serverTimestamp()},{merge:true});
   })};
@@ -1609,6 +1610,7 @@ function catTalk(){const i=nowInfo(),n=new Date(),mins=n.getHours()*60+n.getMinu
  {const d=S.health&&S.health.days&&S.health.days[dkey(n)];if(d&&d.sleepMin&&n.getHours()<11&&Math.random()<.5)return catSay(V?`Đêm qua ngủ ${Math.floor(d.sleepMin/60)}h${String(d.sleepMin%60).padStart(2,'0')}${d.sleepMin>=450?', sung sức rồi đó!':', hôm nay làm nhẹ nhàng thôi nha'}`:`You slept ${Math.floor(d.sleepMin/60)}h${String(d.sleepMin%60).padStart(2,'0')} last night`)}
  if(i.b&&i.b.d.includes(n.getDay())){const s=toM(i.b.s)-mins;if(s>0&&s<=30)return catSay(V?`Meo! ${s} phút nữa tới "${tr(i.b.t)}" (${i.b.s}) đó`:`Meow! "${tr(i.b.t)}" starts in ${s} min`);if(s<=0&&mins<toM(i.b.e))return catSay(V?`Đang giờ "${tr(i.b.t)}" nè, vào học thôi!`:`It's time for "${tr(i.b.t)}"!`)}
  if(h&&h.due>20&&Math.random()<.5)return catSay(V?`Còn ${h.due} từ HSK cần ôn, ôn 10 phút nha`:`${h.due} HSK words are due, 10 minutes?`);
+ {const ht=healthTip();if(ht&&Math.random()<.5)return catSay(ht)}
  const L2=CAT_LINES[V?'vi':'en'];catSay(L2[(Math.random()*L2.length)|0])}
 function catSpots(){const s=[];if(LIB){s.push({k:'fire',x:-13.1,z:1.7,face:-Math.PI/2});s.push({k:'nap',x:-12.5,z:1.1,face:-1.2});s.push({k:'window',x:-5.2,z:-11.9,face:Math.PI})}
  else if(BEACH){const [hx,hz]=GW.hub;s.push({k:'fire',x:hx+1.15,z:hz+.9,face:Math.atan2(-1.15,-.9)});if(GW.pier)s.push({k:'fish',x:GW.pier[1][0]+.3,z:GW.pier[1][1]-.6,face:0})}
@@ -2375,7 +2377,7 @@ function healthPanel(){const r=RM.health,H=H0(),k=dkey(new Date()),d=H.days[k]||
  const beds=[];for(let i=0;i<7;i++){const x=new Date();x.setDate(x.getDate()-i);const dd=H.days[dkey(x)];if(dd&&dd.bed){let [hh,mm]=dd.bed.split(':').map(Number);if(hh<12)hh+=24;beds.push(hh*60+mm)}}
  const bAvg=beds.length?beds.reduce((a,b)=>a+b,0)/beds.length:null,bSd=beds.length>2?Math.sqrt(beds.reduce((a,b)=>a+(b-bAvg)**2,0)/beds.length):null;
  const st=d.sleepMin&&(d.deep||d.rem||d.light)?['deep','rem','light','awake'].map(s=>[s,d[s]||0]):[];const stT=st.reduce((a,b)=>a+b[1],0)||1;
- const status=!H.cfg.clientId?V('Chưa nối Google Health · đang dùng số nhập tay','Not linked to Google Health · manual mode'):hBusy?V('Đang lấy dữ liệu…','Syncing…'):hErr==='relink'?V('Cần bấm "Cập nhật" để Google cấp quyền lại (mỗi giờ 1 lần)','Tap Refresh to re-authorise (hourly)'):hErr&&!hErr.startsWith('partial')?V('Lỗi: ','Error: ')+esc(hErr):H.last?V('Cập nhật lúc ','Updated ')+new Date(H.last).toLocaleTimeString(L==='vi'?'vi-VN':'en-GB',{hour:'2-digit',minute:'2-digit'}):'';
+ const status=H.auto&&H.auto.last?V('Tự kéo từ Google Health lúc 9h & 21h · lần cuối ','Auto-sync 9am & 9pm · last ')+new Date(H.auto.last).toLocaleString(L==='vi'?'vi-VN':'en-GB',{hour:'2-digit',minute:'2-digit',day:'2-digit',month:'2-digit'})+(H.auto.err?' · '+V('lỗi: ','error: ')+esc(H.auto.err):''):!H.cfg.clientId?V('Chưa nối Google Health · đang dùng số nhập tay','Not linked to Google Health · manual mode'):hBusy?V('Đang lấy dữ liệu…','Syncing…'):hErr==='relink'?V('Cần bấm "Cập nhật" để Google cấp quyền lại (mỗi giờ 1 lần)','Tap Refresh to re-authorise (hourly)'):hErr&&!hErr.startsWith('partial')?V('Lỗi: ','Error: ')+esc(hErr):H.last?V('Cập nhật lúc ','Updated ')+new Date(H.last).toLocaleTimeString(L==='vi'?'vi-VN':'en-GB',{hour:'2-digit',minute:'2-digit'}):'';
  let h=head(r.hex,r.short,tr(r.title),status);
  h+=`<div class="pb hp" style="--c:${r.hex}">
  <div class="hready"><div class="hscore" style="--p:${rd||0}"><b>${rd??'–'}</b><small>${V('Sẵn sàng','Readiness')}</small></div><p>${advice(rd)}</p></div>
@@ -2429,6 +2431,35 @@ function healthKiosk(r){
 bindToday(panel);dayRoll();todayRefresh();setInterval(todayTick,30000);
 $('#b-today').addEventListener('click',e=>{e.stopPropagation();stickyMode(stickyEl.classList.contains('hide')?'show':'off');$('#hud-tr').classList.remove('open')});
 setTimeout(drawHealthScreen,300);
+/* ===== Bắp's daily health brief (9:00 & 21:00) ===== */
+function healthBrief(slot){const H=H0(),n=new Date(),d=H.days[dkey(n)]||{},rd=readiness(),hb=avgOf('hrv',7,true),rb=avgOf('rhr',7,true),parts=[];
+ if(slot==='am'){
+  if(d.sleepMin){const dr=(d.deep||0)+(d.rem||0);parts.push(V(`Đêm qua ngủ ${fmtHM(d.sleepMin)}`,`Slept ${fmtHM(d.sleepMin)}`)+(dr&&d.sleepMin?V(` (sâu + REM ${Math.round(dr/d.sleepMin*100)}%)`,` (deep + REM ${Math.round(dr/d.sleepMin*100)}%)`):''))}
+  if(d.hrv&&hb)parts.push(`HRV ${d.hrv}${d.hrv>=hb?'↑':'↓'}`);if(d.rhr&&rb)parts.push(V('nhịp nghỉ ','RHR ')+d.rhr+(d.rhr<=rb?'↓':'↑'));
+  if(rd!=null)parts.push(V(`sẵn sàng ${rd}`,`readiness ${rd}`));
+  let tip;if(d.sleepMin&&d.sleepMin<H.cfg.goalSleep-60)tip=V('Ngủ thiếu: làm việc khó trước 11h, chiều làm việc nhẹ, tối nay ngủ bù sớm hơn 45 phút.','Short night: hard work before 11am, lighter afternoon, bed 45 min earlier.');
+  else if(rd!=null&&rd>=80)tip=V('Ngày sung sức: dồn 3–4 Pomodoro cho Lớp học + việc khó nhất vào buổi sáng.','Strong day: 3–4 Pomodoros on the hardest work this morning.');
+  else if(d.hrv&&hb&&d.hrv<hb*.85)tip=V('Cơ thể hơi mệt: uống nhiều nước, đi bộ nhẹ 15 phút, đừng ép tập nặng hôm nay.','Body is a bit strained: hydrate, easy 15-min walk, skip hard training.');
+  else tip=V('Nhịp ổn định: 2–3 Pomodoro, uống 1 cốc nước ngay bây giờ nha.','Steady: 2–3 Pomodoros, drink a glass of water now.');
+  return (parts.length?parts.join(' · ')+'. ':V('Chưa có số sức khoẻ sáng nay. ','No health numbers yet this morning. '))+tip}
+ const st=d.steps||0,goal=H.cfg.goalSteps;parts.push(V(`Hôm nay ${st.toLocaleString('vi-VN')}/${goal.toLocaleString('vi-VN')} bước`,`${st} / ${goal} steps today`));if(d.azm)parts.push(V(`${d.azm} phút vận động`,`${d.azm} zone min`));if(d.water)parts.push(V(`nước ${(d.water/1000).toFixed(1)}L`,`water ${(d.water/1000).toFixed(1)}L`));
+ const wakes=[];for(let i=0;i<7;i++){const x=new Date();x.setDate(x.getDate()-i);const dd=H.days[dkey(x)];if(dd&&dd.wake){const [hh,mm]=dd.wake.split(':').map(Number);wakes.push(hh*60+mm)}}
+ let tip='';if(wakes.length){const w=wakes.reduce((a,b)=>a+b,0)/wakes.length,bed=((w-H.cfg.goalSleep-15)%1440+1440)%1440;tip=V(`Muốn ngủ đủ ${fmtHM(H.cfg.goalSleep)} (dậy ~${String(Math.floor(w/60)).padStart(2,'0')}:${String(Math.round(w%60)).padStart(2,'0')}), lên giường lúc ${String(Math.floor(bed/60)).padStart(2,'0')}:${String(Math.round(bed%60)).padStart(2,'0')}.`,`To sleep ${fmtHM(H.cfg.goalSleep)}, be in bed by ${String(Math.floor(bed/60)).padStart(2,'0')}:${String(Math.round(bed%60)).padStart(2,'0')}.`)}
+ if(st<goal*.6)tip=V(`Thiếu ${(goal-st).toLocaleString('vi-VN')} bước: đi bộ 10–15 phút trước khi ngủ là đủ đẹp. `,`${goal-st} steps short: a 10–15 min walk tonight helps. `)+tip;else if(st>=goal)tip=V('Đạt mục tiêu bước rồi, giỏi lắm! ','Step goal hit, nice! ')+tip;
+ return parts.join(' · ')+'. '+(tip||V('Tắt màn hình sớm 30 phút trước khi ngủ nha.','Screens off 30 min before bed.'))}
+function briefTick(){const n=new Date(),h=n.getHours(),k=dkey(n),slot=h>=21?'pm':h>=9?'am':null;if(!slot)return;const H=H0();H.said=H.said||{};if(H.said[k+slot])return;
+ const start=n.getHours()*60+n.getMinutes()-(slot==='am'?540:1260),fresh=H.auto&&H.auto.last>=new Date(n).setHours(slot==='am'?8:20,40,0,0);
+ if(H.auto&&!fresh&&start<50)return;
+ H.said[k+slot]=1;const ks=Object.keys(H.said).sort();while(ks.length>14)delete H.said[ks.shift()];save();
+ const msg=healthBrief(slot);setTimeout(()=>{catSay(msg,16000);meowSound('meow')},1500);notify(catName()+' · '+(slot==='am'?V('Sức khoẻ sáng nay','This morning'):V('Tổng kết tối nay','Tonight\'s recap')),msg)}
+function healthTip(){const H=H0(),n=new Date(),d=H.days[dkey(n)]||{},h=n.getHours();if(h<9||h>22)return null;
+ const wantWater=H.cfg.goalWater*Math.min(1,(h-8)/13);if((d.water||0)<wantWater-400)return V(`Mới uống ${((d.water||0)/1000).toFixed(1)}L, làm 1 cốc nước nhé (bấm +250 ở Quầy sức khoẻ)`,`Only ${((d.water||0)/1000).toFixed(1)}L so far, have a glass of water`);
+ if(d.steps!=null&&h>=14&&d.steps<H.cfg.goalSteps*(h-8)/14*.6)return V(`Mới ${d.steps.toLocaleString('vi-VN')} bước, đi một vòng 5 phút cho tỉnh nha`,`Only ${d.steps} steps, take a 5-minute walk`);
+ return null}
+setInterval(briefTick,60000);setTimeout(briefTick,6000);
+setInterval(()=>{if(!document.hidden&&cloud&&fb&&fb.user)fbPull(false)},10*60*1000);
+document.addEventListener('visibilitychange',()=>{if(!document.hidden&&cloud&&fb&&fb.user&&Date.now()-(window.__lastPull||0)>5*60*1000){window.__lastPull=Date.now();fbPull(false)}});
+
 {const q=new URLSearchParams(location.search).get('room');if(q&&RM[q])setTimeout(()=>goRoom(q),900)}
 catInit();setTimeout(()=>{try{if(!NAV.g)navBuild()}catch(e){}},1200);
 requestAnimationFrame(frame);
