@@ -64,12 +64,12 @@ body.popen #hud-tr{right:min(450px,calc(100vw - 60px))}
 #musicpop .mh{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
 #musicpop p{margin:8px 0;font-size:12.5px;color:var(--mute);line-height:1.45}
 #musicpop .seg{display:flex;gap:4px;background:var(--line);padding:3px;border-radius:10px}
-#musicpop .seg button{flex:1;border:0;background:none;padding:7px 4px;border-radius:8px;font:600 12.5px inherit;cursor:pointer;color:inherit}
+#musicpop .seg button{flex:1;border:0;background:none;padding:7px 4px;border-radius:8px;font-weight:600;font-size:12.5px;font-family:inherit;cursor:pointer;color:inherit}
 #musicpop .seg button.on{background:var(--panel);box-shadow:0 1px 4px rgba(0,0,0,.15)}
 #musicpop .rw{display:block;font-size:13px;font-weight:600;margin-top:6px}#musicpop .rw input{width:100%;accent-color:var(--acc)}
 #musicpop .ck{display:flex;gap:8px;align-items:center;font-size:13px;margin-top:8px}
 #musicpop .row{display:flex;gap:6px}#musicpop .row .inp{flex:1;min-width:0}
-#musicpop .chips{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}#musicpop .chips button{border:1px solid var(--line);background:var(--panel);border-radius:99px;padding:5px 10px;font:600 12px inherit;cursor:pointer;color:inherit}
+#musicpop .chips{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}#musicpop .chips button{border:1px solid var(--line);background:var(--panel);border-radius:99px;padding:5px 10px;font-weight:600;font-size:12px;font-family:inherit;cursor:pointer;color:inherit}
 #ytbox{position:fixed;left:calc(12px + var(--sl));bottom:calc(84px + var(--sb));width:min(300px,calc(100vw - 24px));padding:6px;display:none;z-index:25}
 #ytbox.on{display:block}#ytbox .ytf{aspect-ratio:16/9;border-radius:10px;overflow:hidden;background:#000}#ytbox iframe{width:100%;height:100%;border:0}
 #ytbox .x{position:absolute;top:-10px;right:-10px;width:26px;height:26px;border-radius:50%;border:1px solid var(--line);background:var(--panel);cursor:pointer;font-weight:700;color:inherit}
@@ -283,10 +283,11 @@ body.eco #hud-tl,body.eco #pomo,body.eco .ib,body.eco #dockbtn,body.eco #dockgri
 .hcharts{display:grid;grid-template-columns:1fr 1fr;gap:10px}.hcharts small{font-size:11.5px;color:var(--mute)}
 .hsp{position:relative;display:flex;align-items:flex-end;gap:3px;height:62px}.hsp>div{flex:1;text-align:center}.hsp i{display:block;border-radius:3px 3px 0 0}.hsp small{font-size:9.5px!important}.hsp>b{position:absolute;left:0;right:0;border-top:1px dashed rgba(127,127,127,.6)}
 #b-today{position:relative}#b-today[data-n]:not([data-n=''])::after{content:attr(data-n);position:absolute;top:-4px;right:-4px;min-width:16px;height:16px;border-radius:9px;background:#e8553a;color:#fff;font:700 10px/16px system-ui;padding:0 3px}
+.nw,.nw *{font-family:'Be Vietnam Pro',system-ui,sans-serif}
 .nw .nwtop{background:linear-gradient(135deg,rgba(200,50,42,.09),rgba(232,85,58,.05));border-radius:16px;padding:12px 14px}
-.nwday{display:flex;gap:4px;margin-bottom:8px}.nwday button,.nwchips button{border:1px solid var(--line);background:var(--panel);border-radius:20px;padding:5px 11px;font:600 12px inherit;color:inherit;cursor:pointer}
+.nwday{display:flex;gap:4px;margin-bottom:8px}.nwday button,.nwchips button{border:1px solid var(--line);background:var(--panel);border-radius:20px;padding:5px 11px;font-weight:600;font-size:12px;font-family:inherit;color:inherit;cursor:pointer}
 .nwday button.on,.nwchips button.on{background:var(--k,#c8322a);border-color:transparent;color:#fff}
-.nwhead{margin:0 0 6px;font:700 15px/1.45 Georgia,serif}.nwtakes{margin:0;padding-left:18px;font-size:13px;line-height:1.5}
+.nwhead{margin:0 0 6px;font:700 15px/1.45 'Be Vietnam Pro',system-ui,sans-serif}.nwtakes{margin:0;padding-left:18px;font-size:13px;line-height:1.5}
 .nwchips{display:flex;gap:6px;overflow-x:auto;padding:12px 0 4px;scrollbar-width:none}.nwchips button{white-space:nowrap;flex:none}
 .nwlist{display:flex;flex-direction:column;gap:10px;margin-top:6px}
 .nwc{content-visibility:auto;contain-intrinsic-size:auto 150px;border:1px solid var(--line);border-left:4px solid var(--k);border-radius:12px;padding:10px 12px;background:var(--panel)}
@@ -2776,11 +2777,12 @@ function newsPanel(){const r=RM.news,n0=N0(),n=newsDay==='prev'&&n0&&n0.prev?Obj
 panel.addEventListener('click',e=>{const a=e.target.closest('a[data-nid]');if(a){newsMark(a.dataset.nid);a.closest('.nwc').classList.add('rd');updateTags()}},true);
 function newsAct(a,b){if(a==='nfil'){newsFilter=b.dataset.v;renderPanel();return true}if(a==='nday'){newsDay=b.dataset.v;newsFilter='all';renderPanel();return true}return false}
 function newsTag(){const n=N0();if(!n)return V('Bản tin 8:30 mỗi sáng','Daily brief at 8:30');const u=newsUnread();return (n.date===dkey(new Date())?V('Hôm nay','Today'):V('Bản tin ','Brief ')+n.date.slice(5).split('-').reverse().join('/'))+` · ${n.items.length} ${V('tin','stories')}`+(u?V(` · ${u} chưa đọc`,` · ${u} unread`):'')}
+if(document.fonts)document.fonts.ready.then(()=>{try{drawNewsBoard()}catch(e){}});
 function drawNewsBoard(){const r=RM.news;if(!r||!r.ncv)return;const c=r.ncv,x=c.getContext('2d'),W=c.width,H=c.height,n=N0();
- x.fillStyle='#f4ecd8';x.fillRect(0,0,W,H);x.fillStyle='#1d1b18';x.font='900 30px Georgia,serif';x.textAlign='center';x.fillText(V('BẢN TIN SÁNG','MORNING BRIEF'),W/2,38);x.fillRect(16,48,W-32,3);
- x.font='600 13px system-ui';x.fillText(n?new Date(n.at).toLocaleDateString('vi-VN',{weekday:'long',day:'2-digit',month:'2-digit'}):'8:30',W/2,68);x.textAlign='left';
+ x.fillStyle='#f4ecd8';x.fillRect(0,0,W,H);x.fillStyle='#1d1b18';x.font='800 30px "Be Vietnam Pro",sans-serif';x.textAlign='center';x.fillText(V('BẢN TIN SÁNG','MORNING BRIEF'),W/2,38);x.fillRect(16,48,W-32,3);
+ x.font='600 13px "Be Vietnam Pro",sans-serif';x.fillText(n?new Date(n.at).toLocaleDateString('vi-VN',{weekday:'long',day:'2-digit',month:'2-digit'}):'8:30',W/2,68);x.textAlign='left';
  const lines=n?n.items.slice(0,4).map(i=>i.t):[V('Tin MKT · AI · kinh tế · BĐS','MKT · AI · economy · property')];let y=96;
- for(const t of lines){x.fillStyle='#e8553a';x.fillRect(16,y-11,6,6);x.fillStyle='#1d1b18';x.font='700 15px system-ui';const words=t.split(' ');let ln='',cnt=0;for(const w of words){if(x.measureText(ln+w).width>W-46){x.fillText(ln,30,y);y+=18;ln='';if(++cnt>=1){ln='…';break}}ln+=w+' '}x.fillText(ln.trim(),30,y);y+=26;if(y>H-10)break}
+ for(const t of lines){x.fillStyle='#e8553a';x.fillRect(16,y-11,6,6);x.fillStyle='#1d1b18';x.font='700 15px "Be Vietnam Pro",sans-serif';const words=t.split(' ');let ln='',cnt=0;for(const w of words){if(x.measureText(ln+w).width>W-46){x.fillText(ln,30,y);y+=18;ln='';if(++cnt>=1){ln='…';break}}ln+=w+' '}x.fillText(ln.trim(),30,y);y+=26;if(y>H-10)break}
  if(r.ntex)r.ntex.needsUpdate=true}
 function newsKiosk(r){
  const g=new THREE.Group(),acc=r.hex;
