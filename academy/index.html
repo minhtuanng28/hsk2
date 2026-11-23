@@ -2476,7 +2476,7 @@ function hWeight(){const w=hLatest('wt');return w?w.v:HPro().w}
 function sleepScore(d){if(!d||!d.sleepMin)return null;const g=H0().cfg.goalSleep;const dur=Math.min(1,d.sleepMin/g)*50;
  const st=(d.deep||0)+(d.rem||0)+(d.light||0);const q=st?Math.min(1,((d.deep||0)+(d.rem||0))/(d.sleepMin*.42))*25:17;
  const eff=d.inBed?d.sleepMin/d.inBed:.9;const r=Math.max(0,Math.min(1,(eff-.75)/.17))*15+(d.toSleep!=null&&d.inBed?Math.max(0,1-Math.max(0,d.toSleep-15)/30)*10:7);
- return Math.round(Math.min(100,dur+q+r))}
+ return Math.round(Math.min(d.sleepMin<300?55:d.sleepMin<360?68:d.sleepMin<420?82:100,dur+q+r))}
 function hSignals(){const out=[],T=(key,label,unit,dir,fmt)=>{const L1=hLatest(key);if(!L1)return;const b=hBase(key);const v=L1.v;let s='ok',z=null,txt='';
   if(b){z=(v-b.m)/b.sd;const bad=dir>0?z<-1.5:dir<0?z>1.5:Math.abs(z)>1.5,warn=dir>0?z<-.8:dir<0?z>.8:Math.abs(z)>.8;s=bad?'bad':warn?'warn':'ok';txt=V('nền ','base ')+fmt(b.m)}
   out.push({key,label,v,unit,s,z,txt,fmt,old:L1.i})};
