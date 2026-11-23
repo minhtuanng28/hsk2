@@ -105,6 +105,15 @@ function pull() {
     (j.rollupDataPoints || []).forEach(p => { const h = +Utilities.formatDate(new Date(p.startTime), TZ, 'H'); arr[h] = Math.round(+((p.steps || {}).countSum) || 0); });
     day(key_(now)).hourly = arr;
   });
+  tryIt('hrH', () => {
+    const st = new Date(key_(now) + 'T00:00:00+07:00'), arr = new Array(24).fill(null);
+    const j = call_('heart-rate/dataPoints:rollUp', { range: { startTime: st.toISOString(), endTime: now.toISOString() }, windowSize: '3600s' });
+    (j.rollupDataPoints || []).forEach(p => { const h = +Utilities.formatDate(new Date(p.startTime), TZ, 'H');
+      const k = Object.keys(p).find(x => !/time|interval|civil/i.test(x)), o = (k && p[k]) || {};
+      const v = +(o.beatsPerMinuteAvg || o.avgBeatsPerMinute || o.beatsPerMinuteMean || deepNum_(o, /avg|mean|average/i) || 0);
+      if (v > 30 && v < 220) arr[h] = Math.round(v); });
+    if (arr.some(x => x)) day(key_(now)).hrH = arr;
+  });
   tryIt('sleep', () => {
     const f = encodeURIComponent('sleep.interval.civil_end_time >= "' + key_(start) + '" AND sleep.interval.civil_end_time < "' + key_(end) + '"');
     let pageToken = '', n = 0;
