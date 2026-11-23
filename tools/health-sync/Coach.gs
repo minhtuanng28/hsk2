@@ -30,13 +30,14 @@ function mutate_(fn) {
 }
 /* ---- thông báo đẩy ---- */
 function push_(title, body, room, acadIn) {
-  const acad = acadIn || readAcad_(), toks = ((acad.push || {}).tokens || []).map(x => x.t).filter(Boolean);
+  const acad = acadIn || readAcad_(), list = ((acad.push || {}).tokens || []).filter(x => x && x.t), toks = list.map(x => x.t);
+  const HEALTH_URL = 'https://minhtuanng28.github.io/hsk2/health/';
   if (!toks.length) { console.log('push: chưa có thiết bị nào bật thông báo'); return 0; }
   const dead = []; let ok = 0;
-  toks.forEach(t => {
+  list.forEach(o => { const t = o.t, link = o.app === 'health' ? HEALTH_URL + (room === 'news' ? '' : '?tab=today') : APP_URL + (room ? '?room=' + room : '');
     const r = UrlFetchApp.fetch('https://fcm.googleapis.com/v1/projects/' + PROJECT + '/messages:send', {
       method: 'post', contentType: 'application/json', muteHttpExceptions: true, headers: { Authorization: 'Bearer ' + ScriptApp.getOAuthToken() },
-      payload: JSON.stringify({ message: { token: t, data: { title, body, link: APP_URL + (room ? '?room=' + room : ''), tag: room || 'acad' },
+      payload: JSON.stringify({ message: { token: t, data: { title, body, link, tag: room || 'acad' },
         webpush: { headers: { Urgency: 'high', TTL: '21600' } } } })
     });
     const c = r.getResponseCode();

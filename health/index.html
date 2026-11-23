@@ -1,0 +1,275 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,maximum-scale=1">
+<meta name="theme-color" content="#05080c">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Sức khoẻ">
+<title>Sức khoẻ · Học viện của Tuấn</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="/hsk2/health/apple-touch-icon-180.png">
+<link rel="apple-touch-icon" sizes="152x152" href="/hsk2/health/apple-touch-icon-152.png">
+<link rel="apple-touch-icon" sizes="167x167" href="/hsk2/health/apple-touch-icon-167.png">
+<link rel="apple-touch-icon" sizes="180x180" href="/hsk2/health/apple-touch-icon-180.png">
+<style>
+:root{--bg:#05080c;--card:#10161d;--card2:#16202a;--ink:#f2f5f8;--mute:#8b98a7;--line:rgba(255,255,255,.08);
+ --rec:#3ddc84;--str:#ff9f0a;--slp:#a78bfa;--stress:#ff6b81;--blue:#5ac8fa;--ok:#3ddc84;--warn:#ffcc4d;--bad:#ff5a6a;
+ --safe-t:env(safe-area-inset-top);--safe-b:env(safe-area-inset-bottom);color-scheme:dark}
+@media (prefers-color-scheme:light){:root{--bg:#f2f3f7;--card:#fff;--card2:#f5f6f9;--ink:#10151b;--mute:#6b7785;--line:rgba(0,0,0,.07);color-scheme:light}}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}[hidden]{display:none!important}
+html,body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.45 -apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",Roboto,system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+button{font:inherit;color:inherit;cursor:pointer}
+#app{max-width:560px;margin:0 auto;min-height:100vh;padding:calc(var(--safe-t) + 10px) 14px calc(var(--safe-b) + 92px)}
+header{display:flex;align-items:center;gap:10px;margin:2px 2px 14px}
+header .t{flex:1;min-width:0}header h1{margin:0;font-size:24px;letter-spacing:-.02em}header small{color:var(--mute);font-size:12.5px}
+.sync{font-size:11px;color:var(--mute);display:flex;align-items:center;gap:5px}.sync i{width:7px;height:7px;border-radius:50%;background:var(--ok);display:inline-block}
+.card{background:var(--card);border-radius:22px;padding:16px;margin-bottom:12px;border:1px solid var(--line)}
+.card h3{margin:0 0 10px;font-size:13px;font-weight:700;color:var(--mute);text-transform:uppercase;letter-spacing:.06em;display:flex;justify-content:space-between;align-items:center;gap:8px}
+.card h3 span{text-transform:none;letter-spacing:0;font-weight:600}
+.hero{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;padding:16px 8px 12px}
+.ring{background:none;border:0;padding:0;text-align:center}.ring svg{width:100%;max-width:120px;display:block;margin:0 auto}
+.ring b{display:block;font-size:13px;margin-top:6px}.ring small{display:block;font-size:11px;color:var(--mute)}
+.insight{font-size:14px;line-height:1.5;margin:4px 6px 2px;color:var(--ink)}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:12px}.row2 .card{margin:0}
+.big{font-size:30px;font-weight:800;letter-spacing:-.02em}.big em{font-style:normal;font-size:14px;color:var(--mute);font-weight:600;margin-left:3px}
+.lbl{font-size:12.5px;color:var(--mute)}
+.batt{height:14px;border-radius:8px;background:rgba(127,127,127,.18);overflow:hidden;margin:10px 0 6px;position:relative}.batt u{display:block;height:100%;border-radius:8px}
+.sbars{display:flex;align-items:flex-end;gap:2px;height:46px;margin-top:10px}.sbars i{flex:1;border-radius:3px 3px 1px 1px;min-height:3px}
+.coach{border-left:5px solid var(--cc,var(--str))}.coach b{display:block;font-size:17px;margin:2px 0 4px}.coach p{margin:0;font-size:14px}.coach small{display:block;margin-top:6px;color:var(--mute);font-size:12px}
+.stages{display:flex;height:12px;border-radius:7px;overflow:hidden;margin:10px 0 6px}.st-deep{background:#5b4fd6}.st-rem{background:#a78bfa}.st-light{background:#7fb2ff}.st-awake{background:#ff9f7a}
+.leg{display:flex;flex-wrap:wrap;gap:4px 12px;font-size:12px;color:var(--mute)}.leg span::before{content:"";display:inline-block;width:8px;height:8px;border-radius:2px;margin-right:4px;background:currentColor}
+.leg .st-deep{color:#5b4fd6;background:none}.leg .st-rem{color:#a78bfa;background:none}.leg .st-light{color:#7fb2ff;background:none}.leg .st-awake{color:#ff9f7a;background:none}
+.vit{display:grid;grid-template-columns:1fr 1fr;gap:10px}.vit>button{background:var(--card2);border:0;border-radius:16px;padding:11px 12px;text-align:left;border-left:4px solid var(--ok)}
+.vit .warn{border-left-color:var(--warn)}.vit .bad{border-left-color:var(--bad)}.vit small{display:block;color:var(--mute);font-size:12px}.vit b{font-size:21px}.vit b em{font-style:normal;font-size:12px;color:var(--mute);margin-left:2px}
+.vit i{display:block;font-style:normal;font-size:11px;color:var(--mute)}.vit svg{display:block;width:100%;height:26px;margin-top:4px}
+.stat3{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;text-align:center}.stat3 b{display:block;font-size:20px}.stat3 small{color:var(--mute);font-size:11.5px}
+.prog{height:8px;border-radius:5px;background:rgba(127,127,127,.18);overflow:hidden;margin-top:6px}.prog u{display:block;height:100%;border-radius:5px}
+.ex{display:flex;justify-content:space-between;gap:8px;padding:8px 0;border-top:1px solid var(--line);font-size:13.5px}.ex:first-child{border-top:0}.ex small{color:var(--mute)}
+nav#tabs{position:fixed;left:0;right:0;bottom:0;display:flex;justify-content:center;padding:8px 10px calc(var(--safe-b) + 8px);background:color-mix(in srgb,var(--bg) 82%,transparent);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-top:1px solid var(--line);z-index:5}
+nav#tabs>div{display:flex;max-width:560px;width:100%;justify-content:space-around}
+nav#tabs button{background:none;border:0;display:flex;flex-direction:column;align-items:center;gap:2px;font-size:11px;color:var(--mute);padding:4px 10px;border-radius:12px}
+nav#tabs button svg{width:24px;height:24px}nav#tabs button.on{color:var(--ink)}nav#tabs button.on svg{color:var(--rec)}
+.seg{display:inline-flex;background:var(--card2);border-radius:10px;padding:3px}.seg button{border:0;background:none;padding:5px 12px;border-radius:8px;font-size:12.5px;color:var(--mute)}.seg button.on{background:var(--card);color:var(--ink);box-shadow:0 1px 4px rgba(0,0,0,.2)}
+.chart svg{width:100%;height:auto;display:block}.chart .ax{display:flex;justify-content:space-between;font-size:10.5px;color:var(--mute);margin-top:2px}
+.kv{display:flex;align-items:baseline;gap:8px;margin-bottom:6px}.kv b{font-size:22px}.kv span{font-size:12.5px;color:var(--mute)}.up{color:var(--ok)!important}.down{color:var(--bad)!important}
+.chat{display:flex;flex-direction:column;gap:10px;min-height:45vh}
+.msg{max-width:86%;padding:10px 13px;border-radius:18px;font-size:14.5px;line-height:1.5}.msg.me{align-self:flex-end;background:linear-gradient(135deg,#2f8f5b,#3ddc84);color:#04110a;border-bottom-right-radius:6px}
+.msg.ai{align-self:flex-start;background:var(--card);border:1px solid var(--line);border-bottom-left-radius:6px}.msg.err{border-color:rgba(255,90,106,.5)}.msg ul{margin:4px 0;padding-left:18px}.msg li{margin:2px 0}
+.typing{display:flex;gap:4px}.typing i{width:7px;height:7px;border-radius:50%;background:var(--mute);animation:ty 1s infinite}.typing i:nth-child(2){animation-delay:.15s}.typing i:nth-child(3){animation-delay:.3s}@keyframes ty{0%,60%,100%{opacity:.3}30%{opacity:1}}
+.chips{display:flex;gap:7px;overflow-x:auto;scrollbar-width:none;margin:6px -14px 0;padding:0 14px}.chips::-webkit-scrollbar{display:none}.chips button{flex:none;border:1px solid var(--line);background:var(--card);border-radius:999px;padding:7px 12px;font-size:13px}
+.composer{position:fixed;left:0;right:0;bottom:calc(var(--safe-b) + 64px);padding:8px 14px;background:color-mix(in srgb,var(--bg) 85%,transparent);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);z-index:4}
+.composer>div{max-width:560px;margin:0 auto;display:flex;gap:8px;align-items:flex-end}.composer textarea{flex:1;resize:none;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:20px;padding:10px 14px;font:inherit;font-size:15px;max-height:120px}
+.composer button{width:44px;height:44px;border-radius:50%;border:0;background:var(--rec);color:#04110a;font-size:18px;font-weight:800}
+.btn{border:0;border-radius:14px;padding:12px 16px;font-weight:700;background:var(--card2)}.btn.pri{background:var(--rec);color:#04110a}.btn.full{width:100%}
+.list>div{display:flex;justify-content:space-between;gap:10px;padding:10px 0;border-top:1px solid var(--line);font-size:14px}.list>div:first-child{border-top:0}.list span{color:var(--mute)}
+.note{font-size:12px;color:var(--mute);line-height:1.5}
+#gate{position:fixed;inset:0;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:30px;text-align:center;z-index:20}
+#gate img{width:96px;height:96px;border-radius:24px;margin-bottom:16px}#gate h2{margin:0 0 6px}#gate p{color:var(--mute);margin:0 0 20px;max-width:320px}
+#sheet{position:fixed;inset:0;background:rgba(0,0,0,.45);display:none;align-items:flex-end;justify-content:center;z-index:10}#sheet.on{display:flex}
+#sheet>div{background:var(--card);width:100%;max-width:560px;border-radius:24px 24px 0 0;padding:18px 18px calc(var(--safe-b) + 22px);max-height:82vh;overflow-y:auto;animation:up .25s ease}@keyframes up{from{transform:translateY(40px);opacity:0}}
+#sheet h2{margin:0 0 4px}#sheet .grab{width:40px;height:5px;border-radius:3px;background:var(--line);margin:0 auto 12px}
+.bar2{display:grid;grid-template-columns:96px 1fr 36px;gap:8px;align-items:center;font-size:13px;margin:6px 0}.bar2 i{height:8px;border-radius:5px;background:rgba(127,127,127,.18);overflow:hidden}.bar2 u{display:block;height:100%;border-radius:5px}.bar2 b{text-align:right}
+.toast{position:fixed;left:50%;bottom:calc(var(--safe-b) + 90px);transform:translateX(-50%);background:var(--card2);border:1px solid var(--line);padding:10px 16px;border-radius:14px;font-size:13.5px;z-index:30;box-shadow:0 6px 24px rgba(0,0,0,.3)}
+.wk{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin-top:8px}.wk i{font-style:normal;text-align:center;border-radius:9px;padding:6px 0;background:var(--card2);font-size:12px}.wk i.ok{background:rgba(61,220,132,.2);color:var(--rec);font-weight:800}.wk i.today{outline:2px solid var(--str)}
+</style>
+</head>
+<body>
+<div id="gate"><img src="icon-192.png" alt=""><h2>Sức khoẻ</h2><p>Hồi phục, gắng sức, giấc ngủ, stress và Bác sĩ AI từ đồng hồ Fitbit của bạn.</p><button class="btn pri" id="signin">Đăng nhập bằng Google</button><p class="note" id="gateMsg" style="margin-top:14px"></p></div>
+<div id="app"><header><div class="t"><h1 id="hello">Sức khoẻ</h1><small id="today"></small></div><div class="sync" id="sync"></div></header><main id="view"></main></div>
+<div class="composer" id="composer" hidden><div><textarea id="docIn" rows="1" placeholder="Hỏi Bác sĩ AI…"></textarea><button id="docSend" aria-label="Gửi">↑</button></div></div>
+<nav id="tabs"><div>
+ <button data-tab="today"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/></svg>Hôm nay</button>
+ <button data-tab="trend"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 17l5-6 4 3 6-8 3 4"/></svg>Xu hướng</button>
+ <button data-tab="doc"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 5h16v11H9l-5 4z"/><path d="M12 8v5M9.5 10.5h5"/></svg>Bác sĩ AI</button>
+ <button data-tab="me"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg>Cá nhân</button>
+</div></nav>
+<div id="sheet"><div id="sheetIn"></div></div>
+<script type="module">
+const FBCFG={apiKey:"AIzaSyCzG2TNB2fwUSUDycsxQ8a2D1GaWzVHl28",authDomain:"hsk-app-f5201.firebaseapp.com",projectId:"hsk-app-f5201",storageBucket:"hsk-app-f5201.firebasestorage.app",messagingSenderId:"278418991443",appId:"1:278418991443:web:9cb95ad3a99e01b7ae59a6"};
+const DOC_URL='https://script.google.com/macros/s/AKfycbwcUPz08Z829SuNOBFovn1kR3ayoylfEL_zpXZABrgIVJ_PJdQChepItYR0gk82C2IEcQ/exec';
+const VAPID='BJ0WhW-6zP8t1MUX62waCIs0aO60RzrSu5nlm3vbPbpcnlFF-LWt8hJQ8inn8m1Mgjpg6c1-dXjG5okarsZVa1M';
+const ACAD='https://minhtuanng28.github.io/hsk2/academy/';
+const LS='health-app-v1',LSDOC='health-doc';
+const $=s=>document.querySelector(s);
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const K=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+const ago=i=>{const x=new Date();x.setDate(x.getDate()-i);return x};
+const hm=m=>m==null?'–':Math.floor(m/60)+'h'+String(Math.round(m%60)).padStart(2,'0');
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+function toast(t){const e=document.createElement('div');e.className='toast';e.textContent=t;document.body.appendChild(e);setTimeout(()=>e.remove(),3200)}
+let A={},H={days:{}},fb=null,user=null,ref=null,tab=new URLSearchParams(location.search).get('tab')||'today',range=7,lastSync=0;
+try{const c=JSON.parse(localStorage.getItem(LS)||'null');if(c&&c.acad){A=c.acad;H=A.health||{days:{}};lastSync=c.at||0}}catch(e){}
+
+/* ===== giáo án dùng chung (giống Plan.gs) ===== */
+var TPL8 = {
+  1: { type: 'run', name: 'Chạy nền (Z2)', w: [30, 30, 35, 25, 35, 40, 40, 30] },
+  3: { type: 'swim', name: 'Bơi kỹ thuật', w: ['10×50m, nghỉ 30″', '8×75m, nghỉ 30″', '6×100m, nghỉ 30″', '400m thả lỏng (tuần nhẹ)', '5×150m, nghỉ 30″', '4×200m, nghỉ 30″', '3×300m, nghỉ 40″', '500m thả lỏng (trước kiểm tra)'] },
+  5: { type: 'run', name: 'Chạy chất lượng', w: ['8×1′ nhanh / 1′30″ chạy chậm', '6×2′ nhanh / 2′ chậm', '5×3′ vùng Z4 / 2′ chậm', 'Chạy liên tục 3 km nhẹ (tuần nhẹ)', '3×6′ tempo / 2′ chậm', '2×10′ tempo / 3′ chậm', 'Tempo 20′ liên tục', 'KIỂM TRA: chạy 5 km, ghi lại thời gian'] },
+  0: { type: 'swim', name: 'Bơi dài', w: ['400m liên tục (được nghỉ ngắn)', '500m liên tục', '600m liên tục', '500m nhẹ (tuần nhẹ)', '800m liên tục', '1.000m liên tục', '1.200m liên tục', 'KIỂM TRA: bơi liền 1.500m'] }
+};
+function planInfo(H, d) { var p = H && H.tplan; if (!p || !p.start) return null; var st = new Date(p.start + 'T12:00:00'), day = new Date(K(d) + 'T12:00:00');
+  var wk = Math.floor(Math.round((day - st) / 864e5) / 7); if (wk < 0 || wk > 7) return { over: wk > 7, wk: wk }; var t = TPL8[day.getDay()]; if (!t) return { wk: wk, rest: true };
+  var v = t.w[wk]; return { wk: wk, type: t.type, name: t.name, base: typeof v === 'number' ? v + '′' : v, mins: typeof v === 'number' ? v : null, key: t.type === 'run' && day.getDay() === 5 ? 'q' : t.type === 'swim' && day.getDay() === 0 ? 'long' : 'easy' }; }
+function exIs(e, type) { var s = String((e && e.t) || '').toLowerCase(); return type === 'run' ? /run|chạy|treadmill/.test(s) : /swim|bơi/.test(s); }
+function planDone(H, d) { var i = planInfo(H, d); if (!i || !i.type) return null; var dd = H.days[K(d)] || {}; return (dd.ex || []).some(e => exIs(e, i.type) && (e.min || 0) >= 10) || !!((H.tplan.manual || {})[K(d)]); }
+function planSession(H, d, level, z) { var i = planInfo(H, d); if (!i || i.over || i.wk < 0) return null; var tag = 'Tuần ' + (i.wk + 1) + '/8 · ';
+  if (i.rest) return { title: tag + 'Ngày nghỉ theo giáo án', body: level >= 2 ? 'Đi bộ 20–30′ hoặc giãn cơ/core 15′. Để dành sức cho buổi kế tiếp.' : 'Nghỉ hẳn, giãn cơ nhẹ và ngủ sớm.' };
+  var body = i.type === 'run' ? (i.key === 'q' ? i.base + '. Khởi động 10′ chạy chậm, thả lỏng 5–10′.' : 'Chạy đều ' + i.base + ' ở ' + z.z2 + ' bpm (vẫn nói chuyện được).') : i.base + '. Khởi động 200m bơi chậm, cuối buổi 100m thả lỏng.';
+  var title = tag + i.name;
+  if (level === 0) { title = tag + 'Hoãn ' + i.name.toLowerCase(); body = 'Cơ thể đang căng: nghỉ hôm nay, buổi này dời sang ngày nghỉ gần nhất.'; }
+  else if (level === 1) { if (i.key === 'q') { title = tag + 'Đổi thành chạy nhẹ'; body = 'Hồi phục chưa đủ cho buổi chất lượng: chạy nhẹ 20–25′ ở ' + z.z1 + ' bpm.'; } else if (i.key === 'long') { title = tag + 'Bơi nhẹ'; body = 'Bơi thả lỏng 20–25′, bỏ mục tiêu cự ly hôm nay.'; } else if (i.mins) body = 'Rút ngắn còn ' + Math.round(i.mins * .7) + '′ chạy chậm ở ' + z.z1 + ' bpm.'; }
+  else if (level === 2 && i.key === 'q') body += ' Hôm nay hồi phục vừa: bớt 1 hiệp nếu thấy nặng.';
+  return { title, body }; }
+
+/* ===== chỉ số ===== */
+const day=i=>H.days[K(ago(i))]||{};
+const prof=()=>{const p=Object.assign({by:2001,h:171,w:68,waist:94},(H.cfg||{}).prof||{});const m=(H.meas||[]).slice(-1)[0];if(m){p.w=m.w;p.waist=m.waist}return p};
+const age=()=>new Date().getFullYear()-prof().by;
+function series(key,n,off=0){const a=[];for(let i=n-1+off;i>=off;i--){const x=ago(i),d=H.days[K(x)]||{};a.push({x,d,v:typeof d[key]==='number'?d[key]:null})}return a}
+function base(key,n=30){const a=series(key,n,1).map(p=>p.v).filter(v=>v!=null);if(a.length<4)return null;const m=a.reduce((s,v)=>s+v,0)/a.length,sd=Math.sqrt(a.reduce((s,v)=>s+(v-m)**2,0)/a.length);return{m,sd:Math.max(sd,Math.abs(m)*.03,key==='tempD'?.15:0)}}
+const goalSleep=()=>(H.cfg&&H.cfg.goalSleep)||480;
+function sleepScore(d){if(!d||!d.sleepMin)return null;const dur=Math.min(1,d.sleepMin/goalSleep())*50,st=(d.deep||0)+(d.rem||0)+(d.light||0),q=st?Math.min(1,((d.deep||0)+(d.rem||0))/(d.sleepMin*.42))*25:17,eff=d.inBed?d.sleepMin/d.inBed:.9;
+ return Math.round(Math.min(100,dur+q+clamp((eff-.75)/.17,0,1)*15+(d.toSleep!=null&&d.inBed?Math.max(0,1-Math.max(0,d.toSleep-15)/30)*10:7)))}
+function recoveryOf(i=0){const d=day(i),y=day(i+1),ss=sleepScore(d),hb=base('hrv'),rb=base('rhr');let pH=null,pR=null;
+ if(d.hrv&&hb)pH=clamp(68+(d.hrv-hb.m)/hb.sd*16,0,100);if(d.rhr&&rb)pR=clamp(68-(d.rhr-rb.m)/rb.sd*16,0,100);
+ const pL=Math.max(0,100-Math.max(0,(y.azm||0)-45)*1.2);const parts=[[ss,.4],[pH,.32],[pR,.2],[pL,.08]].filter(a=>a[0]!=null);if(ss==null&&pH==null&&pR==null)return null;
+ let sc=parts.reduce((s,a)=>s+a[0]*a[1],0)/parts.reduce((s,a)=>s+a[1],0);if(d.tempD!=null&&d.tempD>=.5)sc-=Math.min(15,d.tempD*12);return{v:Math.round(clamp(sc,1,100)),ss,pH:pH==null?null:Math.round(pH),pR:pR==null?null:Math.round(pR),pL:Math.round(pL)}}
+function strainOf(d){if(!d)return null;const z=d.hz||{l:d.azm||0,m:0,p:0};const load=(z.l||0)+2*(z.m||0)+3*(z.p||0)+(d.steps||0)/1000*1.5;if(!load&&d.steps==null)return null;return Math.round(100*(1-Math.exp(-load/110)))}
+function stressOf(d){if(!d||!d.hrH)return null;const rb=base('rhr'),rest=rb?rb.m:(d.rhr||62),mx=208-.7*age(),span=Math.max(18,(mx-rest)*.35),pts=[];
+ d.hrH.forEach((hr,h)=>{if(!hr||h<7)return;const st=(d.hourly||[])[h]||0;if(st>=600){pts.push({h,act:true,hr});return}pts.push({h,v:Math.round(clamp((hr-rest-3)/span*100,0,100)),hr})});
+ const vs=pts.filter(p=>p.v!=null).map(p=>p.v);return{pts,avg:vs.length?Math.round(vs.reduce((a,b)=>a+b,0)/vs.length):null,high:vs.filter(v=>v>=60).length,calm:vs.filter(v=>v<25).length}}
+const stressLbl=v=>v==null?'–':v<25?'Thư giãn':v<50?'Bình thường':v<75?'Hơi căng':'Căng thẳng cao';
+const stressCol=v=>v==null?'#556':v<25?'#5ac8fa':v<50?'#3ddc84':v<75?'#ffb347':'#ff5a6a';
+function energyNow(){const r=recoveryOf(0);if(!r)return null;let e=Math.min(96,35+.62*r.v);const d=day(0),s=stressOf(d),now=new Date().getHours();e-=(strainOf(d)||0)*.3;
+ if(s)s.pts.forEach(p=>{if(p.h>now)return;if(p.act)return;e-=p.v>=60?4:p.v>=40?1.5:p.v<25?-1.2:.6});return Math.round(clamp(e,2,100))}
+function zones(){const rb=base('rhr'),rest=rb?Math.round(rb.m):(day(0).rhr||62),mx=Math.round(208-.7*age()),z=p=>Math.round(rest+(mx-rest)*p);return{z,z1:z(.4)+'–'+z(.59),z2:z(.6)+'–'+z(.7),mx}}
+function coach(){if(H.coach&&H.coach.date===K(new Date()))return H.coach;const r=recoveryOf(0),d=day(0),hb=base('hrv'),rb=base('rhr');const zH=d.hrv&&hb?(d.hrv-hb.m)/hb.sd:null,zR=d.rhr&&rb?(d.rhr-rb.m)/rb.sd:null;
+ const az=series('azm',28).map(p=>p.v||0),ch=az.reduce((a,b)=>a+b,0)/28,ratio=ch>2?az.slice(-7).reduce((a,b)=>a+b,0)/7/ch:null;
+ let level=(d.tempD!=null&&d.tempD>=.5)||(zR!=null&&zH!=null&&zR>1.5&&zH<-1.5)?0:(r&&r.v<50)||(d.sleepMin&&d.sleepMin<360)||(ratio&&ratio>1.5)?1:(r&&r.v<70)||(ratio&&ratio>1.3)?2:3;
+ const Z=zones(),ps=planSession(H,new Date(),level,Z);const gen=[['Hôm nay nên nghỉ','Đi bộ nhẹ 20′, giãn cơ, ngủ sớm.'],['Tập nhẹ để hồi phục','Bơi thả lỏng 20–30′ hoặc chạy chậm 25′ ở '+Z.z1+' bpm.'],['Tập vừa · nền sức bền','Chạy Z2 35–45′ ở '+Z.z2+' bpm hoặc bơi đều 4×200m.'],['Sung sức · tập nặng được','Chạy interval 6×3′ ở '+Z.z(.8)+'–'+Z.z(.9)+' bpm hoặc bơi 10×100m nhanh.']][level];
+ return{level,title:ps?ps.title:gen[0],body:ps?ps.body:gen[1],why:''}}
+
+/* ===== vẽ ===== */
+function ring(v,col,label,sub,id){const r=46,C=2*Math.PI*r,o=C*(1-clamp((v||0)/100,0,1));
+ return `<button class="ring" data-sheet="${id}"><svg viewBox="0 0 120 120"><circle cx="60" cy="60" r="${r}" fill="none" stroke="${col}" stroke-opacity=".18" stroke-width="12"/><circle cx="60" cy="60" r="${r}" fill="none" stroke="${col}" stroke-width="12" stroke-linecap="round" stroke-dasharray="${C}" stroke-dashoffset="${o}" transform="rotate(-90 60 60)" style="transition:stroke-dashoffset .8s ease"/><text x="60" y="66" text-anchor="middle" font-size="26" font-weight="800" fill="currentColor">${v==null?'–':v+'%'}</text></svg><b>${label}</b><small>${sub}</small></button>`}
+function spark(key,col,n=14){const s=series(key,n).map(p=>p.v),v=s.filter(x=>x!=null);if(v.length<2)return '';const lo=Math.min(...v),hi=Math.max(...v),W=100,Hh=26,X=i=>i*W/(n-1),Y=x=>Hh-3-(x-lo)/((hi-lo)||1)*(Hh-6);let d='';s.forEach((x,i)=>{if(x==null)return;d+=(d&&s[i-1]!=null?'L':'M')+X(i).toFixed(1)+' '+Y(x).toFixed(1)});
+ return `<svg viewBox="0 0 ${W} ${Hh}" preserveAspectRatio="none"><path d="${d}" fill="none" stroke="${col}" stroke-width="2" vector-effect="non-scaling-stroke" stroke-linejoin="round"/></svg>`}
+function vital(key,label,unit,col,dir,fmt){const L=series(key,4).reverse().find(p=>p.v!=null);if(!L)return '';const b=base(key);let cls='',txt='';
+ if(b){const z=(L.v-b.m)/b.sd;cls=(dir>0?z<-1.5:dir<0?z>1.5:Math.abs(z)>1.5)?'bad':(dir>0?z<-.8:dir<0?z>.8:Math.abs(z)>.8)?'warn':'';txt='nền '+fmt(b.m)+(z>.3?' · ↑':z<-.3?' · ↓':' · ≈')}
+ if(key==='tempD'){cls=Math.abs(L.v)>=1?'bad':Math.abs(L.v)>=.5?'warn':'';txt='so với nền'}if(key==='spo2'&&L.v<93)cls='bad';
+ return `<button class="${cls}" data-sheet="v-${key}"><small>${label}</small><b>${fmt(L.v)}<em>${unit}</em></b><i>${txt}</i>${spark(key,col)}</button>`}
+function md(t){return esc(t).replace(/\*\*(.+?)\*\*/g,'<b>$1</b>').replace(/^\s*[\*\-•]\s+(.*)$/gm,'<li>$1</li>').replace(/(<li>.*<\/li>\n?)+/g,m=>'<ul>'+m.replace(/\n/g,'')+'</ul>').replace(/\n{2,}/g,'<br><br>').replace(/\n/g,'<br>')}
+function barChart(vals,col,fmt,goal){const n=vals.length,mx=Math.max(goal||0,...vals.map(v=>v||0))||1,W=320,Hh=110,bw=W/n;
+ return `<div class="chart"><svg viewBox="0 0 ${W} ${Hh+4}">${goal?`<line x1="0" x2="${W}" y1="${Hh-goal/mx*(Hh-8)}" y2="${Hh-goal/mx*(Hh-8)}" stroke="currentColor" stroke-opacity=".25" stroke-dasharray="4 4"/>`:''}${vals.map((v,i)=>`<rect x="${i*bw+bw*.18}" y="${Hh-(v||0)/mx*(Hh-8)}" width="${bw*.64}" height="${Math.max(v?2:0,(v||0)/mx*(Hh-8))}" rx="${Math.min(4,bw*.25)}" fill="${typeof col==='function'?col(v):col}" opacity="${i===n-1?1:.8}"><title>${v==null?'–':fmt(v)}</title></rect>`).join('')}</svg></div>`}
+function lineChart(key,col,fmt,n){const s=series(key,n),b=base(key,30),v=s.map(p=>p.v).filter(x=>x!=null);if(v.length<2)return '<p class="note">Chưa đủ dữ liệu.</p>';
+ let lo=Math.min(...v),hi=Math.max(...v);if(b){lo=Math.min(lo,b.m-b.sd*1.3);hi=Math.max(hi,b.m+b.sd*1.3)}const p=(hi-lo)*.12||1;lo-=p;hi+=p;const W=320,Hh=110,X=i=>6+i*(W-12)/(n-1),Y=x=>Hh-4-(x-lo)/(hi-lo)*(Hh-10);
+ let d='';s.forEach((q,i)=>{if(q.v==null)return;d+=(d&&s[i-1].v!=null?'L':'M')+X(i).toFixed(1)+' '+Y(q.v).toFixed(1)});
+ return `<div class="chart"><svg viewBox="0 0 ${W} ${Hh}">${b?`<rect x="0" width="${W}" y="${Y(b.m+b.sd)}" height="${Y(b.m-b.sd)-Y(b.m+b.sd)}" fill="${col}" opacity=".12" rx="6"/>`:''}<path d="${d}" fill="none" stroke="${col}" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round"/>${s.map((q,i)=>q.v==null?'':`<circle cx="${X(i)}" cy="${Y(q.v)}" r="${n>14?1.8:3}" fill="${col}"><title>${K(q.x)}: ${fmt(q.v)}</title></circle>`).join('')}</svg>${b?`<div class="ax"><span>Vùng bình thường của bạn ${fmt(b.m-b.sd)}–${fmt(b.m+b.sd)}</span></div>`:''}</div>`}
+function avgDelta(arr,prev){const a=arr.filter(v=>v!=null),b=prev.filter(v=>v!=null);const m=a.length?a.reduce((s,v)=>s+v,0)/a.length:null,pm=b.length?b.reduce((s,v)=>s+v,0)/b.length:null;return{m,d:m!=null&&pm!=null?m-pm:null}}
+
+/* ===== màn hình ===== */
+function vToday(){const d=day(0),r=recoveryOf(0),ss=sleepScore(d),stn=strainOf(d),s=stressOf(d),e=energyNow(),c=coach(),Z=zones(),h=new Date().getHours();
+ const sleepD=d.sleepMin?d:null;
+ let ins='';if(r){ins=r.v>=75?'Cơ thể hồi phục tốt. Hôm nay hợp để tập chất lượng và dồn việc khó vào buổi sáng.':r.v>=55?'Hồi phục ở mức vừa. Giữ nhịp đều, tập vừa sức và ngủ đúng giờ tối nay.':'Cơ thể cần hồi phục. Ưu tiên việc nhẹ, uống đủ nước, tập nhẹ hoặc nghỉ.';if(d.sleepMin&&d.sleepMin<390)ins+=' Đêm qua ngủ ít ('+hm(d.sleepMin)+').'}else ins='Chưa có số liệu hôm nay. Dữ liệu tự kéo lúc 9h · 17h · 21h.';
+ const stressBars=s?Array.from({length:17},(_,i)=>{const p=s.pts.find(x=>x.h===i+7);return `<i title="${i+7}h" style="height:${p&&p.v!=null?Math.max(8,p.v):p&&p.act?100:6}%;background:${p&&p.act?'repeating-linear-gradient(45deg,#ff9f0a 0 3px,transparent 3px 6px)':stressCol(p&&p.v)};opacity:${p?1:.25}"></i>`}).join(''):'';
+ const wk=series('azm',7).reduce((a,p)=>a+(p.v||0),0),goalSteps=(H.cfg&&H.cfg.goalSteps)||8000,stT=(d.deep||0)+(d.rem||0)+(d.light||0)+(d.awake||0)||1;
+ const exs=[];[0,1].forEach(i=>(day(i).ex||[]).slice().reverse().forEach(x=>exs.push([i,x])));
+ return `<div class="card"><div class="hero">${ring(r&&r.v,'var(--rec)','Hồi phục',r?(r.v>=75?'Tốt':r.v>=55?'Vừa':'Thấp'):'–','rec')}${ring(stn,'var(--str)','Gắng sức',stn==null?'–':stn>=70?'Cao':stn>=40?'Vừa':'Nhẹ','str')}${ring(ss,'var(--slp)','Giấc ngủ',hm(d.sleepMin),'slp')}</div><p class="insight">${esc(ins)}</p></div>
+ <div class="card coach" style="--cc:${['#8fa3b8','#3ddc84','#ffb347','#ff6b81'][c.level]||'var(--str)'}"><h3>${h<17?'Gợi ý tập hôm nay':'Gợi ý tập 17h'} <span>${planDone(H,new Date())?'✓ đã tập':''}</span></h3><b>${esc(c.title)}</b><p>${esc(c.body)}</p>${c.why?`<small>${esc(c.why)}</small>`:''}</div>
+ <div class="row2"><div class="card" data-sheet="energy"><h3>Năng lượng</h3><div class="big">${e??'–'}<em>%</em></div><div class="batt"><u style="width:${e||0}%;background:linear-gradient(90deg,${e<30?'#ff5a6a,#ff9f0a':e<60?'#ffb347,#ffd36e':'#3ddc84,#9be15d'})"></u></div><div class="lbl">${e==null?'Chưa đủ dữ liệu':e>=60?'Còn nhiều sức':e>=30?'Nên nghỉ xen kẽ':'Sắp cạn, nghỉ ngơi đi'}</div></div>
+ <div class="card" data-sheet="stress"><h3>Stress</h3><div class="big" style="color:${stressCol(s&&s.avg)}">${s&&s.avg!=null?s.avg:'–'}</div><div class="lbl">${s?stressLbl(s.avg)+(s.high?' · '+s.high+'h căng':''):'Chờ nhịp tim theo giờ'}</div><div class="sbars">${stressBars}</div></div></div>
+ <div class="card" style="margin-top:12px" data-sheet="slp"><h3>Giấc ngủ <span>${sleepD?esc(d.bed+' → '+d.wake):''}</span></h3>${sleepD?`<div class="kv"><b>${hm(d.sleepMin)}</b><span>điểm ${ss} · hiệu quả ${d.inBed?Math.round(d.sleepMin/d.inBed*100):'–'}%</span></div><div class="stages">${['deep','rem','light','awake'].map(k=>`<i class="st-${k}" style="flex:${d[k]||0}"></i>`).join('')}</div><div class="leg">${[['deep','Sâu'],['rem','REM'],['light','Nông'],['awake','Thức']].map(([k,l])=>`<span class="st-${k}">${l} ${d[k]||0}′ (${Math.round((d[k]||0)/stT*100)}%)</span>`).join('')}</div>`:'<p class="note">Chưa có giấc ngủ đêm qua.</p>'}</div>
+ <div class="card"><h3>Chỉ số cơ thể <span>so với 30 ngày của bạn</span></h3><div class="vit">${vital('hrv','HRV',' ms','#3ddc84',1,v=>Math.round(v))}${vital('rhr','Nhịp tim nghỉ',' bpm','#ff6b81',-1,v=>Math.round(v))}${vital('spo2','SpO₂','%','#5ac8fa',1,v=>v.toFixed(1))}${vital('br','Nhịp thở','/ph','#7fb2ff',0,v=>v.toFixed(1))}${vital('tempD','Nhiệt độ da','°C','#ff9f0a',0,v=>(v>0?'+':'')+v.toFixed(1))}</div></div>
+ <div class="card"><h3>Vận động</h3><div class="stat3"><div><b>${(d.steps||0).toLocaleString('vi-VN')}</b><small>bước / ${goalSteps.toLocaleString('vi-VN')}</small><div class="prog"><u style="width:${Math.min(100,(d.steps||0)/goalSteps*100)}%;background:var(--rec)"></u></div></div><div><b>${wk}</b><small>phút AZM tuần / 150</small><div class="prog"><u style="width:${Math.min(100,wk/1.5)}%;background:var(--str)"></u></div></div><div><b>${d.cal?d.cal.toLocaleString('vi-VN'):'–'}</b><small>kcal hôm nay</small></div></div>
+ ${exs.length?`<div style="margin-top:12px">${exs.slice(0,4).map(([i,x])=>`<div class="ex"><div>${/swim|bơi/i.test(x.t)?'🏊':/run|chạy/i.test(x.t)?'🏃':/bike/i.test(x.t)?'🚴':'🚶'} <b>${esc(x.t)}</b> <small>${i?'hôm qua':'hôm nay'} ${esc(x.s)}</small></div><small>${x.min}′${x.km?' · '+x.km+' km':''}${x.hr?' · ♥'+x.hr:''}</small></div>`).join('')}</div>`:''}
+ <p class="note" style="margin:10px 0 0">Vùng nhịp tim: đốt mỡ ${Z.z1} · tim mạch ${Z.z(.6)}–${Z.z(.84)} · đỉnh ≥${Z.z(.85)} bpm</p></div>`}
+function vTrend(){const n=range,s=i=>i,mk=(fn)=>{const cur=[],prev=[];for(let i=n-1;i>=0;i--)cur.push(fn(i));for(let i=2*n-1;i>=n;i--)prev.push(fn(i));return{cur,prev}};
+ const rec=mk(i=>{const r=recoveryOf(i);return r&&r.v}),sl=mk(i=>sleepScore(day(i))),slm=mk(i=>day(i).sleepMin||null),stn=mk(i=>strainOf(day(i))),st=mk(i=>{const x=stressOf(day(i));return x&&x.avg}),stp=mk(i=>day(i).steps||null);
+ const head=(t,o,fmt,good)=>{const a=avgDelta(o.cur,o.prev);return `<h3>${t} <span>TB ${a.m==null?'–':fmt(a.m)}${a.d!=null&&Math.abs(a.d)>=.5?` <span class="${(a.d>0)===good?'up':'down'}">${a.d>0?'▲':'▼'} ${fmt(Math.abs(a.d))}</span>`:''}</span></h3>`};
+ const R=x=>Math.round(x);
+ return `<div style="display:flex;justify-content:space-between;align-items:center;margin:0 4px 12px"><b style="font-size:17px">Xu hướng</b><div class="seg">${[7,30].map(v=>`<button data-range="${v}" class="${range===v?'on':''}">${v} ngày</button>`).join('')}</div></div>
+ <div class="card">${head('Hồi phục',rec,R,true)}${barChart(rec.cur,v=>v==null?'#333':v>=75?'#3ddc84':v>=55?'#ffcc4d':'#ff6b81',R)}</div>
+ <div class="card">${head('Giấc ngủ',slm,hm,true)}${barChart(slm.cur,'#a78bfa',hm,goalSleep())}<p class="note">Điểm giấc ngủ TB ${(()=>{const a=avgDelta(sl.cur,sl.prev).m;return a==null?'–':R(a)})()} · đường đứt là mục tiêu ${hm(goalSleep())}</p></div>
+ <div class="card">${head('Gắng sức',stn,R,true)}${barChart(stn.cur,'#ff9f0a',R)}</div>
+ <div class="card">${head('Stress',st,R,false)}${st.cur.some(v=>v!=null)?barChart(st.cur,v=>stressCol(v),R):'<p class="note">Stress cần nhịp tim theo giờ; sẽ đầy dần mỗi ngày.</p>'}</div>
+ <div class="card"><h3>HRV <span>cao hơn = hồi phục tốt</span></h3>${lineChart('hrv','#3ddc84',R,n)}</div>
+ <div class="card"><h3>Nhịp tim nghỉ <span>thấp hơn = tim khoẻ</span></h3>${lineChart('rhr','#ff6b81',R,n)}</div>
+ <div class="card">${head('Bước chân',stp,v=>R(v).toLocaleString('vi-VN'),true)}${barChart(stp.cur,'#3ddc84',v=>R(v).toLocaleString('vi-VN'),(H.cfg&&H.cfg.goalSteps)||8000)}</div>`}
+function docLoad(){try{return JSON.parse(localStorage.getItem(LSDOC)||'[]')}catch(e){return[]}}
+function docSaveL(a){try{localStorage.setItem(LSDOC,JSON.stringify(a.slice(-40)))}catch(e){}}
+const QS=['Hôm nay mình nên tập gì?','Vì sao HRV của mình thấp?','Đánh giá giấc ngủ 7 ngày qua','Stress của mình hôm nay thế nào?','Làm sao giảm vòng eo về 86 cm?','Ăn gì trước khi bơi buổi tối?','Mình có đang tập quá sức không?'];
+function vDoc(){const a=docLoad();return `<div class="chat" id="chat">${a.length?a.map(m=>`<div class="msg ${m.role==='model'?'ai':'me'}${m.err?' err':''}">${m.role==='model'?md(m.text):esc(m.text)}</div>`).join(''):`<div class="msg ai">Chào Tuấn 👋 Mình là Bác sĩ AI. Mình đã đọc số liệu ngủ, HRV, nhịp tim, vận động, stress và giáo án của bạn trong 14 ngày qua. Hỏi gì cũng được nhé.</div>`}</div>
+ <div class="chips" id="chips">${QS.map(q=>`<button data-q="${esc(q)}">${esc(q)}</button>`).join('')}</div>
+ <p class="note" style="margin:12px 4px 70px">⚠️ Chỉ để tham khảo, không thay thế bác sĩ. Khẩn cấp (đau ngực, khó thở, ngất…) gọi 115. Câu hỏi và số liệu tóm tắt được gửi tới Gemini API (gói miễn phí, Google có thể dùng để cải thiện dịch vụ). ${a.length?'<button class="btn" id="docClear" style="padding:6px 10px;margin-left:6px">Xoá hội thoại</button>':''}</p>`}
+function vMe(){const p=prof(),pi=planInfo(H,new Date()),w=H.weekly,m=(H.meas||[]).slice(-1)[0],tok=localStorage.getItem('health-push-tok'),pushOn=tok&&window.Notification&&Notification.permission==='granted';
+ const ios=/iPhone|iPad|iPod/.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1),standalone=matchMedia('(display-mode: standalone)').matches||navigator.standalone;
+ let wkGrid='';if(pi&&!pi.over&&pi.wk>=0){const st=new Date(H.tplan.start+'T12:00:00');wkGrid='<div class="wk">'+[1,3,5,0].map(g=>{const x=new Date(st);x.setDate(st.getDate()+pi.wk*7+(g===0?6:g-1));const ok=planDone(H,x),it=K(x)===K(new Date());return `<i class="${ok?'ok':''} ${it?'today':''}">${['CN','T2','','T4','','T6'][g]} ${ok?'✓':TPL8[g].type==='swim'?'🏊':'🏃'}</i>`}).join('')+'</div>'}
+ return `<div class="card"><h3>Tài khoản</h3><div class="list"><div><span>Google</span><b>${esc(user?user.email:'Chưa đăng nhập')}</b></div><div><span>Đồng bộ lần cuối</span><b>${H.auto&&H.auto.last?new Date(H.auto.last).toLocaleString('vi-VN',{hour:'2-digit',minute:'2-digit',day:'2-digit',month:'2-digit'}):'–'}</b></div><div><span>Nguồn</span><b>Google Health · Fitbit</b></div></div></div>
+ <div class="card"><h3>Thông báo</h3><p class="note" style="margin:0 0 10px">8:30 bản tin · 9h sức khoẻ · 17h gợi ý tập · 21h tổng kết · CN 20h báo cáo tuần.</p>${pushOn?'<b style="color:var(--rec)">✓ Đã bật trên máy này</b>':ios&&!standalone?'<p class="note">Trên iPhone: bấm Chia sẻ → Thêm vào MH chính, mở app từ biểu tượng rồi bật ở đây (iOS 16.4+).</p>':`<button class="btn pri full" id="pushOn">🔔 Bật thông báo trên máy này</button>`}</div>
+ ${pi&&!pi.over?`<div class="card"><h3>Giáo án 8 tuần <span>${pi.wk<0?'sắp bắt đầu':'Tuần '+(pi.wk+1)+'/8'}</span></h3>${wkGrid}<p class="note" style="margin:8px 0 0">T2 chạy nền · T4 bơi kỹ thuật · T6 chạy chất lượng · CN bơi dài. Tuần 8 kiểm tra 5 km & 1.500m.</p></div>`:''}
+ ${w?`<div class="card"><h3>Báo cáo tuần <span>${esc(w.end.slice(8)+'/'+w.end.slice(5,7))} · ${w.score}/100</span></h3><b>${esc(w.title)}</b><ul style="margin:6px 0;padding-left:18px;font-size:13.5px">${w.lines.map(l=>`<li>${esc(l)}</li>`).join('')}</ul><p style="margin:0;font-size:13.5px">🎯 ${esc(w.goal)}</p></div>`:''}
+ <div class="card"><h3>Cơ thể</h3><div class="list"><div><span>Tuổi · chiều cao</span><b>${age()} · ${p.h} cm</b></div><div><span>Cân nặng</span><b>${p.w} kg · BMI ${(p.w/(p.h/100)**2).toFixed(1)}</b></div><div><span>Vòng eo</span><b>${p.waist} cm · eo/cao ${(p.waist/p.h).toFixed(2)}</b></div><div><span>Lần đo cuối</span><b>${m?esc(m.d):'–'}</b></div></div><p class="note" style="margin:8px 0 0">Đo hàng tháng và sửa hồ sơ trong Học viện → Quầy sức khoẻ → Cơ thể.</p></div>
+ <a class="btn full" style="display:block;text-align:center;text-decoration:none;margin-bottom:12px" href="${ACAD}?room=health">Mở Học viện 3D</a>
+ ${user?'<button class="btn full" id="signout" style="margin-bottom:12px">Đăng xuất</button>':''}
+ <p class="note">Số liệu là ước tính từ đồng hồ, chỉ để theo dõi thói quen. Stress ước tính từ nhịp tim lúc ngồi yên so với nhịp nghỉ của bạn; Năng lượng = hồi phục buổi sáng trừ gắng sức và stress trong ngày.</p>`}
+function render(){const h=new Date().getHours(),p=prof();$('#hello').textContent=(h<11?'Chào buổi sáng':h<14?'Chào buổi trưa':h<18?'Chào buổi chiều':'Chào buổi tối')+', Tuấn';
+ $('#today').textContent=new Date().toLocaleDateString('vi-VN',{weekday:'long',day:'numeric',month:'numeric'});
+ $('#sync').innerHTML=H.auto&&H.auto.last?`<i style="background:${Date.now()-H.auto.last<13*3600e3?'var(--ok)':'var(--warn)'}"></i>${new Date(H.auto.last).toLocaleTimeString('vi-VN',{hour:'2-digit',minute:'2-digit'})}`:'';
+ document.querySelectorAll('#tabs button').forEach(b=>b.classList.toggle('on',b.dataset.tab===tab));
+ $('#view').innerHTML=tab==='trend'?vTrend():tab==='doc'?vDoc():tab==='me'?vMe():vToday();$('#composer').hidden=tab!=='doc';
+ if(tab==='doc'){const c=$('#chat');requestAnimationFrame(()=>scrollTo(0,document.body.scrollHeight))}}
+/* ===== chi tiết ===== */
+function sheet(id){const r=recoveryOf(0),d=day(0),Z=zones();let h='';const b2=(l,v,c)=>`<div class="bar2"><span>${l}</span><i><u style="width:${v||0}%;background:${c}"></u></i><b>${v??'–'}</b></div>`;
+ if(id==='rec')h=`<h2>Hồi phục ${r?r.v+'%':''}</h2><p class="note">Cho biết cơ thể đã sẵn sàng tới đâu cho căng thẳng thể chất & tinh thần hôm nay.</p>${r?b2('Giấc ngủ',r.ss,'#a78bfa')+b2('HRV',r.pH,'#3ddc84')+b2('Nhịp nghỉ',r.pR,'#ff6b81')+b2('Tải hôm qua',r.pL,'#ff9f0a'):''}<p class="note">≥75 tốt: tập chất lượng được · 55–74 vừa: tập đều · &lt;55 thấp: tập nhẹ, ngủ sớm. Nhiệt độ da tăng ≥0,5°C sẽ trừ điểm.</p>`;
+ else if(id==='str'){const z=d.hz||{};h=`<h2>Gắng sức ${strainOf(d)??'–'}%</h2><p class="note">Tổng tải tim mạch trong ngày từ phút ở các vùng nhịp tim và số bước (thang 0–100, càng lên cao càng khó tăng).</p><div class="list"><div><span>Đốt mỡ</span><b>${z.l||0}′</b></div><div><span>Tim mạch (×2)</span><b>${z.m||0}′</b></div><div><span>Đỉnh (×3)</span><b>${z.p||0}′</b></div><div><span>Bước</span><b>${(d.steps||0).toLocaleString('vi-VN')}</b></div></div><p class="note">Mục tiêu theo hồi phục: ${r?(r.v>=75?'60–80% (ngày tập chất lượng)':r.v>=55?'40–60% (tập vừa)':'dưới 35% (hồi phục)'):'–'}.</p>`}
+ else if(id==='slp'){const ss=sleepScore(d);h=`<h2>Giấc ngủ ${hm(d.sleepMin)}</h2><p class="note">Điểm ${ss??'–'}/100 = thời lượng (50) + ngủ sâu & REM (25) + hiệu quả và thời gian vào giấc (25).</p><div class="list"><div><span>Lên giường → dậy</span><b>${esc((d.bed||'–')+' → '+(d.wake||'–'))}</b></div><div><span>Ngủ sâu</span><b>${d.deep??'–'}′</b></div><div><span>REM</span><b>${d.rem??'–'}′</b></div><div><span>Thức giấc</span><b>${d.awake??'–'}′</b></div><div><span>Mục tiêu</span><b>${hm(goalSleep())}</b></div></div><p class="note">Người trưởng thành cần 7–9 giờ. Ngủ sâu ~13–23%, REM ~20–25%. Giữ giờ lên giường lệch dưới ±30′ để nhịp sinh học ổn định.</p>`}
+ else if(id==='energy')h=`<h2>Năng lượng ${energyNow()??'–'}%</h2><p class="note">Bắt đầu ngày từ mức hồi phục, giảm dần theo gắng sức và các giờ căng thẳng, hồi lại một chút khi bạn thư giãn. Dưới 30%: nên nghỉ, tránh quyết định quan trọng và tập nặng.</p>`;
+ else if(id==='stress'){const s=stressOf(d);h=`<h2>Stress hôm nay ${s&&s.avg!=null?s.avg:'–'}</h2><p class="note">Ước tính từng giờ: nhịp tim lúc bạn ngồi yên cao hơn nhịp nghỉ bao nhiêu. Giờ có vận động (≥600 bước) được tô sọc cam và không tính là stress.</p>${s?`<div class="list">${s.pts.map(p=>`<div><span>${p.h}h · ♥${p.hr}</span><b style="color:${p.act?'#ff9f0a':stressCol(p.v)}">${p.act?'vận động':p.v+' · '+stressLbl(p.v)}</b></div>`).join('')}</div>`:''}<p class="note">Giảm nhanh: thở 4-6 (hít 4s, thở ra 6s) trong 5 phút, đi bộ 10 phút, uống nước, tránh cà phê sau 14h.</p>`}
+ else if(id.startsWith('v-')){const k=id.slice(2),names={hrv:'HRV',rhr:'Nhịp tim nghỉ',spo2:'SpO₂',br:'Nhịp thở',tempD:'Nhiệt độ da'},info={hrv:'Độ biến thiên nhịp tim khi ngủ. Cao hơn mức nền = hệ thần kinh thư giãn, hồi phục tốt; thấp kéo dài = thiếu ngủ, căng thẳng, tập quá sức hoặc sắp ốm.',rhr:'Nhịp tim lúc nghỉ. Tăng ≥5 bpm so với nền thường do thiếu ngủ, rượu bia, mất nước, căng thẳng hoặc sắp ốm. Giảm dần theo tháng = tim khoẻ hơn.',spo2:'Độ bão hoà oxy trung bình khi ngủ. Bình thường 95–100%. Thấp kéo dài (<92%) nên đi khám.',br:'Số lần thở/phút khi ngủ, thường 12–20. Tăng so với nền có thể là dấu hiệu nhiễm trùng hô hấp.',tempD:'Chênh lệch nhiệt độ da ban đêm so với nền của bạn. Tăng ≥0,5°C vài đêm liền: có thể sắp ốm.'};
+  h=`<h2>${names[k]}</h2><p class="note">${info[k]}</p>${lineChart(k,'#3ddc84',v=>k==='tempD'?(v>0?'+':'')+v.toFixed(2):k==='spo2'||k==='br'?v.toFixed(1):Math.round(v),30)}`}
+ $('#sheetIn').innerHTML='<div class="grab"></div>'+h;$('#sheet').classList.add('on')}
+$('#sheet').addEventListener('click',e=>{if(e.target.id==='sheet')e.currentTarget.classList.remove('on')});
+/* ===== bác sĩ AI ===== */
+let busy=false;
+async function ask(text){text=(text||'').trim();if(!text||busy)return;if(!user){toast('Cần đăng nhập Google trước');return}
+ const a=docLoad();a.push({role:'user',text});docSaveL(a);const c=$('#chat');c.insertAdjacentHTML('beforeend',`<div class="msg me">${esc(text)}</div><div class="msg ai typing" id="ty"><i></i><i></i><i></i></div>`);scrollTo(0,document.body.scrollHeight);
+ $('#docIn').value='';busy=true;let rep;
+ try{const tok=await user.getIdToken();const r=await fetch(DOC_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({idToken:tok,action:'chat',messages:a.slice(-12)})});const j=await r.json();rep=j.reply?{role:'model',text:j.reply}:{role:'model',text:j.msg||'Có lỗi, thử lại nhé.',err:1}}
+ catch(e){rep={role:'model',text:'Không kết nối được Bác sĩ AI. Kiểm tra mạng rồi thử lại.',err:1}}
+ busy=false;if(!rep.err){const b=docLoad();b.push(rep);docSaveL(b)}const t=$('#ty');if(t)t.remove();const c2=$('#chat');if(c2){c2.insertAdjacentHTML('beforeend',`<div class="msg ai${rep.err?' err':''}">${md(rep.text)}</div>`);scrollTo(0,document.body.scrollHeight)}}
+$('#docSend').onclick=()=>ask($('#docIn').value);
+$('#docIn').addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey&&!e.isComposing){e.preventDefault();ask(e.target.value)}});
+$('#docIn').addEventListener('input',e=>{e.target.style.height='auto';e.target.style.height=Math.min(120,e.target.scrollHeight)+'px'});
+document.addEventListener('click',e=>{const t=e.target.closest('[data-tab],[data-range],[data-sheet],[data-q],#pushOn,#signout,#docClear');if(!t)return;
+ if(t.dataset.tab){tab=t.dataset.tab;history.replaceState(null,'','?tab='+tab);render();scrollTo(0,0)}else if(t.dataset.range){range=+t.dataset.range;render()}else if(t.dataset.sheet)sheet(t.dataset.sheet);else if(t.dataset.q)ask(t.dataset.q);
+ else if(t.id==='pushOn')pushEnable();else if(t.id==='signout'&&fb){fb.auth.signOut(fb.A);localStorage.removeItem(LS)}else if(t.id==='docClear'){if(!t.dataset.sure){t.dataset.sure=1;t.textContent='Bấm lần nữa để xoá';return}localStorage.removeItem(LSDOC);render()}});
+/* ===== thông báo đẩy ===== */
+let swReg=null;if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').then(r=>swReg=r).catch(()=>{});
+async function pushEnable(){try{if(!user){toast('Cần đăng nhập trước');return}if(!window.Notification||!('PushManager' in window)){toast('Trình duyệt này chưa hỗ trợ thông báo đẩy');return}
+ const p=await Notification.requestPermission();if(p!=='granted'){toast('Chưa được phép gửi thông báo');return}const reg=swReg||await navigator.serviceWorker.ready;
+ const m=await import('https://www.gstatic.com/firebasejs/13.3.0/firebase-messaging.js');if(m.isSupported&&!(await m.isSupported())){toast('Thiết bị chưa hỗ trợ');return}
+ const tk=await m.getToken(m.getMessaging(fb.app),{vapidKey:VAPID,serviceWorkerRegistration:reg});if(!tk)throw 'notoken';
+ const ua=/iPhone/.test(navigator.userAgent)?'iPhone':/iPad/.test(navigator.userAgent)||navigator.maxTouchPoints>1&&/Mac/.test(navigator.platform)?'iPad':/Android/.test(navigator.userAgent)?'Android':/Win/.test(navigator.platform)?'Windows':/Mac/.test(navigator.platform)?'Mac':'Web';
+ await fb.fs.runTransaction(fb.D,async tx=>{const sn=await tx.get(ref);const dd=sn.exists()?sn.data():{};let st=dd.s?JSON.parse(dd.s):null;if(!st)st={v:1,cards:{},days:{},newLog:{},updated:0};if(st.v!==1)throw new Error('state');
+  const acad=st.acad&&st.acad.v===1?st.acad:{v:1};acad.push=acad.push||{tokens:[]};acad.push.tokens=(acad.push.tokens||[]).filter(x=>x.t!==tk);acad.push.tokens.push({t:tk,at:Date.now(),ua:ua+' · Sức khoẻ',app:'health'});acad.push.tokens=acad.push.tokens.slice(-8);
+  acad.updatedAt=Math.max(Date.now(),(acad.updatedAt||0)+1);st.acad=acad;st.updated=Math.max(Date.now(),(st.updated||0)+1);tx.set(ref,{s:JSON.stringify(st),v:1,updated:fb.fs.serverTimestamp()},{merge:true})});
+ localStorage.setItem('health-push-tok',tk);reg.showNotification('Sức khoẻ · đã bật thông báo',{body:'Bắp sẽ báo lúc 8:30 · 9h · 17h · 21h 🐱',icon:'icon-192.png',tag:'h-test'});toast('Đã bật thông báo trên '+ua);render()}
+ catch(e){toast('Bật thông báo lỗi: '+String(e&&e.message||e).slice(0,80))}}
+/* ===== Firebase ===== */
+function adopt(st){const a=st&&st.acad;if(!a||a.v!==1)return;A=a;H=a.health||{days:{}};H.days=H.days||{};try{localStorage.setItem(LS,JSON.stringify({acad:{health:H,push:a.push},at:Date.now()}))}catch(e){}render()}
+if(H.days&&Object.keys(H.days).length){$('#gate').hidden=true;render()}
+(async()=>{try{const b='https://www.gstatic.com/firebasejs/13.3.0/';const [app,auth,fs]=await Promise.all([import(b+'firebase-app.js'),import(b+'firebase-auth.js'),import(b+'firebase-firestore.js')]);
+ const a=app.initializeApp(FBCFG);fb={auth,fs,app:a,A:auth.getAuth(a),D:fs.getFirestore(a)};let unsub=null;
+ auth.onAuthStateChanged(fb.A,u=>{user=u;if(unsub){unsub();unsub=null}if(u){ref=fs.doc(fb.D,'users',u.uid);$('#gate').hidden=true;unsub=fs.onSnapshot(ref,sn=>{const dd=sn.data()||{};try{adopt(dd.s?JSON.parse(dd.s):null)}catch(e){}},()=>{});render()}else{ref=null;if(!(H.days&&Object.keys(H.days).length))$('#gate').hidden=false;render()}});
+ $('#signin').onclick=()=>auth.signInWithPopup(fb.A,new auth.GoogleAuthProvider()).catch(e=>{if(/popup/.test(e.code||''))auth.signInWithRedirect(fb.A,new auth.GoogleAuthProvider());else $('#gateMsg').textContent='Đăng nhập lỗi: '+(e.code||e)})}
+ catch(e){$('#gateMsg').textContent='Không tải được Firebase, kiểm tra mạng.'}})();
+setInterval(()=>{if(!document.hidden&&tab==='today')render()},5*60e3);
+document.addEventListener('visibilitychange',()=>{if(!document.hidden)render()});
+render();
+</script>
+</body>
+</html>

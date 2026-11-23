@@ -1,0 +1,20 @@
+{
+  "name": "Sức khoẻ · Học viện của Tuấn",
+  "short_name": "Sức khoẻ",
+  "description": "Hồi phục, gắng sức, giấc ngủ, stress và Bác sĩ AI từ dữ liệu Google Health",
+  "start_url": "./?source=app",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#05080c",
+  "theme_color": "#05080c",
+  "icons": [
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ],
+  "shortcuts": [
+    { "name": "Bác sĩ AI", "url": "./?tab=doc", "icons": [{ "src": "icon-192.png", "sizes": "192x192" }] },
+    { "name": "Xu hướng", "url": "./?tab=trend", "icons": [{ "src": "icon-192.png", "sizes": "192x192" }] }
+  ]
+}
