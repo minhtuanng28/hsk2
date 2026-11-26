@@ -361,6 +361,14 @@ body.eco #hud-tl,body.eco #pomo,body.eco .ib,body.eco #dockbtn,body.eco #dockgri
 .dinput{display:flex;gap:6px;align-items:flex-end}.dinput textarea{flex:1;resize:none;border-radius:14px;padding:9px 12px;font:inherit;font-size:13px;border:1px solid var(--line);background:light-dark(#fff,rgba(255,255,255,.06));color:inherit}.dinput .btn{height:40px;min-width:44px;border-radius:14px}
 .hp2 details.note div{margin-top:3px}
 </style>
+<script src="ban-duyet-bai.js"></script>
+<style>
+#bdbHost .bdb{--bdb-bg:var(--solid);--bdb-soft:light-dark(#f3f0e8,#1f2431);--bdb-line:light-dark(#e3dfd4,#2c3242);--bdb-text:var(--ink);--bdb-mute:var(--mute);font-family:inherit;max-width:none}
+#bdbHost .bdb-head h2{display:none}
+#bdbHost .bdb-head{justify-content:flex-end}
+.bdbbox{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.bdbbox b{font-size:22px;line-height:1}
+</style>
 <script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js"}}</script>
 </head>
 <body>
@@ -420,6 +428,8 @@ body.eco #hud-tl,body.eco #pomo,body.eco .ib,body.eco #dockbtn,body.eco #dockgri
 <div id="loading">Đang dựng học viện…</div>
 
 <script type="module">
+var BDB_N=null;
+function setBdbN(n){BDB_N=(typeof n==='number')?n:null;try{window.__bdbTags&&window.__bdbTags()}catch(e){}const el=document.getElementById('bdbN');if(el)el.textContent=BDB_N==null?'–':BDB_N}
 import * as THREE from 'three';
 {
 const $=(s,r=document)=>r.querySelector(s);
@@ -1845,10 +1855,12 @@ function updateTags(){
   else if(r.kind==='news'){el.innerHTML=`${esc(tr(r.title))}<small>${esc(newsTag())}</small>`}
   else if(r.kind==='health'){el.innerHTML=`${esc(tr(r.title))}<small>${esc(healthTag())}</small>`}
   else if(r.kind==='fin'){const n=Object.keys(F0().done).length;el.innerHTML=`${esc(tr(r.title))}<small>${esc(finTag())}</small><div class="bar"><i style="width:${Math.round(n/30*100)}%"></i></div>`}
+  else if(r.kind==='work'&&BDB_N){el.innerHTML=`${esc(tr(r.title))}<small>${BDB_N} ${L==='vi'?'bài chờ duyệt':'posts to review'}</small>`}
   else if(r.kind==='plan'){const open=S.plan.cards.filter(c=>c.col!=='done').length;el.innerHTML=`${esc(tr(r.title))}<small>${open} ${L==='vi'?'việc mở':'open tasks'}</small>`}
   else el.innerHTML=`${esc(tr(r.title))}<small>${esc(tr(r.dates))}</small>`}
  archTag.el.textContent=t('arch');meTag.el.textContent=t('you');for(const o of tags)o.w=0;
 }
+window.__bdbTags=updateTags;
 const v3=new THREE.Vector3();
 const placed=[];
 function placeTags(){const W=innerWidth,H=innerHeight;placed.length=0;const vis=[];
@@ -2286,7 +2298,7 @@ function classPanel(){
 function workPanel(){
  const r=RM.work,w=S.work,today=dkey(new Date()),ck=w.checks[today]||{},done=SLOTS.filter(s=>ck[s.id]).length;
  let h=head(r.hex,r.short,tr(r.title),`${t('workHours')} · ${t('checked',{a:done,b:SLOTS.length})}`);
- h+=`<div class="pb" style="--c:${r.hex}"><div class="sec" style="margin-top:0"><h3>${V('Việc hôm nay','Today')}</h3><div class="todaybox">${todayHTML(true)}</div><div class="row" style="margin-top:8px"><button class="btn sm" data-act="stickyShow">${V('Hiện tờ note trên màn hình','Show the sticky note')}</button><button class="btn sm" data-act="stickyPip">${V('⧉ Ghim nổi ngoài app','⧉ Float outside the app')}</button></div></div><div class="pbar"><i style="width:${done/SLOTS.length*100}%"></i></div>
+ h+=`<div class="pb" style="--c:${r.hex}"><div class="sec" style="margin-top:0"><h3>${V('Bàn duyệt bài','Post review desk')}</h3><div class="bdbbox"><b id="bdbN">${BDB_N==null?'–':BDB_N}</b><span>${V('bài agent viết đang chờ bạn duyệt','agent drafts waiting for review')}</span><button class="btn sm pri" data-act="openDuyet">${V('Mở bàn duyệt','Open review desk')}</button></div></div><div class="sec"><h3>${V('Việc hôm nay','Today')}</h3><div class="todaybox">${todayHTML(true)}</div><div class="row" style="margin-top:8px"><button class="btn sm" data-act="stickyShow">${V('Hiện tờ note trên màn hình','Show the sticky note')}</button><button class="btn sm" data-act="stickyPip">${V('⧉ Ghim nổi ngoài app','⧉ Float outside the app')}</button></div></div><div class="pbar"><i style="width:${done/SLOTS.length*100}%"></i></div>
  <div class="sec"><h3>${t('workChecks')}</h3><ul class="list">${SLOTS.map(s=>`<li class="${ck[s.id]?'done':''}"><input type="checkbox" data-act="wc" data-id="${s.id}" ${ck[s.id]?'checked':''} aria-label="${esc(tr(s.t))}"><div class="lt"><b>${s.time}</b> · ${esc(tr(s.t))}</div></li>`).join('')}</ul></div>
  <div class="sec"><h3>${t('tasks')}</h3><ul class="list">${w.tasks.map(k=>`<li class="${k.done?'done':''}"><input type="checkbox" data-act="td" data-id="${k.id}" ${k.done?'checked':''} aria-label="${esc(tr(k.t))}"><div class="lt">${esc(tr(k.t))}</div><button class="del" data-act="delT" data-id="${k.id}" aria-label="${t('del')}">×</button></li>`).join('')}</ul>
  <div class="add"><div class="row"><input name="t" placeholder="${t('addTask')}"><button class="btn sm pri" data-act="addT">${t('add')}</button></div></div></div>
@@ -2412,6 +2424,7 @@ function findResults(){
 }
 function renderPanel(){
  if(!panelState)return;const k=panelState.kind;const y=panel.scrollTop;
+ if(k==='duyet'){panel.classList.add('wide');if(!panel.querySelector('#bdbHost')){panel.innerHTML=head(RM.work.hex,'MKT',V('Bàn duyệt bài','Post review desk'),V('Bài agent viết sẵn, chỉ đăng khi bạn duyệt','Agent drafts, posted only after you approve'))+`<div class="pb" style="--c:${RM.work.hex}"><div id="bdbHost"></div></div>`;if(window.BanDuyetBai)BanDuyetBai.init({container:panel.querySelector('#bdbHost'),onBadge:setBdbN});else panel.querySelector('#bdbHost').innerHTML='<div class="empty">Chưa tải được ban-duyet-bai.js</div>'}return}
  panel.innerHTML=k==='class'||k==='zh'?classPanel():k==='work'?workPanel():k==='health'?healthPanel():k==='news'?newsPanel():k==='fin'?finPanel():k==='plan'?planPanel():k==='crm'?crmPanel():k==='board'?boardPanel():k==='pomo'?pomoPanel():k==='certs'?certsPanel():k==='acct'?acctPanel():k==='find'?findPanel():settingsPanel();
  panel.scrollTop=y;
 }
@@ -2421,6 +2434,7 @@ panel.addEventListener('click',e=>{
  const b=e.target.closest('[data-act]');if(!b||b.tagName==='INPUT'||b.tagName==='TEXTAREA'||b.tagName==='SELECT')return;
  const a=b.dataset.act,st=panelState,c=st&&st.id&&S.classes[st.id],id=b.dataset.id;
  const done=()=>{save();renderPanel();updateTags()};
+ if(a==='openDuyet'){openPanel({kind:'duyet'});return}
  if(healthAct(a,b))return;if(newsAct(a,b))return;if(finAct(a,b))return;
  switch(a){
   case 'stickyShow':stickyMode('show');break;
@@ -2522,6 +2536,8 @@ if(document.fonts&&document.fonts.ready)document.fonts.ready.then(()=>{drawBoard
 window.__acad={RM,get P(){return P},get walk(){return walk},get SIT(){return SIT},walkable,navPath,SEATS,NAV,get cat(){return CAT},openPanel,get S(){return S},get panelState(){return panelState},get SX(){return SX},get MU(){return MU},sxScene,sxPlay,sxStop,sxSync,sxc};
 /* ================= Việc hôm nay (daily notes) ================= */
 function V(vi,en){return L==='vi'?vi:en}
+setTimeout(function bdbStart(){if(!window.BanDuyetBai)return;const g=document.getElementById('gate');if(g&&g.classList.contains('on'))return setTimeout(bdbStart,2000);
+ BanDuyetBai.kiemTraKhiMo({onBadge:setBdbN,onMo:()=>openPanel({kind:'duyet'})});setInterval(()=>BanDuyetBai.capNhatSo(),10*60*1000)},2500);
 const MKT_SUGG=[['Check ngân sách & CPL các camp','Check budgets & CPL'],['Trả lời lead tồn + giao sale','Clear lead backlog'],['Duyệt content đăng hôm nay','Approve today\'s posts'],['Họp nhanh team 15\'','15-min team stand-up'],['Báo cáo số cuối ngày','End-of-day numbers'],['Lên content ngày mai','Plan tomorrow\'s content'],['1 Pomodoro học Lớp hiện tại','1 Pomodoro for current class'],['Ôn HSK 10 phút','HSK review 10 min']];
 function T0(){if(!S.today||typeof S.today!=='object')S.today={d:'',items:[],hist:{},rec:[]};const T=S.today;T.items=T.items||[];T.hist=T.hist||{};T.rec=T.rec||[];return T}
 function dayRoll(){const T=T0(),k=dkey(new Date());if(T.d===k)return false;
