@@ -1,0 +1,19 @@
+{
+  "name": "Ngân hàng Mintun · Học viện của Tuấn",
+  "short_name": "Mintun Bank",
+  "description": "Tiền vào từ đâu, tiền đi đâu, mục tiêu tài chính và lời khuyên của Bắp mỗi ngày",
+  "start_url": "./?source=app",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#070b10",
+  "theme_color": "#070b10",
+  "icons": [
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ],
+  "shortcuts": [
+    { "name": "Ghi thu chi", "url": "./?tab=log&add=1", "icons": [{ "src": "icon-192.png", "sizes": "192x192" }] },
+    { "name": "Dòng tiền", "url": "./?tab=flow", "icons": [{ "src": "icon-192.png", "sizes": "192x192" }] }
+  ]
+}

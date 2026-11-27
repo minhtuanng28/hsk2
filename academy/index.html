@@ -310,7 +310,18 @@ body.eco #hud-tl,body.eco #pomo,body.eco .ib,body.eco #dockbtn,body.eco #dockgri
 .nwc a{font-size:12.5px;font-weight:700;color:var(--k);text-decoration:none}
 
 .hp2 .tabs{margin-top:0}
-.fin .fhero{border:1px solid var(--line);border-radius:16px;padding:14px;background:linear-gradient(135deg,rgba(31,158,106,.12),rgba(47,95,208,.06))}.fin .fhero h3{margin:0 0 6px;font-size:16px}.fin .fhero p{margin:0;font-size:13px;line-height:1.5}
+.fin .bkdot{display:inline-block;width:8px;height:8px;border-radius:50%;background:#e5484d;margin-left:6px;vertical-align:middle;box-shadow:0 0 0 2px rgba(255,255,255,.6)}
+.bk .bkcat{display:flex;gap:10px;align-items:flex-start;border:1px solid var(--line);border-radius:16px;padding:12px;background:linear-gradient(135deg,rgba(201,147,14,.14),rgba(201,147,14,.03))}
+.bk .bkcat svg{width:58px;height:58px;flex:none}.bk .bkcat b{font-size:11.5px;color:#c9930e;display:block}.bk .bkcat p{margin:2px 0 0;font-size:13.5px;line-height:1.5}
+.bk .bkk{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}.bk .bkk div{background:var(--chip);border-radius:12px;padding:9px 11px;border-left:4px solid var(--k)}
+.bk .bkk small{display:block;font-size:11px;color:var(--mute);font-weight:600}.bk .bkk b{font-size:19px;letter-spacing:-.02em;font-variant-numeric:tabular-nums}.bk .bkk i{display:block;font-style:normal;font-size:10.5px;color:var(--mute)}
+.bk h4{margin:16px 0 6px;font-size:11.5px;text-transform:uppercase;letter-spacing:.06em;color:var(--mute)}
+.bk .bkc svg{width:100%;height:auto;display:block}.bk .bkc text{font-size:9px;fill:var(--mute)}
+.bk .bkl{display:flex;flex-wrap:wrap;gap:3px 12px;font-size:11px;color:var(--mute);margin-top:4px}.bk .bkl span::before{content:"";display:inline-block;width:9px;height:9px;border-radius:2px;background:var(--k);margin-right:5px;vertical-align:-1px}
+.bk .bkr{display:grid;grid-template-columns:1fr auto;gap:2px 10px;font-size:13px;padding:6px 0;border-top:1px solid var(--line)}.bk .bkr:first-of-type{border-top:0}.bk .bkr b{font-variant-numeric:tabular-nums}
+.bk .bkp{grid-column:1/-1;height:7px;border-radius:5px;background:var(--chip);overflow:hidden}.bk .bkp u{display:block;height:100%;background:#00a383;border-radius:5px}
+.bk .bkdue{border-radius:12px;padding:9px 12px;background:rgba(229,72,77,.12);color:#e5484d;font-size:12.5px;font-weight:600;margin-top:10px}
+.fhero{border:1px solid var(--line);border-radius:16px;padding:14px;background:linear-gradient(135deg,rgba(31,158,106,.12),rgba(47,95,208,.06))}.fin .fhero h3{margin:0 0 6px;font-size:16px}.fin .fhero p{margin:0;font-size:13px;line-height:1.5}
 .fweeks{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:12px}.fweeks div{border-left:4px solid var(--k);background:var(--chip);border-radius:10px;padding:7px 9px}.fweeks b{display:block;font-size:11px;color:var(--k)}.fweeks span{font-size:12.5px;font-weight:700}
 .fsum{display:flex;gap:12px;align-items:center;margin-bottom:10px}.fring{position:relative;width:84px;height:84px;flex:none}.fring svg{width:84px;height:84px}.fring>div{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}.fring b{font-size:17px}.fring small{font-size:9.5px;color:var(--mute)}
 .fstat{flex:1;display:grid;grid-template-columns:repeat(3,1fr);gap:6px}.fstat div{background:var(--chip);border-radius:12px;padding:8px 6px;text-align:center}.fstat b{display:block;font-size:17px}.fstat small{font-size:10.5px;color:var(--mute)}
@@ -362,6 +373,7 @@ body.eco #hud-tl,body.eco #pomo,body.eco .ib,body.eco #dockbtn,body.eco #dockgri
 .hp2 details.note div{margin-top:3px}
 </style>
 <script src="ban-duyet-bai.js"></script>
+<script src="../finance/engine.js"></script>
 <style>
 #bdbHost .bdb{--bdb-bg:var(--solid);--bdb-soft:light-dark(#f3f0e8,#1f2431);--bdb-line:light-dark(#e3dfd4,#2c3242);--bdb-text:var(--ink);--bdb-mute:var(--mute);font-family:inherit;max-width:none}
 #bdbHost .bdb-head h2{display:none}
@@ -533,19 +545,20 @@ const ROOMS=[
  {id:'board',kind:'board',pos:[0,2.8],rot:0,size:[2.6,.4],hex:'#1d2a4d',short:'7',title:{vi:'Bảng lịch tuần',en:'Weekly plan board'},dates:{vi:'Lịch học + nhắc nhở',en:'Schedule + reminders'}},
  {id:'health',kind:'health',pos:[6.4,4.2],rot:.1,size:[3.6,2.4],hex:'#ff5a7a',short:'♥',title:{vi:'Quầy sức khoẻ',en:'Health bar'},dates:{vi:'Bước · giấc ngủ · nhịp tim',en:'Steps · sleep · heart'}},
  {id:'news',kind:'news',pos:[4.8,-3.4],rot:.45,size:[3,2],hex:'#c8322a',short:'TIN',title:{vi:'Quầy báo sáng',en:'Morning newsstand'},dates:{vi:'Bản tin 8:30 mỗi sáng',en:'Brief at 8:30 daily'}},
- {id:'fin',kind:'fin',pos:[-7.2,4.8],rot:.5,size:[3.2,2.2],hex:'#1f9e6a',short:'₫',title:{vi:'Quầy tài chính',en:'Finance desk'},dates:{vi:'Lộ trình 30 ngày · quỹ & ngân hàng',en:'30-day path · funds & banking'}}];
+ {id:'fin',kind:'fin',pos:[-7.2,4.8],rot:.5,size:[3.2,2.2],hex:'#1f9e6a',short:'₫',title:{vi:'Quầy tài chính',en:'Finance desk'},dates:{vi:'Lộ trình 30 ngày · quỹ & ngân hàng',en:'30-day path · funds & banking'}},
+ {id:'bank',kind:'bank',pos:[-7.5,-2],rot:1.27,size:[3.4,2.6],hex:'#c9930e',short:'Bank',title:{vi:'Ngân hàng Mintun',en:'Mintun Bank'},dates:{vi:'Thu chi · mục tiêu · Bắp khuyên',en:'Cash flow · goals · tips'}}];
 const RM=Object.fromEntries(ROOMS.map(r=>[r.id,r]));
 const THEME0=(()=>{try{const th=(JSON.parse(localStorage.getItem('tuan-academy-v1')||'{}').settings||{}).theme;return th==='beach'||th==='library'||th==='museum'?th:'campus'}catch(e){return 'campus'}})(),BEACH=THEME0==='beach',MUS=THEME0==='museum',LIB=THEME0==='library'||MUS;
 if(BEACH){RM.tower.title={vi:'Đồng hồ trung tâm',en:'Central clock'};RM.tower.dates={vi:'Giờ thực · Pomodoro',en:'Real time · Pomodoro'};RM.tower.short='⏱';for(const id of ['me1','me2','me3','me4'])RM[id].dates2={vi:'Quầy nước',en:'Drinks bar'}}
-if(LIB){const P0={me1:[[-11,-9.2],.55],me2:[[-5.8,-10.4],0],me3:[[3.6,-9.8],-.12],me4:[[9,-10.6],.1],work:[[-10.6,9.2],1.35],plan:[[9.6,-2.6],-.3],zh:[[-4.2,9.8],.25],crm:[[5.6,8.4],.3],cert:[[13.2,-8.8],-.45],tower:[[-1.8,-12.05],0],board:[[-6.2,-4.6],.35],health:[[10.6,8.4],.55],news:[[-7.2,3.0],.6],fin:[[-3.4,5.8],.2]};
+if(LIB){const P0={me1:[[-11,-9.2],.55],me2:[[-5.8,-10.4],0],me3:[[3.6,-9.8],-.12],me4:[[9,-10.6],.1],work:[[-10.6,9.2],1.35],plan:[[9.6,-2.6],-.3],zh:[[-4.2,9.8],.25],crm:[[5.6,8.4],.3],cert:[[13.2,-8.8],-.45],tower:[[-1.8,-12.05],0],board:[[-6.2,-4.6],.35],health:[[10.6,8.4],.55],news:[[-7.2,3.0],.6],fin:[[-3.4,5.8],.2],bank:[[8,3],-1.21]};
  for(const k in P0){RM[k].pos=P0[k][0];RM[k].rot=P0[k][1]}
  RM.tower.title={vi:'Đồng hồ quả lắc',en:'Grandfather clock'};RM.tower.dates={vi:'Giờ thực · Pomodoro',en:'Real time · Pomodoro'};RM.tower.short='⏱';
  RM.board.title={vi:'Bảng phấn lịch tuần',en:'Weekly chalkboard'};RM.work.title={vi:'Bàn làm việc MKT',en:'MKT work desk'};RM.plan.title={vi:'Bàn kế hoạch',en:'Planning table'};
  RM.crm.title={vi:'Quầy thủ thư · CRM',en:'Front desk · CRM'};RM.fin.title={vi:'Bàn tài chính',en:'Finance desk'};RM.zh.title={vi:'Góc trà tiếng Trung',en:'Chinese tea corner'};RM.cert.title={vi:'Tủ kính chứng chỉ',en:'Certificate cabinet'};
  for(const id of ['me1','me2','me3','me4'])RM[id].dates2={vi:'Bàn học',en:'Study desk'}}
-if(MUS){RM.tower.title={vi:'Đồng hồ Pavillon',en:'Pavillon clock'};RM.board.title={vi:'Bảng lịch triển lãm',en:'Exhibition schedule'};RM.crm.title={vi:'Quầy vé · CRM',en:'Ticket desk · CRM'};RM.cert.title={vi:'Tủ trưng bày chứng chỉ',en:'Certificate vitrine'};RM.zh.title={vi:'Phòng trà phương Đông',en:'Oriental tea room'};RM.work.title={vi:'Văn phòng giám tuyển MKT',en:'MKT curator office'};RM.plan.title={vi:'Bàn sắp đặt triển lãm',en:'Exhibition planning'};RM.news.title={vi:'Sạp báo bảo tàng',en:'Museum newsstand'};RM.health.title={vi:'Quầy sức khoẻ',en:'Health counter'};RM.fin.title={vi:'Phòng giao dịch tài chính',en:'Finance trading room'};for(const id of ['me1','me2','me3','me4'])RM[id].dates2={vi:'Bàn nghiên cứu',en:'Research desk'}}
-if(!LIB){const P1=BEACH?{me1:[[-11,-6],.8],me2:[[-5.5,-11.5],.3],me3:[[1.5,-11],0],me4:[[-13,2.5],1.3],tower:[[9.5,-10],.2],work:[[8.8,-2.8],-.5],plan:[[-9.5,8.5],.9],cert:[[-5.5,5.5],.45],crm:[[2.5,10],.1],zh:[[12.5,5.2],-.8],board:[[3.2,-2.6],.5],health:[[6.8,4.6],-.3],news:[[-6.5,-4.2],.6],fin:[[12.2,-6.4],-.55]}
- :{me1:[[-12,-7],.9],me2:[[-7,-12.3],.35],me3:[[1.5,-12],-.1],me4:[[7.5,-8.5],-.45],tower:[[-3.4,-7.4],.5],work:[[-13.2,1.8],1.45],plan:[[8.6,-1.6],-.7],cert:[[-10,10.2],1.0],crm:[[-2.2,10.6],.25],zh:[[9.4,11.4],-.55],board:[[3.3,2.6],.6],health:[[6.4,4.2],.1],news:[[4.8,-3.4],.45],fin:[[-7.2,4.8],.5]};
+if(MUS){RM.tower.title={vi:'Đồng hồ Pavillon',en:'Pavillon clock'};RM.board.title={vi:'Bảng lịch triển lãm',en:'Exhibition schedule'};RM.crm.title={vi:'Quầy vé · CRM',en:'Ticket desk · CRM'};RM.cert.title={vi:'Tủ trưng bày chứng chỉ',en:'Certificate vitrine'};RM.zh.title={vi:'Phòng trà phương Đông',en:'Oriental tea room'};RM.work.title={vi:'Văn phòng giám tuyển MKT',en:'MKT curator office'};RM.plan.title={vi:'Bàn sắp đặt triển lãm',en:'Exhibition planning'};RM.news.title={vi:'Sạp báo bảo tàng',en:'Museum newsstand'};RM.health.title={vi:'Quầy sức khoẻ',en:'Health counter'};RM.fin.title={vi:'Phòng giao dịch tài chính',en:'Finance trading room'};RM.bank.title={vi:'Kho bạc Mintun',en:'Mintun Treasury'};for(const id of ['me1','me2','me3','me4'])RM[id].dates2={vi:'Bàn nghiên cứu',en:'Research desk'}}
+if(!LIB){const P1=BEACH?{me1:[[-11,-6],.8],me2:[[-5.5,-11.5],.3],me3:[[1.5,-11],0],me4:[[-13,2.5],1.3],tower:[[9.5,-10],.2],work:[[8.8,-2.8],-.5],plan:[[-9.5,8.5],.9],cert:[[-5.5,5.5],.45],crm:[[2.5,10],.1],zh:[[12.5,5.2],-.8],board:[[3.2,-2.6],.5],health:[[6.8,4.6],-.3],news:[[-6.5,-4.2],.6],fin:[[12.2,-6.4],-.55],bank:[[-1.5,-6.5],.08]}
+ :{me1:[[-12,-7],.9],me2:[[-7,-12.3],.35],me3:[[1.5,-12],-.1],me4:[[7.5,-8.5],-.45],tower:[[-3.4,-7.4],.5],work:[[-13.2,1.8],1.45],plan:[[8.6,-1.6],-.7],cert:[[-10,10.2],1.0],crm:[[-2.2,10.6],.25],zh:[[9.4,11.4],-.55],board:[[3.3,2.6],.6],health:[[6.4,4.2],.1],news:[[4.8,-3.4],.45],fin:[[-7.2,4.8],.5],bank:[[-7.5,-2],1.27]};
  for(const k in P1){RM[k].pos=P1[k][0];RM[k].rot=P1[k][1]}
  if(BEACH){RM.tower.title={vi:'Hải đăng đồng hồ',en:'Clock lighthouse'}}else{RM.tower.title={vi:'Tháp đồng hồ',en:'Clock tower'};RM.tower.dates={vi:'Giờ thực · Pomodoro',en:'Real time · Pomodoro'};RM.tower.short='⏱'}}
 const DATA_ROOMS=['me1','me2','me3','me4','zh','work'];
@@ -639,6 +652,7 @@ if(!ON_PAGES)(async()=>{try{
 /* Google (Firebase) sync: same account as the HSK app */
 const FBCFG={apiKey:"AIzaSyCzG2TNB2fwUSUDycsxQ8a2D1GaWzVHl28",authDomain:"hsk-app-f5201.firebaseapp.com",projectId:"hsk-app-f5201",storageBucket:"hsk-app-f5201.firebasestorage.app",messagingSenderId:"278418991443",appId:"1:278418991443:web:9cb95ad3a99e01b7ae59a6"};
 let fb=null,fbFail=false,HSK=null,hskAt=0,acctMsg='',gateBypass=false;
+let MONEY=null,bankBusy=false,bankSaidKey='';const BANK_URL='../finance/',BF=()=>window.MintunFin,bSh=n=>BF()?BF().short(n):String(Math.round(n||0));
 function gateUI(){const g=$('#gate');if(!ON_PAGES||gateBypass){g.classList.remove('on');return}const on=!fb?!fbFail:!fb.user;g.classList.toggle('on',on||(!fb&&!fbFail));
  const m=$('#gateMsg');if(fbFail){g.classList.add('on');m.innerHTML=`<button class="btn" id="gateOff" style="margin-top:6px">${t('gateOffline')}</button>`}else m.textContent=acctMsg}
 async function fbInit(){
@@ -657,6 +671,7 @@ async function fbPull(first){
   const snap=await fb.fs.getDoc(ref);
   const d=snap.exists()?snap.data():{};
   try{HSK=JSON.parse(d.s||'null')}catch(e){HSK=null}hskAt=Date.now();afterHsk();
+  try{const mn=JSON.parse(d.money||'null');if(mn&&mn.v===1){MONEY=mn;bankChanged()}}catch(e){}
   cloud={set:x=>fb.fs.runTransaction(fb.D,async tx=>{
     const sn=await tx.get(ref);const dd=sn.exists()?sn.data():{};
     let st=null;if(dd.s){st=JSON.parse(dd.s);if(!st||st.v!==1)throw new Error('hsk-state')}
@@ -1243,9 +1258,9 @@ function cabana(r){
 }
 const lampLights=[];
 for(const r of ROOMS){
- if(LIB){const k=r.kind;if(k==='class')studyDesk(r,+r.id.slice(2)-1);else if(k==='work')workDesk(r);else if(k==='plan')planTable(r);else if(k==='zh')zhNook(r);else if(k==='crm')crmDesk(r);else if(k==='cert')certCabinet(r);else if(k==='pomo')grandClock(r);else if(k==='board')chalkBoard(r);else if(k==='health')healthKiosk(r);else if(k==='news')newsKiosk(r);else if(k==='fin')finKiosk(r)}
- else if(BEACH){const k=r.kind;if(k==='class')tikiBar(r,+r.id.slice(2)-1);else if(k==='work')villa(r,'#2f5fd0');else if(k==='plan')surfShack(r);else if(k==='zh')teaPagoda(r);else if(k==='crm')kiosk(r);else if(k==='cert')cabana(r);else if(k==='pomo')lighthouse(r);else if(k==='board')surfBoard(r);else if(k==='health')healthKiosk(r);else if(k==='news')newsKiosk(r);else if(k==='fin')finKiosk(r)}
- else{const k=r.kind;if(k==='class')cottage(r,+r.id.slice(2)-1);else if(k==='work')brickOffice(r);else if(k==='plan')greenhouse(r);else if(k==='zh')teaPagoda(r);else if(k==='crm')shopFront(r);else if(k==='cert')museum(r);else if(k==='pomo')clockTower(r);else if(k==='board')noticeBoard(r);else if(k==='health')healthKiosk(r);else if(k==='news')newsKiosk(r);else if(k==='fin')finKiosk(r)}
+ if(LIB){const k=r.kind;if(k==='class')studyDesk(r,+r.id.slice(2)-1);else if(k==='work')workDesk(r);else if(k==='plan')planTable(r);else if(k==='zh')zhNook(r);else if(k==='crm')crmDesk(r);else if(k==='cert')certCabinet(r);else if(k==='pomo')grandClock(r);else if(k==='board')chalkBoard(r);else if(k==='health')healthKiosk(r);else if(k==='news')newsKiosk(r);else if(k==='fin')finKiosk(r);else if(k==='bank')bankKiosk(r)}
+ else if(BEACH){const k=r.kind;if(k==='class')tikiBar(r,+r.id.slice(2)-1);else if(k==='work')villa(r,'#2f5fd0');else if(k==='plan')surfShack(r);else if(k==='zh')teaPagoda(r);else if(k==='crm')kiosk(r);else if(k==='cert')cabana(r);else if(k==='pomo')lighthouse(r);else if(k==='board')surfBoard(r);else if(k==='health')healthKiosk(r);else if(k==='news')newsKiosk(r);else if(k==='fin')finKiosk(r);else if(k==='bank')bankKiosk(r)}
+ else{const k=r.kind;if(k==='class')cottage(r,+r.id.slice(2)-1);else if(k==='work')brickOffice(r);else if(k==='plan')greenhouse(r);else if(k==='zh')teaPagoda(r);else if(k==='crm')shopFront(r);else if(k==='cert')museum(r);else if(k==='pomo')clockTower(r);else if(k==='board')noticeBoard(r);else if(k==='health')healthKiosk(r);else if(k==='news')newsKiosk(r);else if(k==='fin')finKiosk(r);else if(k==='bank')bankKiosk(r)}
 }
 const GW={y:()=>0,ok:null,hub:[0,6]};
 if(!LIB){
@@ -1803,6 +1818,7 @@ function catTalk(){const i=nowInfo(),n=new Date(),mins=n.getHours()*60+n.getMinu
  if(i.b&&i.b.d.includes(n.getDay())){const s=toM(i.b.s)-mins;if(s>0&&s<=30)return catSay(V?`Meo! ${s} phút nữa tới "${tr(i.b.t)}" (${i.b.s}) đó`:`Meow! "${tr(i.b.t)}" starts in ${s} min`);if(s<=0&&mins<toM(i.b.e))return catSay(V?`Đang giờ "${tr(i.b.t)}" nè, vào học thôi!`:`It's time for "${tr(i.b.t)}"!`)}
  if(h&&h.due>20&&Math.random()<.5)return catSay(V?`Còn ${h.due} từ HSK cần ôn, ôn 10 phút nha`:`${h.due} HSK words are due, 10 minutes?`);
  {const ht=healthTip();if(ht&&Math.random()<.5)return catSay(ht)}
+ {const bt=bankTip();if(bt&&Math.random()<.35)return catSay(bt,9000)}
  const L2=CAT_LINES[V?'vi':'en'];catSay(L2[(Math.random()*L2.length)|0])}
 function catSpots(){const s=[];if(LIB){s.push({k:'fire',x:-13.1,z:1.7,face:-Math.PI/2});s.push({k:'nap',x:-12.5,z:1.1,face:-1.2});s.push({k:'window',x:-5.2,z:-11.9,face:Math.PI})}
  else if(BEACH){const [hx,hz]=GW.hub;s.push({k:'fire',x:hx+1.15,z:hz+.9,face:Math.atan2(-1.15,-.9)});if(GW.pier)s.push({k:'fish',x:GW.pier[1][0]+.3,z:GW.pier[1][1]-.6,face:0})}
@@ -1856,6 +1872,7 @@ function updateTags(){
   else if(BEACH&&r.kind==='class'){}
   else if(r.kind==='news'){el.innerHTML=`${esc(tr(r.title))}<small>${esc(newsTag())}</small>`}
   else if(r.kind==='health'){el.innerHTML=`${esc(tr(r.title))}<small>${esc(healthTag())}</small>`}
+  else if(r.kind==='bank'){el.innerHTML=`${esc(tr(r.title))}${bankDue()?'<span class="bkdot"></span>':''}<small>${esc(bankTag())}</small>`}
   else if(r.kind==='fin'){const n=Object.keys(F0().done).length;el.innerHTML=`${esc(tr(r.title))}<small>${esc(finTag())}</small><div class="bar"><i style="width:${Math.round(n/30*100)}%"></i></div>`}
   else if(r.kind==='work'&&BDB_N){el.innerHTML=`${esc(tr(r.title))}<small>${BDB_N} ${L==='vi'?'bài chờ duyệt':'posts to review'}</small>`}
   else if(r.kind==='plan'){const open=S.plan.cards.filter(c=>c.col!=='done').length;el.innerHTML=`${esc(tr(r.title))}<small>${open} ${L==='vi'?'việc mở':'open tasks'}</small>`}
@@ -2258,7 +2275,7 @@ $('#pcls').addEventListener('change',e=>{PM.cls=e.target.value;savePM()});
 
 /* ---------------- panel ---------------- */
 const panel=$('#panel');let panelState=null;
-function openRoom(id){const r=RM[id];if(LIB&&r.seat&&!SIT&&Math.hypot(P.x-r.door[0],P.z-r.door[1])<2.6)sitAt(r.seat);if(r.kind==='board')openPanel({kind:'board'});else if(r.kind==='pomo')openPanel({kind:'pomo'});else if(r.kind==='plan')openPanel({kind:'plan',tab:'board'});else if(r.kind==='crm')openPanel({kind:'crm'});else if(r.kind==='cert')openPanel({kind:'certs'});else if(r.kind==='health')openPanel({kind:'health'});else if(r.kind==='news')openPanel({kind:'news'});else if(r.kind==='fin')openPanel({kind:'fin'});else openPanel({kind:r.kind,id,tab:'syllabus'})}
+function openRoom(id){const r=RM[id];if(LIB&&r.seat&&!SIT&&Math.hypot(P.x-r.door[0],P.z-r.door[1])<2.6)sitAt(r.seat);if(r.kind==='board')openPanel({kind:'board'});else if(r.kind==='pomo')openPanel({kind:'pomo'});else if(r.kind==='plan')openPanel({kind:'plan',tab:'board'});else if(r.kind==='crm')openPanel({kind:'crm'});else if(r.kind==='cert')openPanel({kind:'certs'});else if(r.kind==='health')openPanel({kind:'health'});else if(r.kind==='news')openPanel({kind:'news'});else if(r.kind==='fin')openPanel({kind:'fin'});else if(r.kind==='bank')openPanel({kind:'bank'});else openPanel({kind:r.kind,id,tab:'syllabus'})}
 function openPanel(st){panelState=st;panel.classList.remove('wide');renderPanel();panel.classList.add('open');document.body.classList.add('popen');$('#prompt').classList.remove('on');walk=null;if(st.kind==='find')setTimeout(()=>{const i=$('#fq');if(i)i.focus()},60)}
 function closePanel(){if(!panelState)return;panel.classList.remove('wide');panelState=null;panel.classList.remove('open');document.body.classList.remove('popen');near=null;canvas.focus({preventScroll:true})}
 const head=(hex,k,title,sub)=>`<div class="grab"></div><header class="ph" style="--c:${hex}"><div class="pk">${esc(k)}</div><div><h2>${esc(title)}</h2><p>${sub}</p></div><button class="x" data-act="close" aria-label="${t('close')}">×</button></header>`;
@@ -2427,7 +2444,7 @@ function findResults(){
 function renderPanel(){
  if(!panelState)return;const k=panelState.kind;const y=panel.scrollTop;
  if(k==='duyet'){panel.classList.add('wide');if(!panel.querySelector('#bdbHost')){panel.innerHTML=head(RM.work.hex,'MKT',V('Bàn duyệt bài','Post review desk'),V('Bài agent viết sẵn, chỉ đăng khi bạn duyệt','Agent drafts, posted only after you approve'))+`<div class="pb" style="--c:${RM.work.hex}"><div id="bdbHost"></div></div>`;if(window.BanDuyetBai)BanDuyetBai.init({container:panel.querySelector('#bdbHost'),onBadge:setBdbN});else panel.querySelector('#bdbHost').innerHTML='<div class="empty">Chưa tải được ban-duyet-bai.js</div>'}return}
- panel.innerHTML=k==='class'||k==='zh'?classPanel():k==='work'?workPanel():k==='health'?healthPanel():k==='news'?newsPanel():k==='fin'?finPanel():k==='plan'?planPanel():k==='crm'?crmPanel():k==='board'?boardPanel():k==='pomo'?pomoPanel():k==='certs'?certsPanel():k==='acct'?acctPanel():k==='find'?findPanel():settingsPanel();
+ panel.innerHTML=k==='class'||k==='zh'?classPanel():k==='work'?workPanel():k==='health'?healthPanel():k==='news'?newsPanel():k==='fin'?finPanel():k==='bank'?bankPanel():k==='plan'?planPanel():k==='crm'?crmPanel():k==='board'?boardPanel():k==='pomo'?pomoPanel():k==='certs'?certsPanel():k==='acct'?acctPanel():k==='find'?findPanel():settingsPanel();
  panel.scrollTop=y;
 }
 const fval=(b,n)=>{const f=b.closest('.add');const el=f&&f.querySelector(`[name=${n}]`);return el?el.value.trim():''};
@@ -2470,6 +2487,8 @@ panel.addEventListener('click',e=>{
   case 'fgo':{const r=(st.res||[])[+b.dataset.i];if(r)openPanel(Object.assign({},r.go));break}
   case 'qCard':{const ti=(st.q||'').trim();if(!ti)return;S.plan.cards.push({id:uid(),t:ti,p:'',g:TAGS[0],due:'',col:'todo'});save();updateTags();openPanel({kind:'plan',tab:'board'});break}
   case 'qPage':{const ti=(st.q||'').trim();if(!ti)return;const pg=newPage('',ti);openPanel({kind:'plan',tab:'pages',page:pg.id});break}
+  case 'bankUpd':bankRefresh();break;
+  case 'bankOpen':window.open(BANK_URL+(b.dataset.q||''),'mintun-bank');break;
   case 'crmOpen':{const u=safeUrl(S.settings.crmUrl);if(u)window.open(u,'tuan-crm','width=1280,height=860');break}
   case 'crmEmbed':S.settings.crmEmbed=!S.settings.crmEmbed;done();break;
   case 'crmUrlSave':{const u=safeUrl(fval(b,'cu'));if(!u)return;S.settings.crmUrl=u;done();break}
@@ -3217,6 +3236,79 @@ function finKiosk(r){
  if(!LIB){const roof=new THREE.Mesh(new THREE.ConeGeometry(2.15,.65,BEACH?10:4),M(BEACH?'#d9b46a':'#1f6b4a'));if(!BEACH)roof.rotation.y=Math.PI/4;roof.position.y=3.85;roof.castShadow=true;g.add(roof);for(const s of [-1,1]){const pl=new THREE.Mesh(new THREE.CylinderGeometry(.05,.05,3.5,8),M(BEACH?'#c9a45a':'#2b2f36'));pl.position.set(s*1.3,1.75,.8);g.add(pl)}}
  place(r,g,3.2,2.2,1.6,LIB?3.6:4.5);setTimeout(drawFinBoard,60);
 }
+/* ===== Ngân hàng Mintun: tóm tắt tài chính (dữ liệu lấy từ app /finance, đọc Google Sheet qua Apps Script) ===== */
+function bankMilestone(){const n=new Date();return new Date(n.getFullYear(),n.getMonth(),n.getDate()>=16?16:1).getTime()}
+function bankDue(){const s=MONEY&&MONEY.sum;return !!(MONEY&&MONEY.cfg&&MONEY.cfg.url)&&(!s||!s.sync||s.sync<bankMilestone())}
+function bankTag(){const s=MONEY&&MONEY.sum;if(!MONEY||!MONEY.cfg||!MONEY.cfg.url)return V('Chưa kết nối sổ thu chi','Not connected yet');if(!s)return V('Bấm để cập nhật','Tap to update');
+ return V(`T${s.month} · ${s.free>=0?'dư':'hụt'} ${bSh(Math.abs(s.free))} · tích lũy ${Math.round(s.rate*100)}%`,`${s.month} · saved ${Math.round(s.rate*100)}%`)}
+function bankTipOfDay(){const s=MONEY&&MONEY.sum;if(!s||!s.tips||!s.tips.length)return '';const n=Math.min(8,s.tips.length),d=BF()?BF().dayNo():Math.floor(Date.now()/864e5);return s.tips[d%n]}
+function bankTip(){if(L!=='vi')return '';if(bankDue()&&Math.random()<.5){const d=new Date().getDate();return d===1||d===16?'Hôm nay là mốc chốt sổ: điền sheet thu chi rồi bấm Cập nhật ở Ngân hàng Mintun nha':'Sổ thu chi chưa cập nhật từ mốc gần nhất, ghé Ngân hàng Mintun bấm Cập nhật nha'}return bankTipOfDay()}
+function bankChanged(){try{updateTags()}catch(e){}drawBankBoard();if(panelState&&panelState.kind==='bank')renderPanel();
+ const k='bank'+dkey(new Date());if(bankSaidKey!==k&&MONEY&&MONEY.sum&&new Date().getHours()>=8){bankSaidKey=k;const t=bankTipOfDay();if(t)setTimeout(()=>{try{catSay(t,12000)}catch(e){}},20000)}}
+async function bankRefresh(){
+ const F=BF();if(!MONEY||!MONEY.cfg||!MONEY.cfg.url){window.open(BANK_URL,'mintun-bank');return}
+ if(!F){toast(V('Chưa tải được bộ phân tích','Analyzer not loaded'));return}
+ if(bankBusy)return;bankBusy=true;if(panelState&&panelState.kind==='bank')renderPanel();
+ try{const r=await fetch(MONEY.cfg.url,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({key:MONEY.cfg.key,action:'doc'})});const j=await r.json();if(!j.ok)throw new Error(j.loi||'error');
+  const M2=F.parse(j,MONEY.map||{});MONEY.sum=F.summary(M2,MONEY.goals||[],Date.now());
+  if(fb&&fb.user)await fb.fs.setDoc(fb.fs.doc(fb.D,'users',fb.user.uid),{money:JSON.stringify(MONEY)},{merge:true});
+  toast(V('Đã cập nhật sổ thu chi','Ledger updated'))}
+ catch(e){toast(V('Cập nhật lỗi: ','Update failed: ')+String(e&&e.message||e).slice(0,80))}
+ bankBusy=false;bankChanged()}
+const BANK_CAT=`<svg viewBox="0 0 100 100" aria-hidden="true"><ellipse cx="50" cy="76" rx="24" ry="18" fill="#e9b04f"/><ellipse cx="50" cy="80" rx="13" ry="12" fill="#fbe8c4"/><path d="M24 30 28 10 42 24zM76 30 72 10 58 24z" fill="#e9b04f"/><ellipse cx="50" cy="44" rx="29" ry="25" fill="#e9b04f"/><path d="M42 22c2 5 1 8-1 10M50 20v11M58 22c-2 5-1 8 1 10" stroke="#c98a2e" stroke-width="3" stroke-linecap="round" fill="none"/><ellipse cx="50" cy="53" rx="15" ry="11" fill="#fbe8c4"/><ellipse cx="39" cy="43" rx="4" ry="5" fill="#2a1a10"/><ellipse cx="61" cy="43" rx="4" ry="5" fill="#2a1a10"/><circle cx="40.5" cy="41" r="1.4" fill="#fff"/><circle cx="62.5" cy="41" r="1.4" fill="#fff"/><path d="M47 50h6l-3 3z" fill="#e86a8a"/><path d="M50 53c-1 3-5 3-6 1M50 53c1 3 5 3 6 1" stroke="#2a1a10" stroke-width="1.4" fill="none" stroke-linecap="round"/><rect x="56" y="70" width="17" height="12" rx="3" fill="#f2c14e" stroke="#b8860b" stroke-width="1.2"/></svg>`;
+function bankChart(h){if(!h||!h.length)return '';const W=400,H=130,pl=34,pb=16,pt=6,n=h.length,bw=(W-pl-4)/n,bar=Math.min(16,bw*.6);
+ const vals=h.flatMap(x=>[x.inc,x.spend+Math.max(0,x.save)]).filter(v=>v>0).sort((a,b)=>a-b);let mx=vals[vals.length-1]||1;const p=vals[Math.floor((vals.length-1)*.85)]||mx;if(vals.length>=6&&mx>p*1.9)mx=p*1.35;
+ const y=v=>pt+(H-pt-pb)*(1-Math.min(v,mx)/mx);let s=`<line x1="${pl}" x2="${W}" y1="${y(0)}" y2="${y(0)}" stroke="var(--line)"/><text x="${pl-4}" y="${y(mx)+8}" text-anchor="end">${bSh(mx)}</text><text x="${pl-4}" y="${y(0)}" text-anchor="end">0</text>`,pts=[];
+ h.forEach((m,k)=>{const x=pl+bw*k+bw/2,sp=Math.max(0,m.spend),sv=Math.max(0,m.save);
+  if(sp>0)s+=`<rect x="${x-bar/2}" y="${y(sp)}" width="${bar}" height="${y(0)-y(sp)}" fill="#e76624" rx="1.5"/>`;
+  if(sv>0)s+=`<rect x="${x-bar/2}" y="${y(sp+sv)}" width="${bar}" height="${Math.max(0,y(sp)-y(sp+sv)-1.5)}" fill="#00a888" rx="1.5"/>`;
+  pts.push(x.toFixed(1)+' '+y(m.inc).toFixed(1));if(k%2===n%2-1||n<8)s+=`<text x="${x}" y="${H-3}" text-anchor="middle">${esc(m.l.replace(/\/20(\d\d)/,'/$1'))}</text>`});
+ s+=`<path d="M${pts.join('L')}" fill="none" stroke="#338ced" stroke-width="2"/>`;
+ return `<div class="bkc"><svg viewBox="0 0 ${W} ${H}">${s}</svg></div><div class="bkl"><span style="--k:#338ced">${V('Thu nhập','Income')}</span><span style="--k:#e76624">${V('Chi tiêu','Spending')}</span><span style="--k:#00a888">${V('Tích lũy','Saved')}</span></div>`}
+function bankPanel(){const r=RM.bank,s=MONEY&&MONEY.sum,con=MONEY&&MONEY.cfg&&MONEY.cfg.url;
+ const sub=s?V('Cập nhật ','Updated ')+new Date(s.sync||s.at).toLocaleString(L==='vi'?'vi-VN':'en-GB',{hour:'2-digit',minute:'2-digit',day:'2-digit',month:'2-digit'}):V('Tiền vào từ đâu, đi đâu, mục tiêu tới đâu','Where money comes from and goes');
+ let h=head(r.hex,r.short,tr(r.title),sub)+`<div class="pb bk" style="--c:${r.hex}">`;
+ if(!con){h+=`<div class="bkcat">${BANK_CAT}<div><b>Bắp</b><p>${V('Bắp chưa đọc được sổ thu chi. Mở app Ngân hàng Mintun, vào Cài đặt dán link Apps Script và mã kết nối là xong.','Open the Mintun Bank app and connect your Google Sheet in Settings.')}</p></div></div>
+  <button class="btn pri" data-act="bankOpen" style="width:100%;margin-top:12px">${V('Mở app Ngân hàng Mintun','Open Mintun Bank')} ↗</button></div>`;return h}
+ const tip=bankTipOfDay();
+ h+=`<div class="bkcat">${BANK_CAT}<div><b>Bắp · ${esc(new Date().toLocaleDateString('vi-VN',{weekday:'long',day:'numeric',month:'numeric'}))}</b><p>${esc(tip||V('Bấm Cập nhật để Bắp đọc sổ nha.','Tap Update.'))}</p></div></div>`;
+ if(bankDue())h+=`<div class="bkdue">${V('Đã tới mốc chốt sổ (ngày 1 và 16). Điền xong sheet thì bấm Cập nhật.','Ledger checkpoint reached (1st and 16th). Fill the sheet, then Update.')}</div>`;
+ if(s){h+=`<h4>${V('Tháng','Month')} ${esc(s.month)}${s.partial?' · '+V('tháng ','month ')+esc(s.partial)+V(' đang điền',' in progress'):''}</h4>
+  <div class="bkk" style="margin-top:0"><div style="--k:#338ced"><small>${V('Tiền vào','In')}</small><b>${bSh(s.inc)}</b><i>TB 6T ${bSh(s.avgInc)}</i></div><div style="--k:#e76624"><small>${V('Chi tiêu','Spent')}</small><b>${bSh(s.spend)}</b><i>TB 6T ${bSh(s.avgSpend)}</i></div>
+  <div style="--k:#00a888"><small>${V('Tích lũy','Saved')}</small><b>${bSh(s.save)}</b><i>${Math.round(s.rate*100)}% ${V('thu nhập','of income')}</i></div><div style="--k:#7a8592"><small>${s.free>=0?V('Còn dư','Left'):V('Thâm hụt','Deficit')}</small><b>${bSh(s.free)}</b><i>${s.free>=0?V('chưa phân bổ','unallocated'):V('lấy tiền cũ bù','from savings')}</i></div></div>
+  <h4>${V('12 tháng gần nhất','Last 12 months')}</h4>${bankChart(s.hist)}`;
+  if(s.top&&s.top.length)h+=`<h4>${V('Chi nhiều nhất','Top spending')}</h4>`+s.top.map(t=>`<div class="bkr"><span>${esc(t.n)}</span><b>${bSh(t.v)}</b></div>`).join('');
+  if(s.goals&&s.goals.length)h+=`<h4>${V('Mục tiêu','Goals')}</h4>`+s.goals.map(g=>`<div class="bkr"><span>${esc(g.n)} <small style="color:var(--mute)">${g.kind==='dai'?V('dài hạn','long'):V('ngắn hạn','short')}</small></span><b>${bSh(g.cur)} / ${bSh(g.target)}</b><div class="bkp"><u style="width:${Math.round(Math.min(1,g.p)*100)}%"></u></div></div>`).join('');
+  else h+=`<p class="note">${V('Chưa có mục tiêu. Đặt mục tiêu ngắn hạn và dài hạn trong app.','No goals yet.')}</p>`}
+ h+=`<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:14px"><button class="btn" data-act="bankUpd" ${bankBusy?'disabled':''}>${bankBusy?V('Đang đọc sheet…','Reading…'):V('Cập nhật','Update')}</button><button class="btn" data-act="bankOpen" data-q="?add=1&tab=log">${V('+ Ghi thu chi','+ Add entry')}</button></div>
+  <button class="btn pri" data-act="bankOpen" style="width:100%;margin-top:8px">${V('Mở app chi tiết','Open full app')} ↗</button></div>`;
+ return h}
+function bankKiosk(r){
+ const g=new THREE.Group(),gold='#d4a017',wall=LIB?'#efe3c8':'#f3ecdc',stone=LIB?'#d8c9a8':'#ddd4c2';
+ if(LIB)rug(g,0,.1,3.8,3,r.hex);else box(3.8,.16,3,stone,0,.08,0,g);
+ box(3.2,.12,.5,stone,0,.22,1.22,g);box(3.4,.1,2.5,stone,0,.2,-.05,g);
+ box(3,1.85,1.9,wall,0,1.17,-.3,g);
+ for(const x of [-1.15,-.39,.39,1.15]){const c=new THREE.Mesh(new THREE.CylinderGeometry(.11,.13,1.8,12),M('#fffaf0'));c.position.set(x,1.15,.92);c.castShadow=true;g.add(c);box(.32,.08,.32,'#efe6d2',x,.29,.92,g);box(.32,.08,.32,'#efe6d2',x,2.03,.92,g)}
+ box(3.35,.24,2.5,'#eadfc6',0,2.18,-.05,g);box(3.36,.07,.02,gold,0,2.08,1.21,g,{cast:false});
+ const pd=gable(3.35,.72,2.5,'#f0e6cf');pd.position.set(0,2.3,-.05);g.add(pd);
+ const coin=new THREE.Mesh(new THREE.CylinderGeometry(.24,.24,.06,24),M('#e3b341'));coin.rotation.x=Math.PI/2;coin.position.set(0,2.55,1.22);g.add(coin);r.coin=coin;
+ box(.72,1.15,.05,'#5b3a1c',0,.83,.66,g);box(.04,.12,.03,gold,-.08,.85,.7,g,{cast:false});box(.04,.12,.03,gold,.08,.85,.7,g,{cast:false});
+ for(const s2 of [-1,1])box(.5,.6,.04,'#9fc6e0',s2*.78,1.2,.66,g,{cast:false});
+ for(let k=0;k<4;k++){const cn=new THREE.Mesh(new THREE.CylinderGeometry(.1,.1,.035,14),M('#e3b341'));cn.position.set(-1.45,.18+k*.04,1.25);g.add(cn)}
+ const cv=document.createElement('canvas');cv.width=256;cv.height=176;r.bcv=cv;const tex=new THREE.CanvasTexture(cv);tex.colorSpace=THREE.SRGBColorSpace;r.btex=tex;
+ const sg=new THREE.Group();sg.position.set(1.62,0,1.15);sg.rotation.y=-.35;g.add(sg);box(.07,1.1,.07,'#2b2f36',0,.55,0,sg);box(1.02,.72,.06,'#1b1f27',0,1.32,0,sg);
+ const pg=new THREE.Mesh(new THREE.PlaneGeometry(.94,.64),new THREE.MeshLambertMaterial({map:tex,emissive:'#ffffff',emissiveMap:tex,emissiveIntensity:.75}));pg.position.set(0,1.32,.035);sg.add(pg);
+ place(r,g,3.4,2.6,1.95,LIB?3.6:4.2);setTimeout(drawBankBoard,80)}
+function drawBankBoard(){const r=RM.bank;if(!r||!r.bcv)return;const c=r.bcv,x=c.getContext('2d'),W=c.width,H=c.height,s=MONEY&&MONEY.sum;
+ x.fillStyle='#10161e';x.fillRect(0,0,W,H);x.fillStyle='#f2c14e';x.font='800 22px "Be Vietnam Pro",sans-serif';x.fillText('MINTUN BANK',14,32);
+ x.font='600 15px "Be Vietnam Pro",sans-serif';
+ if(!s){x.fillStyle='#a8b3c0';x.fillText(MONEY&&MONEY.cfg&&MONEY.cfg.url?'Bấm để cập nhật':'Chưa kết nối sheet',14,70)}
+ else{x.fillStyle='#a8b3c0';x.fillText('Tháng '+s.month,14,60);
+  const row=(l,v,c2,yy)=>{x.fillStyle='#a8b3c0';x.font='600 15px "Be Vietnam Pro",sans-serif';x.fillText(l,14,yy);x.fillStyle=c2;x.font='800 18px "Be Vietnam Pro",sans-serif';x.textAlign='right';x.fillText(v,W-14,yy);x.textAlign='left'};
+  row('Thu',bSh(s.inc),'#6aabf1',90);row('Chi',bSh(s.spend),'#f2a073',116);row('Tích lũy',Math.round(s.rate*100)+'%','#3fd3b0',142);row(s.free>=0?'Dư':'Hụt',bSh(s.free),'#e6e9ee',168)}
+ if(bankDue()){x.fillStyle='#e5484d';x.beginPath();x.arc(W-18,22,8,0,7);x.fill()}
+ if(r.btex)r.btex.needsUpdate=true}
+setInterval(()=>{if(MONEY){drawBankBoard();try{updateTags()}catch(e){}}},30*60000);
 let finSaidKey='';
 function finTick(){const F=F0();if(!F.start)return;const di=finDayIdx(F);if(di<1||di>30)return;const now=new Date(),k='fin'+dkey(now);if(finSaidKey===k)return;if(now.getHours()<20)return;if(F.done[di]){finSaidKey=k;return}
  const said=(S.health&&S.health.said)||{};if(said[k]){finSaidKey=k;return}finSaidKey=k;S.health=S.health||{};S.health.said=S.health.said||{};S.health.said[k]=1;save();
