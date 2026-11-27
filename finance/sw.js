@@ -1,4 +1,4 @@
-const C='mintun-bank-v4';
+const C='mintun-bank-v5';
 const CORE=['./','./app.js','./charts.js','./engine.js','./manifest.webmanifest','./icon-192.png'];
 self.addEventListener('install',e=>{e.waitUntil(caches.open(C).then(c=>c.addAll(CORE)).catch(()=>{}));self.skipWaiting()});
 self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(ks=>Promise.all(ks.filter(k=>k.startsWith('mintun-bank')&&k!==C).map(k=>caches.delete(k)))).then(()=>self.clients.claim()))});

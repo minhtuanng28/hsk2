@@ -240,7 +240,7 @@ function vInv(after) {
      <div class="big num">${cnt(pf.total, 'pf')}</div>
      <div class="sub">Hôm nay ${pf.day ? `<b class="${pf.day >= 0 ? 'up' : 'down'}">${sgn(pf.day)}</b>` : '0'} · vốn ${short(pf.cost)}${pxDate ? ' · giá ngày ' + pxDate.split('-').reverse().join('/') : ''}</div>
      ${hist.length > 1 ? `<div style="margin-top:12px">${MC.area(series, labels, aopts)}</div><p class="note" style="margin:6px 0 0">Tính theo số lượng đang nắm giữ, giá đóng cửa từng ngày, cộng tiền gửi.</p>` : ''}
-     <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:14px"><button class="btn pri sm" data-act="hnew">+ Cổ phiếu / quỹ</button><button class="btn sm" data-act="dnew">+ Tiền gửi</button><button class="btn sm" data-act="px" ${busy ? 'disabled' : ''}>Cập nhật giá</button></div></div>
+     <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:14px"><button class="btn pri sm" data-act="hnew">+ Cổ phiếu / quỹ</button><button class="btn sm" data-act="dnew">+ Tiền gửi</button><button class="btn sm" data-act="himp">Nhập nhanh nhiều mã</button><button class="btn sm" data-act="px" ${busy ? 'disabled' : ''}>Cập nhật giá</button></div></div>
     <div class="card"><h3><b>Phân bổ</b></h3>${items.length ? `<div class="dwrap">${MC.donut(items, dopts)}<div class="leg">${legendRows(items, pf.total, 'alloc')}</div></div>` : '<p class="note">Thêm cổ phiếu, chứng chỉ quỹ hoặc tiền gửi để xem phân bổ và lãi/lỗ theo ngày.</p>'}</div>
    </div>
    <div class="card"><h3><b>Cổ phiếu · ETF · quỹ mở</b><span class="sub">${pf.H.length} mã</span></h3>
@@ -265,6 +265,21 @@ function holdForm(h) {
     const L = ST.inv.holdings, i = L.findIndex(x => x.id === o.id); if (i >= 0) L[i] = o; else L.push(o);
     save(); closeSheet(); render(); refreshPrices(true).then(render); };
   if (h.id) $('#hX').onclick = e => { if (!e.target.dataset.sure) { e.target.dataset.sure = 1; e.target.textContent = 'Bấm lần nữa để xoá'; return; } ST.inv.holdings = ST.inv.holdings.filter(x => x.id !== h.id); save(); closeSheet(); render(); };
+}
+function importForm() {
+  sheet(`<h2>Nhập nhanh danh mục</h2><div class="sub">Mỗi dòng một mã: <b>MÃ  SỐ LƯỢNG  GIÁ VỐN</b>. Giá vốn gõ như app chứng khoán (65.5 = 65.500 đ). Thêm chữ <b>quy</b> cuối dòng nếu là quỹ mở. Mã đã có sẽ được thay.</div>
+  <div class="f"><textarea id="iT" rows="8" placeholder="VNM 100 65.5&#10;HPG 200 27.3&#10;VESAF 50 29000 quy"></textarea></div>
+  <div class="note" id="iP"></div><button class="btn pri full" id="iS">Lưu danh mục</button>`);
+  const parse = () => $('#iT').value.split(/\n+/).map(l => l.trim()).filter(Boolean).map(l => {
+    const m = l.toUpperCase().replace(/,/g, '').match(/^([A-Z0-9]{2,12})\s+([\d.]+)\s+([\d.]+)(?:\s+(QUY|QUỸ))?/);
+    if (!m) return { bad: l };
+    let qty = Number(m[2].replace(/\.(?=\d{3}\b)/g, '')), cost = Number(m[3]); if (cost < 1000) cost = Math.round(cost * 1000);
+    return { code: m[1], qty, cost, type: m[4] ? 'quy' : 'cp' };
+  });
+  $('#iT').oninput = () => { const r = parse(); $('#iP').innerHTML = r.map(x => x.bad ? `<span class="down">Không hiểu: ${esc(x.bad)}</span>` : `${esc(x.code)}: ${x.qty} × ${F.vnd(x.cost)} = ${F.short(x.qty * x.cost)}`).join('<br>'); };
+  $('#iS').onclick = () => { const r = parse().filter(x => !x.bad && x.qty > 0); if (!r.length) return toast('Chưa có dòng hợp lệ');
+    r.forEach(x => { const L = ST.inv.holdings, i = L.findIndex(h => h.code === x.code), o = Object.assign({ id: i >= 0 ? L[i].id : 'h' + Date.now().toString(36) + x.code, date: '', manual: '' }, x); if (i >= 0) L[i] = Object.assign(L[i], o); else L.push(o); });
+    save(); closeSheet(); render(); toast('Đã lưu ' + r.length + ' mã, đang lấy giá…'); refreshPrices(true).then(render); };
 }
 function depForm(d) {
   d = d || {};
@@ -445,7 +460,7 @@ document.addEventListener('click', async e => {
   if (d.act === 'nexttip') { tipShift++; return render(); }
   if (d.act === 'settings') return openSettings(); if (d.act === 'refresh') return refresh(); if (d.act === 'add') return openAdd();
   if (d.act === 'ai') return runAI(); if (d.act === 'px') { await refreshPrices(); return render(); }
-  if (d.act === 'hnew') return holdForm(); if (d.act === 'dnew') return depForm();
+  if (d.act === 'hnew') return holdForm(); if (d.act === 'himp') return importForm(); if (d.act === 'dnew') return depForm();
   if (d.hold) return holdForm(ST.inv.holdings.find(x => x.id === d.hold)); if (d.dep) return depForm(ST.inv.deposits.find(x => x.id === d.dep));
   if (d.act === 'gnew') return goalForm({ kind: d.kind });
   if (d.cat) return openCat(d.cat);
