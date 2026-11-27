@@ -129,7 +129,7 @@ nav#tabs button.add svg{width:24px;height:24px}
 /* đầu tư */
 .hold{display:grid;grid-template-columns:auto 1fr auto auto;gap:12px;align-items:center;padding:11px 4px;border-top:1px solid var(--ui);width:100%;background:none;border-left:0;border-right:0;border-bottom:0;text-align:left}
 .hold:first-child{border-top:0}.tk{width:40px;height:40px;border-radius:12px;display:grid;place-items:center;font-size:11px;font-weight:800;color:#fff;background:var(--c)}
-.hold .nm b{display:block;font-size:14px}.hold .nm small{color:var(--mute);font-size:12px}.hold .v{text-align:right}.hold .v b{display:block;font-size:14px}.hold svg.sp{width:80px;height:30px}
+.hold .nm{min-width:0}.hold .nm b{display:block;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.hold .nm>small{display:block;color:var(--mute);font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.hold .v small{display:block;white-space:nowrap}.hold .v{text-align:right}.hold .v b{display:block;font-size:14px}.hold svg.sp{width:80px;height:30px}
 @media (max-width:520px){.hold{grid-template-columns:auto 1fr auto}.hold svg.sp{display:none}}
 .up{color:var(--gain)}.down{color:var(--loss)}
 /* chung */
