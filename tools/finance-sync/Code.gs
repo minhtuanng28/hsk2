@@ -12,6 +12,10 @@
  *   doc       → toàn bộ bảng thu chi + ghi chú ô + comment + nhật ký giao dịch app
  *   them      → { gd:{ ts, loai:'thu'|'chi', hang_muc, so_tien, ghi_chu } } cộng vào ô tháng + ghi chú ô + ghi nhật ký
  *   xoa       → { id } trừ lại khoản đã ghi từ app
+ *   gia       → { ma:[{ma:'FPT',loai:'cp'|'quy'}] } giá đóng cửa theo ngày (cổ phiếu/ETF VN, NAV quỹ mở)
+ *   ai        → { tom:'tóm tắt số liệu', hoi?:'câu hỏi' } Gemini phân tích (cần Script Property GEMINI_KEY)
+ *
+ * Ô A1 của tab thu chi: ghi mốc cập nhật (vd "Update gần nhất: 11h15 AM 27/11/2026"), app hiện ở đầu dashboard.
  */
 
 const LOG_TAB = 'App · Giao dịch';
@@ -68,6 +72,8 @@ function doPost(e) {
       case 'doc': return json_(Object.assign({ ok: true }, docTatCa_(!!p.moi)));
       case 'them': return json_(Object.assign({ ok: true }, them_(p.gd || {})));
       case 'xoa': return json_(Object.assign({ ok: true }, xoa_(String(p.id || ''))));
+      case 'gia': return json_({ ok: true, gia: layGia_(p.ma || []), at: new Date().toISOString() });
+      case 'ai': return json_(Object.assign({ ok: true }, hoiAI_(String(p.tom || ''), String(p.hoi || ''))));
       default: return json_({ ok: false, loi: 'Không rõ thao tác' });
     }
   } catch (err) {
@@ -310,3 +316,140 @@ function norm_(s) {
 }
 function fmt_(n) { return Math.round(Number(n)).toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.'); }
 function json_(o) { return ContentService.createTextOutput(JSON.stringify(o)).setMimeType(ContentService.MimeType.JSON); }
+
+/* ============================ GIÁ CHỨNG KHOÁN / QUỸ ============================ */
+
+/** Thử trong trình soạn thảo: chạy rồi xem Nhật ký thực thi. */
+function thuGia() {
+  Logger.log(JSON.stringify(layGia_([{ ma: 'FPT', loai: 'cp' }, { ma: 'E1VFVN30', loai: 'cp' }, { ma: 'DCDS', loai: 'quy' }]), null, 1).slice(0, 3000));
+}
+
+function layGia_(list) {
+  const out = {}, cache = CacheService.getScriptCache();
+  (list || []).slice(0, 12).forEach(it => {
+    const ma = String(it.ma || '').toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 12);
+    if (!ma) return;
+    const loai = it.loai === 'quy' ? 'quy' : 'cp', ck = 'gia_' + loai + '_' + ma;
+    const hit = cache.get(ck);
+    if (hit) { try { out[ma] = JSON.parse(hit); return; } catch (_) { } }
+    let r = null;
+    try { r = loai === 'quy' ? giaQuy_(ma) : (giaVnd_(ma) || giaTcbs_(ma)); } catch (e) { r = { loi: String(e.message || e).slice(0, 120) }; }
+    if (!r) r = { loi: 'Không tìm thấy mã ' + ma };
+    out[ma] = r;
+    if (!r.loi) cache.put(ck, JSON.stringify(r), 1800);
+  });
+  return out;
+}
+
+function chuoi_(rows) {   // rows: [[yyyy-MM-dd, giá VND], ...] tăng dần
+  rows = rows.filter(x => x[1] > 0);
+  if (!rows.length) return null;
+  const last = rows[rows.length - 1], prev = rows.length > 1 ? rows[rows.length - 2] : last;
+  return { gia: last[1], truoc: prev[1], ngay: last[0], chuoi: rows.slice(-130) };
+}
+
+function giaVnd_(ma) {
+  const to = Math.floor(Date.now() / 1000), from = to - 200 * 86400;
+  const r = UrlFetchApp.fetch('https://dchart-api.vndirect.com.vn/dchart/history?resolution=D&symbol=' + ma + '&from=' + from + '&to=' + to,
+    { muteHttpExceptions: true, headers: { 'User-Agent': 'Mozilla/5.0' } });
+  if (r.getResponseCode() !== 200) return null;
+  const j = JSON.parse(r.getContentText());
+  if (j.s !== 'ok' || !j.t || !j.t.length) return null;
+  const rows = j.t.map((t, i) => [Utilities.formatDate(new Date(t * 1000), TZ, 'yyyy-MM-dd'), Math.round(j.c[i] * 1000)]);
+  const o = chuoi_(rows); if (o) o.nguon = 'VNDirect'; return o;
+}
+
+function giaTcbs_(ma) {
+  const to = Math.floor(Date.now() / 1000), from = to - 200 * 86400;
+  const r = UrlFetchApp.fetch('https://apipubaws.tcbs.com.vn/stock-insight/v1/stock/bars-long-term?ticker=' + ma + '&type=stock&resolution=D&from=' + from + '&to=' + to,
+    { muteHttpExceptions: true, headers: { 'User-Agent': 'Mozilla/5.0' } });
+  if (r.getResponseCode() !== 200) return null;
+  const d = (JSON.parse(r.getContentText()).data || []);
+  if (!d.length) return null;
+  const rows = d.map(x => [String(x.tradingDate).slice(0, 10), Math.round(x.close < 1000 ? x.close * 1000 : x.close)]);
+  const o = chuoi_(rows); if (o) o.nguon = 'TCBS'; return o;
+}
+
+/** NAV chứng chỉ quỹ mở qua Fmarket */
+function giaQuy_(ma) {
+  const H = { 'Content-Type': 'application/json', 'User-Agent': 'Mozilla/5.0' };
+  const c = CacheService.getScriptCache();
+  let ds = null; const hc = c.get('fm_list');
+  if (hc) try { ds = JSON.parse(hc); } catch (_) { }
+  if (!ds) {
+    const r = UrlFetchApp.fetch('https://api.fmarket.vn/res/products/filter', { method: 'post', headers: H, muteHttpExceptions: true,
+      payload: JSON.stringify({ types: ['NEW_FUND', 'TRADING_FUND'], issuerIds: [], sortOrder: 'DESC', sortField: 'navTo6Months', page: 1, pageSize: 200, isIpo: false, fundAssetTypes: [], bondRemainPeriods: [], searchField: '', isBuyByReward: false, thirdAppIds: [] }) });
+    if (r.getResponseCode() !== 200) return { loi: 'Fmarket ' + r.getResponseCode() };
+    ds = ((JSON.parse(r.getContentText()).data || {}).rows || []).map(x => ({ id: x.id, ma: String(x.shortName || x.code || '').toUpperCase(), ten: x.name, nav: x.nav }));
+    try { c.put('fm_list', JSON.stringify(ds), 21600); } catch (_) { }
+  }
+  const f = ds.find(x => x.ma.replace(/[^A-Z0-9]/g, '') === ma);
+  if (!f) return null;
+  const today = Utilities.formatDate(new Date(), TZ, 'yyyyMMdd'), from = Utilities.formatDate(new Date(Date.now() - 200 * 864e5), TZ, 'yyyyMMdd');
+  const r2 = UrlFetchApp.fetch('https://api.fmarket.vn/res/product/get-nav-history', { method: 'post', headers: H, muteHttpExceptions: true,
+    payload: JSON.stringify({ isAllData: 0, productId: f.id, fromDate: from, toDate: today }) });
+  let rows = [];
+  if (r2.getResponseCode() === 200) rows = (JSON.parse(r2.getContentText()).data || []).map(x => [String(x.navDate).slice(0, 10), Math.round(x.nav)]).sort((a, b) => a[0] < b[0] ? -1 : 1);
+  if (!rows.length && f.nav) rows = [[Utilities.formatDate(new Date(), TZ, 'yyyy-MM-dd'), Math.round(f.nav)]];
+  const o = chuoi_(rows); if (o) { o.nguon = 'Fmarket'; o.ten = f.ten; } return o;
+}
+
+/* ============================ GEMINI ============================ */
+
+function thuAI() { Logger.log(JSON.stringify(hoiAI_('Thu TB 40tr/tháng, chi 25tr, tích lũy 30%. Chưa có quỹ dự phòng.', ''), null, 1)); }
+
+function hoiAI_(tom, hoi) {
+  const key = (PropertiesService.getScriptProperties().getProperty('GEMINI_KEY') || '').trim();
+  if (!key) throw new Error('Chưa có GEMINI_KEY trong Script Properties');
+  if (!tom) throw new Error('Thiếu số liệu');
+  const nen = `Bạn là "Bắp", chú mèo cố vấn tài chính cá nhân của Tuấn (Head of Marketing BĐS ở TP.HCM, thu nhập gồm lương + freelance + ngoài giờ + hoa hồng, đang đầu tư chứng khoán/quỹ VN).
+Chỉ dựa trên số liệu được cung cấp, KHÔNG bịa số. Đơn vị tiền: đồng (tr = triệu). Viết tiếng Việt đời thường, thẳng thắn, cụ thể bằng con số, câu ngắn. Không khuyến nghị mua/bán mã cụ thể; nói về phân bổ, rủi ro, kỷ luật. Có thể xưng "Bắp", gọi "Tuấn".`;
+  const prompt = hoi
+    ? nen + `\n\nSỐ LIỆU:\n${tom.slice(0, 14000)}\n\nCÂU HỎI CỦA TUẤN: ${hoi.slice(0, 600)}\n\nTrả lời trong tra_loi (tối đa 140 từ).`
+    : nen + `\n\nSỐ LIỆU:\n${tom.slice(0, 14000)}\n\nHãy phân tích sức khoẻ tài chính hiện tại. Trả về: tong (2–3 câu nhận định tổng quan), diem_manh (2–3 ý), can_cai_thien (2–3 ý), hanh_dong (3 việc cụ thể làm trong 30 ngày tới, mỗi việc kèm vi_sao ngắn), dau_tu (1–2 câu về danh mục đầu tư nếu có, nếu không có thì gợi ý bắt đầu).`;
+  const schema = hoi ? { type: 'OBJECT', properties: { tra_loi: { type: 'STRING' } }, required: ['tra_loi'] }
+    : { type: 'OBJECT', properties: { tong: { type: 'STRING' }, diem_manh: { type: 'ARRAY', items: { type: 'STRING' } }, can_cai_thien: { type: 'ARRAY', items: { type: 'STRING' } },
+      hanh_dong: { type: 'ARRAY', items: { type: 'OBJECT', properties: { viec: { type: 'STRING' }, vi_sao: { type: 'STRING' } }, required: ['viec'] } }, dau_tu: { type: 'STRING' } },
+      required: ['tong', 'diem_manh', 'can_cai_thien', 'hanh_dong'] };
+  let model = chonModel_(key), loi = '';
+  let think = m => /gemini-2\./.test(m) ? { thinkingBudget: 0 } : { thinkingLevel: 'minimal' };
+  const t0 = Date.now();
+  for (let i = 0; i < 4 && Date.now() - t0 < 100e3; i++) {
+    const r = UrlFetchApp.fetch('https://generativelanguage.googleapis.com/v1beta/models/' + model + ':generateContent', {
+      method: 'post', headers: { 'x-goog-api-key': key }, contentType: 'application/json', muteHttpExceptions: true,
+      payload: JSON.stringify({ contents: [{ role: 'user', parts: [{ text: prompt }] }], generationConfig: { temperature: 0.4, maxOutputTokens: 4096, responseMimeType: 'application/json', responseSchema: schema, thinkingConfig: think(model) } })
+    });
+    const code = r.getResponseCode();
+    if (code === 200) {
+      PropertiesService.getScriptProperties().setProperty('GEMINI_MODEL', model);
+      const parts = ((((JSON.parse(r.getContentText()).candidates || [])[0] || {}).content || {}).parts || []);
+      return { ai: JSON.parse(parts.map(p => p.text || '').join('')), model: model, luc: new Date().toISOString() };
+    }
+    loi = model + ' ' + code + ' ' + r.getContentText().slice(0, 120);
+    if (code === 400 && /thinking/i.test(r.getContentText())) { think = () => undefined; continue; }
+    if (code === 404 || code === 400) { PropertiesService.getScriptProperties().deleteProperty('GEMINI_MODEL'); model = chonModel_(key, true); }
+    if (code === 429 || code >= 500) { model = modelKhac_(model); Utilities.sleep(2500 * (i + 1)); }
+  }
+  throw new Error('Gemini lỗi: ' + loi);
+}
+
+function chonModel_(key, moi) {
+  const P = PropertiesService.getScriptProperties();
+  const cached = P.getProperty('GEMINI_MODEL');
+  if (cached && !moi && P.getProperty('GEMINI_ALT')) return cached;
+  const r = UrlFetchApp.fetch('https://generativelanguage.googleapis.com/v1beta/models?pageSize=200', { headers: { 'x-goog-api-key': key }, muteHttpExceptions: true });
+  if (r.getResponseCode() !== 200) throw new Error('Gemini models ' + r.getResponseCode() + ' ' + r.getContentText().slice(0, 150));
+  const all = (JSON.parse(r.getContentText()).models || []);
+  const ms = all.filter(m => (m.supportedGenerationMethods || []).includes('generateContent')).map(m => m.name.replace('models/', ''))
+    .filter(n => /flash/.test(n) && !/image|tts|audio|live|embed|thinking-exp|robotics/.test(n));
+  const ver = n => { const m = n.match(/gemini-(\d+(?:\.\d+)?)/); return m ? +m[1] : 0; };
+  ms.sort((a, b) => (ver(b) - ver(a)) || ((/lite/.test(a) ? 1 : 0) - (/lite/.test(b) ? 1 : 0)) || ((/preview|exp/.test(a) ? 1 : 0) - (/preview|exp/.test(b) ? 1 : 0)) || (a.length - b.length));
+  if (!ms.length) throw new Error('Không tìm thấy model Gemini Flash');
+  P.setProperty('GEMINI_ALT', JSON.stringify(ms.slice(0, 5)));
+  return ms[0];
+}
+function modelKhac_(cur) {
+  let a = []; try { a = JSON.parse(PropertiesService.getScriptProperties().getProperty('GEMINI_ALT') || '[]'); } catch (e) { }
+  const i = a.indexOf(cur); return a[(i + 1) % a.length] || cur;
+}
+
