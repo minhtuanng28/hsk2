@@ -278,5 +278,41 @@
     };
   }
 
+
+  /* ---------- Két sắt: mã hoá dữ liệu bằng mật khẩu 6 số (PBKDF2-SHA256 → AES-GCM 256) ---------- */
+  const b64 = u => btoa(String.fromCharCode(...new Uint8Array(u)));
+  const ub64 = s => Uint8Array.from(atob(s), c => c.charCodeAt(0));
+  const Vault = {
+    ITER: 310000,
+    okPin: p => /^\d{6}$/.test(String(p || '')),
+    newSalt: () => b64(crypto.getRandomValues(new Uint8Array(16))),
+    async key(pin, salt, iter) {
+      const base = await crypto.subtle.importKey('raw', new TextEncoder().encode('mintun:' + pin), 'PBKDF2', false, ['deriveKey']);
+      return crypto.subtle.deriveKey({ name: 'PBKDF2', salt: ub64(salt), iterations: iter || Vault.ITER, hash: 'SHA-256' }, base, { name: 'AES-GCM', length: 256 }, false, ['encrypt', 'decrypt']);
+    },
+    async seal(k, obj, meta) {
+      const iv = crypto.getRandomValues(new Uint8Array(12));
+      const ct = await crypto.subtle.encrypt({ name: 'AES-GCM', iv }, k.key, new TextEncoder().encode(JSON.stringify(obj)));
+      return Object.assign({ v: 2, salt: k.salt, iter: k.iter, iv: b64(iv), ct: b64(ct) }, meta || {});
+    },
+    async open(k, box) {
+      const pt = await crypto.subtle.decrypt({ name: 'AES-GCM', iv: ub64(box.iv) }, k.key, ub64(box.ct));
+      return JSON.parse(new TextDecoder().decode(pt));
+    },
+    /** mở bằng PIN: trả về {k, data} hoặc ném lỗi nếu sai */
+    async unlock(pin, box) {
+      const key = await Vault.key(pin, box.salt, box.iter);
+      const k = { key, salt: box.salt, iter: box.iter || Vault.ITER };
+      return { k, data: await Vault.open(k, box) };
+    },
+    async make(pin) { const salt = Vault.newSalt(); return { key: await Vault.key(pin, salt, Vault.ITER), salt, iter: Vault.ITER }; },
+    /** chống đoán: sai 5 lần khoá 30 giây, mỗi lần sai thêm gấp đôi (tối đa 15 phút) */
+    tries() { try { return JSON.parse(localStorage.getItem('mintun-pin-tries') || '{"n":0,"until":0}'); } catch (e) { return { n: 0, until: 0 }; } },
+    wait() { const t = Vault.tries(); return Math.max(0, t.until - Date.now()); },
+    fail() { const t = Vault.tries(); t.n++; if (t.n >= 5) t.until = Date.now() + Math.min(900e3, 30e3 * Math.pow(2, t.n - 5)); localStorage.setItem('mintun-pin-tries', JSON.stringify(t)); return t; },
+    ok() { localStorage.removeItem('mintun-pin-tries'); }
+  };
+
+  root.MintunVault = Vault;
   root.MintunFin = { GROUPS, parse, range, avgBefore, catAvg, lastIdx, lastFull, vnd, short, pct, num, norm, goalProgress, tips, tipOfDay, summary, defaultGroup, dayNo };
 })(typeof window !== 'undefined' ? window : globalThis);

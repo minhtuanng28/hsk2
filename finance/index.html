@@ -120,6 +120,13 @@ nav#tabs button.add svg{width:26px;height:26px;color:var(--brand-ink)!important}
 .typ button.on{background:var(--card);color:var(--ink);box-shadow:0 1px 4px rgba(0,0,0,.25)}
 .f2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .toast{position:fixed;left:50%;bottom:calc(var(--safe-b) + 92px);transform:translateX(-50%);background:var(--card2);border:1px solid var(--line);padding:10px 16px;border-radius:14px;font-size:13.5px;z-index:50;box-shadow:0 6px 24px rgba(0,0,0,.3);max-width:90vw}
+ #lock{position:fixed;inset:0;z-index:28;background:var(--bg);display:flex;align-items:center;justify-content:center;padding:24px}
+#lockIn{width:100%;max-width:330px;text-align:center}#lockIn img{width:72px;height:72px;border-radius:20px}#lockIn h2{margin:12px 0 4px;font-size:21px}
+.lsub{color:var(--mute);font-size:13px;margin:0 0 18px;min-height:18px}.lmsg{color:var(--bad);font-size:13px;min-height:20px;margin:12px 0 6px}
+.pdots{display:flex;justify-content:center;gap:14px}.pdots i{width:14px;height:14px;border-radius:50%;border:2px solid var(--mute)}.pdots i.on{background:var(--brand);border-color:var(--brand)}
+.shake{animation:sh .35s}@keyframes sh{20%,60%{transform:translateX(-8px)}40%,80%{transform:translateX(8px)}}
+.pad{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:8px}.pad button{height:62px;border-radius:20px;border:1px solid var(--line);background:var(--card);font-size:24px;font-weight:600}
+.pad button:active{background:var(--card2)}.pad button.sm{font-size:14px;color:var(--mute);background:none;border:0}
 #gate{position:fixed;inset:0;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:30px;text-align:center;z-index:30}
 #gate img{width:96px;height:96px;border-radius:26px;margin-bottom:16px}#gate h2{margin:0 0 6px}#gate p{color:var(--mute);margin:0 0 20px;max-width:340px}
 .empty{text-align:center;padding:26px 10px}.empty p{color:var(--mute);margin:8px 0 16px}
@@ -138,6 +145,7 @@ code{background:var(--card2);padding:2px 6px;border-radius:6px;font-size:12px;wo
   <img class="logo" src="icon-192.png" alt="">
   <div class="t"><h1>Ngân hàng Mintun</h1><small id="syncTxt">Chưa cập nhật</small></div>
   <button class="upd" id="bUpd" title="Đọc lại Google Sheet"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 11a8 8 0 0 0-14.5-4.5L4 8"/><path d="M4 4v4h4"/><path d="M4 13a8 8 0 0 0 14.5 4.5L20 16"/><path d="M20 20v-4h-4"/></svg><span>Cập nhật</span><i class="dot" id="dueDot" hidden></i></button>
+  <button class="ib" id="bLock" aria-label="Khoá"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="5" y="11" width="14" height="10" rx="2.5"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg></button>
   <button class="ib" id="bSet" aria-label="Cài đặt"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg></button>
  </header>
  <main id="view"></main>
@@ -151,6 +159,7 @@ code{background:var(--card2);padding:2px 6px;border-radius:6px;font-size:12px;wo
  <button data-tab="log"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="4" y="3.5" width="16" height="17" rx="3"/><path d="M8 8h8M8 12h8M8 16h5"/></svg>Sổ ghi</button>
 </div></nav>
 <div id="sheet"><div id="sheetIn"></div></div>
+<div id="lock" hidden><div id="lockIn"></div></div>
 <div id="tip"></div>
 <script src="engine.js"></script>
 <script type="module">
@@ -158,7 +167,8 @@ const F=window.MintunFin;
 const FBCFG={apiKey:"AIzaSyCzG2TNB2fwUSUDycsxQ8a2D1GaWzVHl28",authDomain:"hsk-app-f5201.firebaseapp.com",projectId:"hsk-app-f5201",storageBucket:"hsk-app-f5201.firebasestorage.app",messagingSenderId:"278418991443",appId:"1:278418991443:web:9cb95ad3a99e01b7ae59a6"};
 const ACAD='/hsk2/academy/',GUIDE='https://github.com/minhtuanng28/hsk2/blob/main/tools/finance-sync/HUONG-DAN.md';
 const DEMO=new URLSearchParams(location.search).get('demo');
-const LS=DEMO?'mintun-bank-demo':'mintun-bank-v1';
+const LS=DEMO?'mintun-bank-demo':'mintun-bank-v1',LSV=DEMO?'mintun-bank-demo-v2':'mintun-bank-v2';
+const VA=window.MintunVault;
 const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const {short,vnd,pct,GROUPS}=F;
@@ -166,14 +176,18 @@ const GC={thu:'var(--g-thu)',codinh:'var(--g-codinh)',linhhoat:'var(--g-linhhoat
 function toast(t){const e=document.createElement('div');e.className='toast';e.textContent=t;document.body.appendChild(e);setTimeout(()=>e.remove(),3200)}
 
 /* ===== trạng thái ===== */
-let ST={cfg:{url:'',key:''},goals:[],map:{},doc:null,sync:0,pending:[],upd:0,recent:{}};
-try{Object.assign(ST,JSON.parse(localStorage.getItem(LS)||'{}'))}catch(e){}
+const blank=()=>({cfg:{url:'',key:''},goals:[],map:{},doc:null,sync:0,pending:[],upd:0,recent:{}});
+let ST=blank(),K=null;                       // K: khoá AES suy ra từ mật khẩu 6 số, chỉ nằm trong bộ nhớ
+let legacy=null;try{legacy=JSON.parse(localStorage.getItem(LS)||'null')}catch(e){}   // bản chưa mã hoá (trước khi có mật khẩu)
+let localBox=null;try{localBox=JSON.parse(localStorage.getItem(LSV)||'null')}catch(e){}
+let cloudBox=null,cloudLegacy=null,cloudChecked=!!DEMO;
 let M=null,sel=null,tab=new URLSearchParams(location.search).get('tab')||'home',tipShift=0,busy=false;
 let logYM=null,flowR='12',chartR='12',catG='all',goalEdit=null,showTable=false;
 function build(){M=null;if(!ST.doc)return;try{M=F.parse(ST.doc,ST.map);if(sel==null||sel>=M.mon.length)sel=F.lastFull(M)}catch(e){M=null;toast('Không đọc được sheet: '+e.message)}}
-function saveLocal(){try{localStorage.setItem(LS,JSON.stringify(ST))}catch(e){}}
+let saveQ=Promise.resolve();
+function saveLocal(){if(!K)return;const k=K,snap=JSON.parse(JSON.stringify(ST));saveQ=saveQ.then(async()=>{try{const box=await VA.seal(k,snap,{upd:snap.upd});localStorage.setItem(LSV,JSON.stringify(box));localBox=box;localStorage.removeItem(LS)}catch(e){console.warn('vault',e)}})}
 let cloudT=null;
-function save(cloud=true){ST.upd=Date.now();saveLocal();if(cloud&&!DEMO){clearTimeout(cloudT);cloudT=setTimeout(pushCloud,1200)}}
+function save(cloud=true){if(!K)return;ST.upd=Date.now();saveLocal();if(cloud&&!DEMO){clearTimeout(cloudT);cloudT=setTimeout(pushCloud,1200)}}
 
 /* ===== mốc cập nhật: ngày 1 và 16 hằng tháng ===== */
 function lastMilestone(){const n=new Date();const d=new Date(n.getFullYear(),n.getMonth(),n.getDate()>=16?16:1,0,0,0);return d.getTime()}
@@ -189,8 +203,8 @@ async function api(action,extra){
  const j=await r.json();if(!j.ok)throw new Error(j.loi||'Lỗi không rõ');return j}
 async function flushPending(){for(const p of ST.pending.slice()){if(p.err)continue;try{await api('them',{gd:p});ST.pending=ST.pending.filter(x=>x.id!==p.id)}catch(e){if(/Không thấy dòng|không hợp lệ|chứa chữ|không có cột/.test(e.message)){p.err=e.message}else throw e}}saveLocal()}
 async function refresh(silent){
- if(busy)return;busy=true;$('#bUpd').classList.add('spin');
- try{if(ST.pending.length)await flushPending();const j=await api('doc');delete j.ok;ST.doc=j;ST.sync=Date.now();build();save();if(!silent)toast('Đã cập nhật từ sheet "'+(j.tab||'')+'"');render()}
+ if(busy||!K)return;busy=true;$('#bUpd').classList.add('spin');
+ try{if(ST.pending.length)await flushPending();const j=await api('doc',{moi:!silent});delete j.ok;ST.doc=j;ST.sync=Date.now();build();save();if(!silent)toast('Đã cập nhật từ sheet "'+(j.tab||'')+'"');render()}
  catch(e){if(!silent)toast(e.message);render()}
  finally{busy=false;$('#bUpd').classList.remove('spin')}}
 
@@ -283,7 +297,7 @@ function sankey(R){
  srcs.forEach((a,ai)=>{gs.forEach((g,gi)=>{const f=g.v/outTot,h=a.h*f;if(h<.3)return;s+=link(X[0]+colW,sOff[ai],X[1],gIn[gi],h,col(a),`<b>${esc(a.n)} → ${esc(g.n)}</b>${short(a.v*f)}`);sOff[ai]+=h;gIn[gi]+=h})});
  const gOut=gs.map(g=>g.y);
  leafs.forEach(l=>{const gi=gs.findIndex(g=>g.g===l.g);if(gi<0)return;const h=l.h;s+=link(X[1]+colW,gOut[gi],X[2],l.y,h,col(l),`<b>${esc(GROUPS[l.g]?GROUPS[l.g].short:'Còn dư')} → ${esc(l.n)}</b>${short(l.v)}`);gOut[gi]+=h});
- const node=(x,a,side)=>`<rect x="${x}" y="${a.y}" width="${colW}" height="${a.h}" rx="3" fill="${col(a)}" data-tip="${esc('<b>'+a.n+'</b>'+vnd(a.v))}"/>`+
+ const node=(x,a,side)=>`<rect x="${x}" y="${a.y}" width="${colW}" height="${a.h}" rx="3" fill="${col(a)}" data-tip="${esc('<b>'+esc(a.n)+'</b>'+vnd(a.v))}"/>`+
   (side==='l'?`<text x="${x-8}" y="${a.y+a.h/2-1}" text-anchor="end">${esc(a.n)}</text><text class="m" x="${x-8}" y="${a.y+a.h/2+12}" text-anchor="end">${short(a.v)} · ${pct(a.v/Math.max(1,inTot))}</text>`
   :side==='m'?`<text x="${x+colW+6}" y="${a.y-5}" font-weight="700">${esc(a.n)} <tspan class="m" font-weight="500">${short(a.v)}</tspan></text>`
   :`<text x="${x+colW+8}" y="${a.y+a.h/2+4}">${esc(a.n)} <tspan class="m">${short(a.v)}</tspan></text>`);
@@ -397,7 +411,7 @@ function vGoals(){
  const sh=ST.goals.filter(g=>g.kind!=='dai'),lo=ST.goals.filter(g=>g.kind==='dai');
  return `<div class="card"><h3>Đã tích lũy từ ${M.months[0].label}</h3><div style="font-size:30px;font-weight:800;letter-spacing:-.02em" class="num">${short(tot)}</div>
   <div class="sub">TB 12 tháng: để dành ${short(sv12)}/tháng · chi tiêu ${short(sp12)}/tháng</div>
-  <div class="alloc" style="margin-top:12px">${sv.map((c,i)=>all.cat[c.id]>0?`<u style="--c:var(--g-tichluy);opacity:${1-i*.18};width:${all.cat[c.id]/Math.max(1,tot)*100}%" data-tip="${esc('<b>'+c.name+'</b>'+vnd(all.cat[c.id]))}"></u>`:'').join('')}</div>
+  <div class="alloc" style="margin-top:12px">${sv.map((c,i)=>all.cat[c.id]>0?`<u style="--c:var(--g-tichluy);opacity:${1-i*.18};width:${all.cat[c.id]/Math.max(1,tot)*100}%" data-tip="${esc('<b>'+esc(c.name)+'</b>'+vnd(all.cat[c.id]))}"></u>`:'').join('')}</div>
   ${sv.map(c=>`<div class="hb"><span class="n">${esc(c.name)}</span><span class="tr"><u style="--c:var(--g-tichluy);width:${Math.max(0,all.cat[c.id])/Math.max(1,tot)*100}%"></u></span><b class="num">${short(all.cat[c.id])}</b></div>`).join('')}
   <p class="note" style="margin:8px 0 0">Tổng tiền đã chuyển vào các hạng mục tích lũy. Chưa tính lãi/lỗ đầu tư.</p></div>
  <div class="card"><h3>Mục tiêu ngắn hạn <span class="sub">dưới 1 năm</span></h3>${sh.map(goalCard).join('')||'<p class="note">Chưa có mục tiêu ngắn hạn.</p>'}<button class="btn sm" data-act="gnew" data-kind="ngan">+ Thêm mục tiêu ngắn hạn</button></div>
@@ -470,21 +484,21 @@ function openAdd(pre){
 
 /* ===== cài đặt ===== */
 function openSettings(){
- const link=ST.cfg.url&&ST.cfg.key?location.origin+location.pathname+'#u='+encodeURIComponent(ST.cfg.url)+'&k='+encodeURIComponent(ST.cfg.key):'';
  sheet(`<h2>Cài đặt</h2>
  <h3 style="font-size:12.5px;color:var(--mute);margin:16px 0 0">KẾT NỐI GOOGLE SHEET</h3>
  <div class="f"><label>Link web app Apps Script</label><input id="sU" value="${esc(ST.cfg.url)}" placeholder="https://script.google.com/macros/s/…/exec"></div>
  <div class="f"><label>Mã kết nối (APP_KEY)</label><input id="sK" type="password" value="${esc(ST.cfg.key)}" placeholder="Chạy hàm caiDat() để lấy mã"></div>
  <button class="btn pri full" id="sSave">Lưu và cập nhật</button>
- <p class="note">Chưa cài? Xem <a href="${GUIDE}" target="_blank" rel="noopener" style="color:var(--brand)">hướng dẫn 5 phút</a>. Link và mã được lưu trong tài khoản Google của bạn (Firebase), không nằm trên GitHub.</p>
- ${link?`<button class="btn full" id="sLink">Copy link cài nhanh cho máy khác</button><p class="note">Mở link này trên điện thoại/iPad là tự điền sẵn kết nối. Đừng gửi link cho người khác.</p>`:''}
+ <p class="note">Chưa cài? Xem <a href="${GUIDE}" target="_blank" rel="noopener" style="color:var(--brand)">hướng dẫn 5 phút</a>. Link, mã và mục tiêu được mã hoá bằng mật khẩu 6 số trước khi lưu vào máy và tài khoản Google, không nằm trên GitHub. Máy khác chỉ cần đăng nhập cùng tài khoản rồi nhập mật khẩu.</p>
+ <h3 style="font-size:12.5px;color:var(--mute);margin:18px 0 4px">MẬT KHẨU 6 SỐ</h3><p class="note" style="margin:0 0 8px">Tự khoá khi rời app quá 3 phút hoặc không thao tác 10 phút. Nhập sai 5 lần sẽ phải chờ.</p>
+ <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn sm" id="sPin">Đổi mật khẩu</button><button class="btn sm" id="sLock">Khoá ngay</button></div>
  <h3 style="font-size:12.5px;color:var(--mute);margin:18px 0 4px">NHÓM HẠNG MỤC</h3><p class="note" style="margin:0 0 6px">Bắp tự chia, sửa nếu thấy chưa đúng. Tích lũy không tính là tiêu xài.</p>
  ${M?M.cats.filter(c=>c.sec!=='thu').map(c=>`<div class="mapr"><i class="gdot" style="--c:${GC[c.group]}"></i><span>${esc(c.name)}</span><select data-map="${esc(c.name)}">${['codinh','linhhoat','tichluy'].map(g=>`<option value="${g}" ${c.group===g?'selected':''}>${GROUPS[g].short}</option>`).join('')}</select></div>`).join(''):'<p class="note">Cập nhật dữ liệu trước.</p>'}
  <h3 style="font-size:12.5px;color:var(--mute);margin:18px 0 4px">NHẮC CẬP NHẬT</h3><p class="note" style="margin:0">Dấu đỏ trên nút Cập nhật hiện vào ngày 1 và 16 hằng tháng cho tới khi bạn bấm cập nhật. Học viện cũng hiện dấu này trên toà Ngân hàng Mintun.</p>
  <h3 style="font-size:12.5px;color:var(--mute);margin:18px 0 4px">TÀI KHOẢN</h3><p class="note" style="margin:0 0 8px">${user?esc(user.email||user.displayName||''):'Chưa đăng nhập'}</p>
  <div style="display:flex;gap:8px;flex-wrap:wrap"><a class="btn sm" href="${ACAD}" style="text-decoration:none">Về Học viện</a>${user?'<button class="btn sm" id="sOut">Đăng xuất</button>':''}</div>`);
  $('#sSave').onclick=()=>{const u=$('#sU').value.trim(),k=$('#sK').value.trim();if(!okUrl(u))return toast('Link phải có dạng https://script.google.com/macros/s/…/exec');if(k.length<16)return toast('Mã kết nối chưa đúng');ST.cfg={url:u,key:k};save();closeSheet();refresh()};
- if($('#sLink'))$('#sLink').onclick=()=>{navigator.clipboard.writeText(link).then(()=>toast('Đã copy link'),()=>toast('Không copy được'))};
+ $('#sPin').onclick=()=>{closeSheet();showLock('change1')};$('#sLock').onclick=()=>{closeSheet();lockNow()};
  if($('#sOut'))$('#sOut').onclick=()=>fb&&fb.auth.signOut(fb.A).then(()=>location.reload())}
 
 /* ===== sheet & sự kiện ===== */
@@ -494,7 +508,7 @@ $('#sheet').addEventListener('click',e=>{if(e.target.id==='sheet')closeSheet()})
 document.addEventListener('keydown',e=>{if(e.key==='Escape')closeSheet()});
 document.addEventListener('change',e=>{const s=e.target.closest('select[data-map]');if(!s)return;ST.map[s.dataset.map]=s.value;save();build();render();if($('#sheet').classList.contains('on')&&s.closest('#sheetIn')){const id=(M.cats.find(c=>c.name===s.dataset.map)||{}).id;if(id&&$('#sheetIn h2')&&$('#sheetIn h2').textContent===s.dataset.map)openCat(id)}});
 $('#tabs').addEventListener('click',e=>{const b=e.target.closest('button[data-tab]');if(!b)return;if(b.dataset.tab==='add'){if(!M)return toast('Kết nối sheet trước đã');return openAdd()}tab=b.dataset.tab;history.replaceState(null,'','?tab='+tab+(DEMO?'&demo=1':''));render();scrollTo(0,0)});
-$('#bUpd').onclick=()=>refresh();$('#bSet').onclick=openSettings;
+$('#bUpd').onclick=()=>{if(K)refresh()};$('#bSet').onclick=()=>{if(K)openSettings()};$('#bLock').onclick=lockNow;
 document.addEventListener('click',async e=>{const t=e.target.closest('[data-act],[data-cr],[data-fr],[data-cg],[data-cat],[data-mi],[data-gedit],[data-gadd],[data-gsug],[data-tdel],[data-pdel],[data-tab2]');if(!t)return;const d=t.dataset;
  if(d.act==='prev'){if(sel>0)sel--;render()}else if(d.act==='next'){if(sel<M.mon.length-1)sel++;render()}
  else if(d.act==='lprev'||d.act==='lnext'){let k=logYM.y*12+logYM.m-1+(d.act==='lnext'?1:-1);logYM={y:Math.floor(k/12),m:k%12+1};render()}
@@ -511,39 +525,86 @@ document.addEventListener('click',async e=>{const t=e.target.closest('[data-act]
   const s={ef:{name:'Quỹ dự phòng 6 tháng',kind:'ngan',target:Math.round(sp*6/1e6)*1e6,deadline:y+1+'-06',link:sv,note:'6 tháng chi tiêu trung bình, để ở chỗ rút được ngay.'},ef3:{name:'Quỹ dự phòng 3 tháng',kind:'ngan',target:Math.round(sp*3/1e6)*1e6,deadline:y+'-12',link:sv},
    big:{name:'Món lớn sắp mua',kind:'ngan'},trip:{name:'Chuyến du lịch',kind:'ngan'},inv:{name:'Danh mục đầu tư',kind:'dai',deadline:(y+5)+'-12',link:M.cats.filter(c=>c.group==='tichluy'&&/chung khoan|dau tu/.test(F.norm(c.name))).map(c=>c.name)}}[d.gsug];
   if(s.link&&!s.link.length)delete s.link;goalForm(s)}
- else if(d.pdel){ST.pending=ST.pending.filter(x=>x.id!==d.pdel);saveLocal();render()}
+ else if(d.pdel){ST.pending=ST.pending.filter(x=>x.id!==d.pdel);save(false);render()}
  else if(d.tdel){if(!t.dataset.sure){t.dataset.sure=1;t.textContent='Xoá?';setTimeout(()=>{delete t.dataset.sure;t.textContent='✕'},3500);return}
   t.textContent='…';try{await api('xoa',{id:d.tdel});toast('Đã xoá và trừ lại trên sheet');await refresh(true)}catch(err){toast(err.message);render()}}});
 
-/* ===== link cài nhanh ===== */
-if(location.hash.includes('k=')){const h=new URLSearchParams(location.hash.slice(1));const u=h.get('u'),k=h.get('k');if(okUrl(u)&&k){ST.cfg={url:u,key:k};save(false);setTimeout(()=>toast('Đã nhận kết nối sheet'),400)}history.replaceState(null,'',location.pathname+location.search)}
+/* ===== khoá 6 số ===== */
+let lockMode=null,pinBuf='',pinFirst='',lockBusy=false,hiddenAt=0,idleT=null;
+function lockState(){if(K)return null;if(localBox||cloudBox)return 'unlock';if(!cloudChecked)return 'wait';return 'create'}
+function showLock(mode){lockMode=mode||lockState();pinBuf='';drawLock();$('#lock').hidden=false}
+function drawLock(msg,bad){
+ const T={unlock:['Nhập mật khẩu','Mật khẩu 6 số của Ngân hàng Mintun'],create:['Tạo mật khẩu 6 số','Dùng để mở app và toà Ngân hàng trong Học viện. Dữ liệu được mã hoá bằng mật khẩu này.'],confirm:['Nhập lại mật khẩu','Nhập lại 6 số vừa tạo'],change1:['Mật khẩu mới','Nhập 6 số mới'],change2:['Nhập lại mật khẩu mới',''],wait:['Đang kiểm tra tài khoản…','']}[lockMode]||['',''];
+ const w=VA.wait();const wm=w?'Sai nhiều lần, thử lại sau '+Math.ceil(w/1000)+' giây':'';
+ $('#lockIn').innerHTML=`<img src="icon-192.png" alt=""><h2>${T[0]}</h2><p class="lsub">${esc(T[1])}</p>
+ <div class="pdots${bad?' shake':''}">${[0,1,2,3,4,5].map(i=>`<i class="${i<pinBuf.length?'on':''}"></i>`).join('')}</div>
+ <p class="lmsg">${esc(msg||wm||(lockBusy?'Đang mở két…':''))}</p>
+ ${lockMode==='wait'?'':`<div class="pad">${[1,2,3,4,5,6,7,8,9].map(n=>`<button data-pin="${n}">${n}</button>`).join('')}<button data-pin="x" class="sm">${lockMode==='unlock'?'Quên?':lockMode==='change1'||lockMode==='change2'?'Huỷ':''}</button><button data-pin="0">0</button><button data-pin="b" class="sm" aria-label="Xoá">⌫</button></div>`}`;
+}
+async function pinDone(){
+ const pin=pinBuf;pinBuf='';
+ if(lockMode==='create'||lockMode==='change1'){pinFirst=pin;lockMode=lockMode==='create'?'confirm':'change2';drawLock();return}
+ if(lockMode==='confirm'||lockMode==='change2'){if(pin!==pinFirst){lockMode=lockMode==='confirm'?'create':'change1';drawLock('Hai lần nhập không khớp, làm lại nhé',true);return}
+  lockBusy=true;drawLock();const chg=lockMode==='change2';K=await VA.make(pin);lockBusy=false;
+  if(!chg){Object.assign(ST,blank(),cloudLegacy?{cfg:cloudLegacy.cfg||ST.cfg,goals:cloudLegacy.goals||[],map:cloudLegacy.map||{}}:{},legacy||{});legacy=null;cloudLegacy=null}
+  save();$('#lock').hidden=true;lockMode=null;build();render();toast(chg?'Đã đổi mật khẩu':'Đã tạo mật khẩu. Nhớ kỹ 6 số này nha!');armIdle();
+  if(!chg&&(DEMO||ST.cfg.url&&ST.cfg.key)&&!ST.doc)refresh(true);return}
+ if(lockMode==='unlock'){
+  if(VA.wait()){drawLock();return}
+  lockBusy=true;drawLock();
+  try{await unlockWith(pin);VA.ok();lockBusy=false;$('#lock').hidden=true;lockMode=null;build();render();armIdle();if(wantAdd&&M)setTimeout(()=>openAdd(),300);
+   if((DEMO||ST.cfg.url&&ST.cfg.key)&&(!ST.sync||Date.now()-ST.sync>6*36e5))refresh(true);else if(M)pushCloud()}
+  catch(e){lockBusy=false;const t=VA.fail();drawLock(t.until>Date.now()?'':'Sai mật khẩu ('+t.n+' lần)',true)}}}
+async function unlockWith(pin){
+ const useCloud=cloudBox&&(!localBox||cloudBox.salt!==localBox.salt||(cloudBox.upd||0)>=(localBox.upd||0));
+ let base=null,data=blank();
+ if(useCloud){base=await VA.unlock(pin,cloudBox);const c=base.data;Object.assign(data,{cfg:c.cfg||data.cfg,goals:c.goals||[],map:c.map||{},upd:cloudBox.upd||0});
+  if(localBox){try{const l=localBox.salt===cloudBox.salt?{data:await VA.open(base.k,localBox)}:await VA.unlock(pin,localBox);Object.assign(data,{doc:l.data.doc,sync:l.data.sync,pending:l.data.pending||[],recent:l.data.recent||{}})}catch(e){localStorage.removeItem(LSV);localBox=null}}}
+ else{base=await VA.unlock(pin,localBox);Object.assign(data,base.data)}
+ K=base.k;ST=data;if(useCloud)saveLocal()}
+function lockNow(){if(!K&&!$('#lock').hidden)return;K=null;ST=blank();M=null;closeSheet();$('#view').innerHTML='';showLock('unlock')}
+function armIdle(){clearTimeout(idleT);if(K)idleT=setTimeout(lockNow,10*60e3)}
+['pointerdown','keydown','scroll'].forEach(ev=>document.addEventListener(ev,()=>{if(K)armIdle()},{passive:true,capture:true}));
+document.addEventListener('visibilitychange',()=>{if(document.hidden)hiddenAt=Date.now();else{if(K&&hiddenAt&&Date.now()-hiddenAt>3*60e3)lockNow();$('#dueDot').hidden=!isDue()}});
+function pinKey(k){if($('#lock').hidden||lockBusy||lockMode==='wait')return;
+ if(k==='b'){pinBuf=pinBuf.slice(0,-1);drawLock();return}
+ if(k==='x'){if(lockMode==='change1'||lockMode==='change2'){$('#lock').hidden=true;lockMode=null;return}if(lockMode==='unlock')forgot();return}
+ if(lockMode==='unlock'&&VA.wait())return drawLock();
+ if(pinBuf.length<6){pinBuf+=k;drawLock();if(pinBuf.length===6)setTimeout(pinDone,120)}}
+$('#lock').addEventListener('click',e=>{const b=e.target.closest('[data-pin]');if(b)pinKey(b.dataset.pin)});
+document.addEventListener('keydown',e=>{if($('#lock').hidden)return;if(/^\d$/.test(e.key))pinKey(e.key);else if(e.key==='Backspace')pinKey('b')});
+async function forgot(){
+ if(!confirm('Quên mật khẩu: dữ liệu đã mã hoá (link kết nối, mục tiêu, nhóm hạng mục) sẽ bị xoá để tạo mật khẩu mới. Sổ thu chi trên Google Sheet KHÔNG bị ảnh hưởng. Tiếp tục?'))return;
+ if(!DEMO&&!(fb&&ref))return toast('Đăng nhập Google trước rồi mới đặt lại được');
+ if(!confirm('Chắc chắn xoá và đặt mật khẩu mới?'))return;
+ localStorage.removeItem(LSV);localBox=null;cloudBox=null;cloudLegacy=null;VA.ok();
+ if(fb&&ref)try{await fb.fs.setDoc(ref,{money:JSON.stringify({v:0,reset:Date.now()})},{merge:true})}catch(e){}
+ showLock('create')}
 
-/* ===== Firebase: cùng tài khoản với Học viện ===== */
+/* ===== Firebase: cùng tài khoản với Học viện, dữ liệu tài chính lưu dạng mã hoá ===== */
 let fb=null,user=null,ref=null;
-async function pushCloud(){if(!fb||!ref||DEMO)return;const sum=M?F.summary(M,ST.goals,ST.sync):null;
- const money={v:1,upd:ST.upd,cfg:ST.cfg,goals:ST.goals,map:ST.map,sum};
- try{await fb.fs.setDoc(ref,{money:JSON.stringify(money)},{merge:true})}catch(e){console.warn('cloud',e)}}
-function adoptCloud(s){if(!s)return;let m;try{m=JSON.parse(s)}catch(e){return}if(!m||m.v!==1)return;
- if((m.upd||0)>(ST.upd||0)){if(m.cfg&&m.cfg.url)ST.cfg=m.cfg;ST.goals=m.goals||[];ST.map=m.map||{};ST.upd=m.upd;saveLocal();build();render();if(!ST.doc&&ST.cfg.url)refresh(true)}
- else if((ST.upd||0)>(m.upd||0))pushCloud()}
-build();
-if(DEMO){$('#gate').hidden=true;render();if(!ST.doc)refresh(true)}
+async function pushCloud(){if(!fb||!ref||DEMO||!K)return;const sum=M?F.summary(M,ST.goals,ST.sync):null;
+ try{const box=await VA.seal(K,{cfg:ST.cfg,goals:ST.goals,map:ST.map,sum},{upd:ST.upd,sync:ST.sync||0});await fb.fs.setDoc(ref,{money:JSON.stringify(box)},{merge:true});cloudBox=box}catch(e){console.warn('cloud',e)}}
+async function adoptCloud(s){let m=null;try{m=JSON.parse(s||'null')}catch(e){}
+ cloudChecked=true;
+ if(m&&m.v===2)cloudBox=m;else if(m&&m.v===1)cloudLegacy=m;
+ if(K){if(m&&m.v===2&&(m.upd||0)>(ST.upd||0)){try{const c=await VA.open(K,m);ST.cfg=c.cfg||ST.cfg;ST.goals=c.goals||[];ST.map=c.map||{};ST.upd=m.upd;saveLocal();build();render()}catch(e){lockNow()}}else if((ST.upd||0)>((m&&m.upd)||0))pushCloud();return}
+ if(!$('#lock').hidden||lockMode)showLock(lockState())}
+if(DEMO){$('#gate').hidden=true;showLock()}
 else{
- if(ST.doc)$('#gate').hidden=true;
- render();
+ if(localBox)$('#gate').hidden=true;
+ showLock();
  (async()=>{try{const b='https://www.gstatic.com/firebasejs/13.3.0/';const [app,auth,fs]=await Promise.all([import(b+'firebase-app.js'),import(b+'firebase-auth.js'),import(b+'firebase-firestore.js')]);
   const a=app.initializeApp(FBCFG);fb={auth,fs,A:auth.getAuth(a),D:fs.getFirestore(a)};
   auth.onAuthStateChanged(fb.A,async u=>{user=u;if(u){ref=fs.doc(fb.D,'users',u.uid);$('#gate').hidden=true;
-    try{const sn=await fs.getDoc(ref);adoptCloud(sn.exists()?sn.data().money:null)}catch(e){}
-    if(ST.cfg.url&&ST.cfg.key&&(!ST.sync||Date.now()-ST.sync>6*36e5))refresh(true);else if(M)pushCloud()}
-   else{ref=null;if(!ST.doc)$('#gate').hidden=false}});
+    try{const sn=await fs.getDoc(ref);await adoptCloud(sn.exists()?sn.data().money:null)}catch(e){cloudChecked=true;if(lockMode)showLock(lockState())}}
+   else{ref=null;if(!localBox)$('#gate').hidden=false}});
   $('#signin').onclick=()=>auth.signInWithPopup(fb.A,new auth.GoogleAuthProvider()).catch(e=>{if(/popup/.test(e.code||''))auth.signInWithRedirect(fb.A,new auth.GoogleAuthProvider());else $('#gateMsg').textContent='Đăng nhập lỗi: '+(e.code||e)})}
- catch(e){$('#gateMsg').textContent='Không tải được Firebase, kiểm tra mạng.'}})();
+ catch(e){$('#gateMsg').textContent='Không tải được Firebase, kiểm tra mạng.';cloudChecked=true;if(lockMode)showLock(lockState())}})();
 }
-if(new URLSearchParams(location.search).get('add')&&M)setTimeout(()=>openAdd(),300);
+const wantAdd=new URLSearchParams(location.search).get('add');
 let rzT;window.addEventListener('resize',()=>{clearTimeout(rzT);rzT=setTimeout(()=>{if(M&&!$('#sheet').classList.contains('on'))render()},250)});
-window.addEventListener('online',()=>{if(ST.pending.length)refresh(true)});
-document.addEventListener('visibilitychange',()=>{if(!document.hidden){$('#dueDot').hidden=!isDue()}});
+window.addEventListener('online',()=>{if(K&&ST.pending.length)refresh(true)});
 if('serviceWorker' in navigator&&!DEMO)navigator.serviceWorker.register('sw.js').catch(()=>{});
 
 /* ===== chế độ xem thử (?demo=1): đọc file demo cục bộ, không có trên GitHub ===== */

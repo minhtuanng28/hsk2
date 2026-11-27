@@ -35,9 +35,21 @@ Muốn kiểm tra: chạy hàm `thuDoc`. Nhật ký sẽ báo số dòng, số g
 ## Bước 4: Dán vào app
 
 1. Mở **minhtuanng28.github.io/hsk2/finance/**, đăng nhập Google (cùng tài khoản Học viện).
-2. Bấm bánh răng **Cài đặt** → dán URL và APP_KEY → **Lưu và cập nhật**.
-3. Kết nối được lưu vào tài khoản Google của bạn (Firebase), nên Học viện và máy khác đăng nhập cùng tài khoản sẽ tự có.
-   Muốn điền nhanh trên điện thoại: Cài đặt → **Copy link cài nhanh cho máy khác**.
+2. Lần đầu app yêu cầu **tạo mật khẩu 6 số** (nhập 2 lần). Mật khẩu này do bạn tự đặt, không ai khác biết, kể cả Claude.
+3. Bấm bánh răng **Cài đặt** → dán URL và APP_KEY → **Lưu và cập nhật**.
+4. Máy khác (điện thoại, iPad) chỉ cần đăng nhập cùng tài khoản Google rồi nhập mật khẩu 6 số là có đủ kết nối, mục tiêu.
+
+## Mật khẩu 6 số
+
+- Link Apps Script, APP_KEY, mục tiêu, bản sao sổ thu chi đều được **mã hoá (AES-256)** bằng khoá suy ra từ mật khẩu trước khi lưu vào máy và Firebase.
+  Không có mật khẩu thì người mở được máy hay tài khoản cũng không đọc được số liệu.
+- App và toà Ngân hàng Mintun trong Học viện đều hỏi mật khẩu. App **tự khoá** khi rời app quá 3 phút hoặc 10 phút không thao tác;
+  Học viện tự khoá khi chuyển tab hoặc đóng bảng quá 3 phút. Nút ổ khoá trên đầu app để khoá ngay.
+- Nhập sai 5 lần phải chờ 30 giây, sai tiếp thì thời gian chờ tăng gấp đôi (tối đa 15 phút).
+- **Đổi mật khẩu:** Cài đặt → Đổi mật khẩu. Máy khác dùng mật khẩu mới ngay.
+- **Quên mật khẩu:** bấm "Quên?" ở màn hình khoá. Link kết nối và mục tiêu bị xoá để đặt mật khẩu mới (sheet thu chi không ảnh hưởng);
+  dán lại link + APP_KEY (chạy `caiDat` để xem lại mã) và tạo lại mục tiêu.
+- Lưu ý: 6 số là khoá chống người khác xem trộm trên máy/tài khoản của bạn. Đừng dùng lại mật khẩu ngân hàng thật.
 
 ## Dùng hằng ngày
 

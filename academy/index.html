@@ -320,6 +320,8 @@ body.eco #hud-tl,body.eco #pomo,body.eco .ib,body.eco #dockbtn,body.eco #dockgri
 .bk .bkl{display:flex;flex-wrap:wrap;gap:3px 12px;font-size:11px;color:var(--mute);margin-top:4px}.bk .bkl span::before{content:"";display:inline-block;width:9px;height:9px;border-radius:2px;background:var(--k);margin-right:5px;vertical-align:-1px}
 .bk .bkr{display:grid;grid-template-columns:1fr auto;gap:2px 10px;font-size:13px;padding:6px 0;border-top:1px solid var(--line)}.bk .bkr:first-of-type{border-top:0}.bk .bkr b{font-variant-numeric:tabular-nums}
 .bk .bkp{grid-column:1/-1;height:7px;border-radius:5px;background:var(--chip);overflow:hidden}.bk .bkp u{display:block;height:100%;background:#00a383;border-radius:5px}
+.bk .bkpin{text-align:center;padding:10px 0}.bk .bkdots{display:flex;justify-content:center;gap:12px;margin:8px 0}.bk .bkdots i{width:13px;height:13px;border-radius:50%;border:2px solid var(--mute)}.bk .bkdots i.on{background:#c9930e;border-color:#c9930e}
+.bk .bkmsg{color:#e5484d;font-size:12.5px;min-height:18px;margin:6px 0}.bk .bkpad{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;max-width:260px;margin:0 auto}.bk .bkpad button{height:52px;border-radius:16px;border:1px solid var(--line);background:var(--solid);font-size:21px;font-weight:600;cursor:pointer}
 .bk .bkdue{border-radius:12px;padding:9px 12px;background:rgba(229,72,77,.12);color:#e5484d;font-size:12.5px;font-weight:600;margin-top:10px}
 .fhero{border:1px solid var(--line);border-radius:16px;padding:14px;background:linear-gradient(135deg,rgba(31,158,106,.12),rgba(47,95,208,.06))}.fin .fhero h3{margin:0 0 6px;font-size:16px}.fin .fhero p{margin:0;font-size:13px;line-height:1.5}
 .fweeks{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:12px}.fweeks div{border-left:4px solid var(--k);background:var(--chip);border-radius:10px;padding:7px 9px}.fweeks b{display:block;font-size:11px;color:var(--k)}.fweeks span{font-size:12.5px;font-weight:700}
@@ -652,7 +654,7 @@ if(!ON_PAGES)(async()=>{try{
 /* Google (Firebase) sync: same account as the HSK app */
 const FBCFG={apiKey:"AIzaSyCzG2TNB2fwUSUDycsxQ8a2D1GaWzVHl28",authDomain:"hsk-app-f5201.firebaseapp.com",projectId:"hsk-app-f5201",storageBucket:"hsk-app-f5201.firebasestorage.app",messagingSenderId:"278418991443",appId:"1:278418991443:web:9cb95ad3a99e01b7ae59a6"};
 let fb=null,fbFail=false,HSK=null,hskAt=0,acctMsg='',gateBypass=false;
-let MONEY=null,bankBusy=false,bankSaidKey='';const BANK_URL='../finance/',BF=()=>window.MintunFin,bSh=n=>BF()?BF().short(n):String(Math.round(n||0));
+let MONEY=null,MBOX=null,BK_K=null,bankPin='',bankPinMsg='',bankOpenAt=0,bankBusy=false,bankSaidKey='';const BANK_URL='../finance/',BF=()=>window.MintunFin,bSh=n=>BF()?BF().short(n):String(Math.round(n||0));
 function gateUI(){const g=$('#gate');if(!ON_PAGES||gateBypass){g.classList.remove('on');return}const on=!fb?!fbFail:!fb.user;g.classList.toggle('on',on||(!fb&&!fbFail));
  const m=$('#gateMsg');if(fbFail){g.classList.add('on');m.innerHTML=`<button class="btn" id="gateOff" style="margin-top:6px">${t('gateOffline')}</button>`}else m.textContent=acctMsg}
 async function fbInit(){
@@ -671,7 +673,7 @@ async function fbPull(first){
   const snap=await fb.fs.getDoc(ref);
   const d=snap.exists()?snap.data():{};
   try{HSK=JSON.parse(d.s||'null')}catch(e){HSK=null}hskAt=Date.now();afterHsk();
-  try{const mn=JSON.parse(d.money||'null');if(mn&&mn.v===1){MONEY=mn;bankChanged()}}catch(e){}
+  try{const mn=JSON.parse(d.money||'null');if(mn&&mn.v===2){if(!MBOX||mn.upd!==MBOX.upd||mn.sync!==MBOX.sync){MBOX=mn;if(BK_K&&mn.salt===BK_K.salt)BF&&window.MintunVault.open(BK_K,mn).then(x=>{MONEY=x;bankChanged()}).catch(()=>bankLock());else bankLock()}else bankChanged()}else if(mn&&mn.v===1){MONEY=mn;bankChanged()}else{MBOX=null;MONEY=null;bankChanged()}}catch(e){}
   cloud={set:x=>fb.fs.runTransaction(fb.D,async tx=>{
     const sn=await tx.get(ref);const dd=sn.exists()?sn.data():{};
     let st=null;if(dd.s){st=JSON.parse(dd.s);if(!st||st.v!==1)throw new Error('hsk-state')}
@@ -2488,6 +2490,8 @@ panel.addEventListener('click',e=>{
   case 'qCard':{const ti=(st.q||'').trim();if(!ti)return;S.plan.cards.push({id:uid(),t:ti,p:'',g:TAGS[0],due:'',col:'todo'});save();updateTags();openPanel({kind:'plan',tab:'board'});break}
   case 'qPage':{const ti=(st.q||'').trim();if(!ti)return;const pg=newPage('',ti);openPanel({kind:'plan',tab:'pages',page:pg.id});break}
   case 'bankUpd':bankRefresh();break;
+  case 'bankPin':bankPinKey(b.dataset.v);break;
+  case 'bankLock':bankLock();break;
   case 'bankOpen':window.open(BANK_URL+(b.dataset.q||''),'mintun-bank');break;
   case 'crmOpen':{const u=safeUrl(S.settings.crmUrl);if(u)window.open(u,'tuan-crm','width=1280,height=860');break}
   case 'crmEmbed':S.settings.crmEmbed=!S.settings.crmEmbed;done();break;
@@ -3238,20 +3242,22 @@ function finKiosk(r){
 }
 /* ===== Ngân hàng Mintun: tóm tắt tài chính (dữ liệu lấy từ app /finance, đọc Google Sheet qua Apps Script) ===== */
 function bankMilestone(){const n=new Date();return new Date(n.getFullYear(),n.getMonth(),n.getDate()>=16?16:1).getTime()}
-function bankDue(){const s=MONEY&&MONEY.sum;return !!(MONEY&&MONEY.cfg&&MONEY.cfg.url)&&(!s||!s.sync||s.sync<bankMilestone())}
-function bankTag(){const s=MONEY&&MONEY.sum;if(!MONEY||!MONEY.cfg||!MONEY.cfg.url)return V('Chưa kết nối sổ thu chi','Not connected yet');if(!s)return V('Bấm để cập nhật','Tap to update');
+function bankLocked(){return !!MBOX&&!MONEY}
+function bankLock(){MONEY=null;BK_K=null;bankPin='';bankChanged()}
+function bankDue(){if(bankLocked())return !MBOX.sync||MBOX.sync<bankMilestone();const s=MONEY&&MONEY.sum;return !!(MONEY&&MONEY.cfg&&MONEY.cfg.url)&&(!s||!s.sync||s.sync<bankMilestone())}
+function bankTag(){if(bankLocked())return V('Đã khoá · bấm để mở','Locked · tap to open');const s=MONEY&&MONEY.sum;if(!MONEY||!MONEY.cfg||!MONEY.cfg.url)return V('Chưa kết nối sổ thu chi','Not connected yet');if(!s)return V('Bấm để cập nhật','Tap to update');
  return V(`T${s.month} · ${s.free>=0?'dư':'hụt'} ${bSh(Math.abs(s.free))} · tích lũy ${Math.round(s.rate*100)}%`,`${s.month} · saved ${Math.round(s.rate*100)}%`)}
 function bankTipOfDay(){const s=MONEY&&MONEY.sum;if(!s||!s.tips||!s.tips.length)return '';const n=Math.min(8,s.tips.length),d=BF()?BF().dayNo():Math.floor(Date.now()/864e5);return s.tips[d%n]}
 function bankTip(){if(L!=='vi')return '';if(bankDue()&&Math.random()<.5){const d=new Date().getDate();return d===1||d===16?'Hôm nay là mốc chốt sổ: điền sheet thu chi rồi bấm Cập nhật ở Ngân hàng Mintun nha':'Sổ thu chi chưa cập nhật từ mốc gần nhất, ghé Ngân hàng Mintun bấm Cập nhật nha'}return bankTipOfDay()}
 function bankChanged(){try{updateTags()}catch(e){}drawBankBoard();if(panelState&&panelState.kind==='bank')renderPanel();
  const k='bank'+dkey(new Date());if(bankSaidKey!==k&&MONEY&&MONEY.sum&&new Date().getHours()>=8){bankSaidKey=k;const t=bankTipOfDay();if(t)setTimeout(()=>{try{catSay(t,12000)}catch(e){}},20000)}}
 async function bankRefresh(){
- const F=BF();if(!MONEY||!MONEY.cfg||!MONEY.cfg.url){window.open(BANK_URL,'mintun-bank');return}
+ const F=BF();if(!MONEY||!MONEY.cfg||!/^https:\/\/script\.google\.com\/macros\/s\/[\w-]+\/exec$/.test(MONEY.cfg.url||'')){window.open(BANK_URL,'mintun-bank');return}
  if(!F){toast(V('Chưa tải được bộ phân tích','Analyzer not loaded'));return}
  if(bankBusy)return;bankBusy=true;if(panelState&&panelState.kind==='bank')renderPanel();
- try{const r=await fetch(MONEY.cfg.url,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({key:MONEY.cfg.key,action:'doc'})});const j=await r.json();if(!j.ok)throw new Error(j.loi||'error');
+ try{const r=await fetch(MONEY.cfg.url,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({key:MONEY.cfg.key,action:'doc',moi:true})});const j=await r.json();if(!j.ok)throw new Error(j.loi||'error');
   const M2=F.parse(j,MONEY.map||{});MONEY.sum=F.summary(M2,MONEY.goals||[],Date.now());
-  if(fb&&fb.user)await fb.fs.setDoc(fb.fs.doc(fb.D,'users',fb.user.uid),{money:JSON.stringify(MONEY)},{merge:true});
+  if(fb&&fb.user&&BK_K&&MBOX){const box=await window.MintunVault.seal(BK_K,MONEY,{upd:MBOX.upd||0,sync:MONEY.sum.sync});await fb.fs.setDoc(fb.fs.doc(fb.D,'users',fb.user.uid),{money:JSON.stringify(box)},{merge:true});MBOX=box}
   toast(V('Đã cập nhật sổ thu chi','Ledger updated'))}
  catch(e){toast(V('Cập nhật lỗi: ','Update failed: ')+String(e&&e.message||e).slice(0,80))}
  bankBusy=false;bankChanged()}
@@ -3265,7 +3271,22 @@ function bankChart(h){if(!h||!h.length)return '';const W=400,H=130,pl=34,pb=16,p
   pts.push(x.toFixed(1)+' '+y(m.inc).toFixed(1));if(k%2===n%2-1||n<8)s+=`<text x="${x}" y="${H-3}" text-anchor="middle">${esc(m.l.replace(/\/20(\d\d)/,'/$1'))}</text>`});
  s+=`<path d="M${pts.join('L')}" fill="none" stroke="#338ced" stroke-width="2"/>`;
  return `<div class="bkc"><svg viewBox="0 0 ${W} ${H}">${s}</svg></div><div class="bkl"><span style="--k:#338ced">${V('Thu nhập','Income')}</span><span style="--k:#e76624">${V('Chi tiêu','Spending')}</span><span style="--k:#00a888">${V('Tích lũy','Saved')}</span></div>`}
-function bankPanel(){const r=RM.bank,s=MONEY&&MONEY.sum,con=MONEY&&MONEY.cfg&&MONEY.cfg.url;
+function bankPinPad(){const r=RM.bank,VA=window.MintunVault,w=VA?VA.wait():0;
+ return head(r.hex,r.short,tr(r.title),V('Nhập mật khẩu 6 số để xem','Enter your 6-digit PIN'))+`<div class="pb bk" style="--c:${r.hex}"><div class="bkpin">
+  <div class="bkdots">${[0,1,2,3,4,5].map(i=>`<i class="${i<bankPin.length?'on':''}"></i>`).join('')}</div>
+  <p class="bkmsg">${esc(w?V('Sai nhiều lần, thử lại sau ','Too many tries, wait ')+Math.ceil(w/1000)+'s':bankPinMsg)}</p>
+  <div class="bkpad">${[1,2,3,4,5,6,7,8,9,'',0,'⌫'].map(n=>n===''?'<span></span>':`<button data-act="bankPin" data-v="${n}">${n}</button>`).join('')}</div>
+  <p class="note">${V('Quên mật khẩu? Mở app Ngân hàng Mintun để đặt lại.','Forgot it? Reset in the Mintun Bank app.')} <a href="${BANK_URL}" target="_blank" rel="noopener">↗</a></p></div></div>`}
+async function bankPinKey(v){const VA=window.MintunVault;if(!VA||!MBOX||bankBusy)return;if(VA.wait()){renderPanel();return}
+ if(v==='⌫'){bankPin=bankPin.slice(0,-1);renderPanel();return}if(bankPin.length>=6)return;bankPin+=v;bankPinMsg='';renderPanel();
+ if(bankPin.length<6)return;const pin=bankPin;bankBusy=true;bankPinMsg=V('Đang mở két…','Unlocking…');renderPanel();
+ try{const r=await VA.unlock(pin,MBOX);VA.ok();BK_K=r.k;MONEY=r.data;bankOpenAt=Date.now();bankPin='';bankPinMsg=''}
+ catch(e){const t=VA.fail();bankPin='';bankPinMsg=t.until>Date.now()?'':V('Sai mật khẩu','Wrong PIN')+' ('+t.n+')'}
+ bankBusy=false;bankChanged()}
+document.addEventListener('keydown',e=>{if(panelState&&panelState.kind==='bank'&&bankLocked()&&!/INPUT|TEXTAREA/.test((e.target||{}).tagName||'')){if(/^\d$/.test(e.key)){e.preventDefault();bankPinKey(e.key)}else if(e.key==='Backspace')bankPinKey('⌫')}});
+document.addEventListener('visibilitychange',()=>{if(document.hidden&&MBOX&&MONEY)bankLock()});
+setInterval(()=>{if(MBOX&&MONEY&&!(panelState&&panelState.kind==='bank')&&Date.now()-bankOpenAt>3*60e3)bankLock()},20e3);
+function bankPanel(){if(bankLocked())return bankPinPad();const r=RM.bank,s=MONEY&&MONEY.sum,con=MONEY&&MONEY.cfg&&MONEY.cfg.url;bankOpenAt=Date.now();
  const sub=s?V('Cập nhật ','Updated ')+new Date(s.sync||s.at).toLocaleString(L==='vi'?'vi-VN':'en-GB',{hour:'2-digit',minute:'2-digit',day:'2-digit',month:'2-digit'}):V('Tiền vào từ đâu, đi đâu, mục tiêu tới đâu','Where money comes from and goes');
  let h=head(r.hex,r.short,tr(r.title),sub)+`<div class="pb bk" style="--c:${r.hex}">`;
  if(!con){h+=`<div class="bkcat">${BANK_CAT}<div><b>Bắp</b><p>${V('Bắp chưa đọc được sổ thu chi. Mở app Ngân hàng Mintun, vào Cài đặt dán link Apps Script và mã kết nối là xong.','Open the Mintun Bank app and connect your Google Sheet in Settings.')}</p></div></div>
@@ -3281,7 +3302,7 @@ function bankPanel(){const r=RM.bank,s=MONEY&&MONEY.sum,con=MONEY&&MONEY.cfg&&MO
   if(s.goals&&s.goals.length)h+=`<h4>${V('Mục tiêu','Goals')}</h4>`+s.goals.map(g=>`<div class="bkr"><span>${esc(g.n)} <small style="color:var(--mute)">${g.kind==='dai'?V('dài hạn','long'):V('ngắn hạn','short')}</small></span><b>${bSh(g.cur)} / ${bSh(g.target)}</b><div class="bkp"><u style="width:${Math.round(Math.min(1,g.p)*100)}%"></u></div></div>`).join('');
   else h+=`<p class="note">${V('Chưa có mục tiêu. Đặt mục tiêu ngắn hạn và dài hạn trong app.','No goals yet.')}</p>`}
  h+=`<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:14px"><button class="btn" data-act="bankUpd" ${bankBusy?'disabled':''}>${bankBusy?V('Đang đọc sheet…','Reading…'):V('Cập nhật','Update')}</button><button class="btn" data-act="bankOpen" data-q="?add=1&tab=log">${V('+ Ghi thu chi','+ Add entry')}</button></div>
-  <button class="btn pri" data-act="bankOpen" style="width:100%;margin-top:8px">${V('Mở app chi tiết','Open full app')} ↗</button></div>`;
+  <button class="btn pri" data-act="bankOpen" style="width:100%;margin-top:8px">${V('Mở app chi tiết','Open full app')} ↗</button>${MBOX?`<button class="btn" data-act="bankLock" style="width:100%;margin-top:8px">${V('Khoá lại','Lock')}</button>`:''}</div>`;
  return h}
 function bankKiosk(r){
  const g=new THREE.Group(),gold='#d4a017',wall=LIB?'#efe3c8':'#f3ecdc',stone=LIB?'#d8c9a8':'#ddd4c2';
@@ -3302,7 +3323,8 @@ function bankKiosk(r){
 function drawBankBoard(){const r=RM.bank;if(!r||!r.bcv)return;const c=r.bcv,x=c.getContext('2d'),W=c.width,H=c.height,s=MONEY&&MONEY.sum;
  x.fillStyle='#10161e';x.fillRect(0,0,W,H);x.fillStyle='#f2c14e';x.font='800 22px "Be Vietnam Pro",sans-serif';x.fillText('MINTUN BANK',14,32);
  x.font='600 15px "Be Vietnam Pro",sans-serif';
- if(!s){x.fillStyle='#a8b3c0';x.fillText(MONEY&&MONEY.cfg&&MONEY.cfg.url?'Bấm để cập nhật':'Chưa kết nối sheet',14,70)}
+ if(bankLocked()){x.fillStyle='#a8b3c0';x.fillText('Đã khoá',14,70);x.fillText('Nhập mật khẩu 6 số',14,96);x.fillText('để xem sổ thu chi',14,120)}
+ else if(!s){x.fillStyle='#a8b3c0';x.fillText(MONEY&&MONEY.cfg&&MONEY.cfg.url?'Bấm để cập nhật':'Chưa kết nối sheet',14,70)}
  else{x.fillStyle='#a8b3c0';x.fillText('Tháng '+s.month,14,60);
   const row=(l,v,c2,yy)=>{x.fillStyle='#a8b3c0';x.font='600 15px "Be Vietnam Pro",sans-serif';x.fillText(l,14,yy);x.fillStyle=c2;x.font='800 18px "Be Vietnam Pro",sans-serif';x.textAlign='right';x.fillText(v,W-14,yy);x.textAlign='left'};
   row('Thu',bSh(s.inc),'#6aabf1',90);row('Chi',bSh(s.spend),'#f2a073',116);row('Tích lũy',Math.round(s.rate*100)+'%','#3fd3b0',142);row(s.free>=0?'Dư':'Hụt',bSh(s.free),'#e6e9ee',168)}

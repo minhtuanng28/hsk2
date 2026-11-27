@@ -55,10 +55,17 @@ function doGet() { return json_({ ok: true, app: 'ngan-hang-mintun' }); }
 function doPost(e) {
   let p = {};
   try { p = JSON.parse(e.postData.contents); } catch (_) { }
-  if (!khopKey_(p.key)) { Utilities.sleep(900); return json_({ ok: false, loi: 'Sai mã kết nối' }); }
+  const cache = CacheService.getScriptCache();
+  const fails = Number(cache.get('fails') || 0);
+  if (fails >= 20) return json_({ ok: false, loi: 'Tạm khoá 15 phút do nhập sai mã quá nhiều lần' });
+  if (!khopKey_(p.key)) {
+    cache.put('fails', String(fails + 1), 900);
+    Utilities.sleep(1200);
+    return json_({ ok: false, loi: 'Sai mã kết nối' });
+  }
   try {
     switch (p.action) {
-      case 'doc': return json_(Object.assign({ ok: true }, docTatCa_()));
+      case 'doc': return json_(Object.assign({ ok: true }, docTatCa_(!!p.moi)));
       case 'them': return json_(Object.assign({ ok: true }, them_(p.gd || {})));
       case 'xoa': return json_(Object.assign({ ok: true }, xoa_(String(p.id || ''))));
       default: return json_({ ok: false, loi: 'Không rõ thao tác' });
@@ -78,7 +85,7 @@ function khopKey_(k) {
 
 /* ============================ ĐỌC ============================ */
 
-function docTatCa_() {
+function docTatCa_(moi) {
   const sh = tabThuChi_();
   const rg = sh.getDataRange();
   const raw = rg.getValues().map(r => r.map(v => v instanceof Date ? { d: Utilities.formatDate(v, TZ, 'yyyy-MM-dd') } : v));
@@ -87,11 +94,20 @@ function docTatCa_() {
     values: raw,
     display: rg.getDisplayValues(),
     notes: rg.getNotes(),
-    comments: docComment_(),
+    comments: docCommentCache_(moi),
     gd: docLog_(),
     at: new Date().toISOString(),
     file: SpreadsheetApp.getActiveSpreadsheet().getName()
   };
+}
+
+/** Comment đọc qua Drive API khá chậm: giữ 6 giờ, bấm "Cập nhật" (moi=true) thì đọc lại. */
+function docCommentCache_(moi) {
+  const c = CacheService.getScriptCache();
+  if (!moi) { const s = c.get('cmt'); if (s) try { return JSON.parse(s); } catch (_) { } }
+  const out = docComment_();
+  try { const s = JSON.stringify(out); if (s.length < 95000) c.put('cmt', s, 21600); } catch (_) { }
+  return out;
 }
 
 /** Comment trên Sheet (không bắt buộc). App tự dò comment thuộc ô nào qua giá trị ô + ngày tạo. */
@@ -138,8 +154,9 @@ function them_(g) {
   const hm = String(g.hang_muc || '').trim();
   if (!hm) throw new Error('Thiếu hạng mục');
   const ts = g.ts ? new Date(g.ts) : new Date();
-  if (isNaN(ts)) throw new Error('Ngày giờ không hợp lệ');
-  const note = String(g.ghi_chu || '').slice(0, 200);
+  if (isNaN(ts) || Math.abs(ts - Date.now()) > 3 * 365 * 864e5) throw new Error('Ngày giờ không hợp lệ');
+  const note = String(g.ghi_chu || '').replace(/[\u0000-\u001f]/g, ' ').slice(0, 200);
+  const an = s => /^[=+\-@]/.test(s) ? "'" + s : s;   // chặn chữ bị Sheet hiểu thành công thức
 
   const lock = LockService.getScriptLock();
   lock.waitLock(20000);
@@ -159,7 +176,7 @@ function them_(g) {
     const old = cell.getNote();
     cell.setNote(old ? old + '\n' + line : line);
 
-    log.appendRow([id, ts, loai, hm, amt, note, (ts.getMonth() + 1) + '/' + ts.getFullYear(), cell.getA1Notation(), 'ok', new Date()]);
+    log.appendRow([id, ts, loai, an(hm), amt, an(note), (ts.getMonth() + 1) + '/' + ts.getFullYear(), cell.getA1Notation(), 'ok', new Date()]);
     return { id, o: cell.getA1Notation(), thang: (ts.getMonth() + 1) + '/' + ts.getFullYear() };
   } finally { lock.releaseLock(); }
 }
