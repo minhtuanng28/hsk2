@@ -13,6 +13,7 @@
  *   them      → { gd:{ ts, loai:'thu'|'chi', hang_muc, so_tien, ghi_chu } } cộng vào ô tháng + ghi chú ô + ghi nhật ký
  *   xoa       → { id } trừ lại khoản đã ghi từ app
  *   gia       → { ma:[{ma:'FPT',loai:'cp'|'quy'}] } giá đóng cửa theo ngày (cổ phiếu/ETF VN, NAV quỹ mở)
+ *   ket_doc / ket_ghi → két dữ liệu app đã MÃ HOÁ bằng mật khẩu 6 số (đồng bộ giữa các máy, không cần đăng nhập Google)
  *   ai        → { tom:'tóm tắt số liệu', hoi?:'câu hỏi' } Gemini phân tích (cần Script Property GEMINI_KEY)
  *
  * Ô A1 của tab thu chi: ghi mốc cập nhật (vd "Update gần nhất: 11h15 AM 27/11/2026"), app hiện ở đầu dashboard.
@@ -73,6 +74,8 @@ function doPost(e) {
       case 'them': return json_(Object.assign({ ok: true }, them_(p.gd || {})));
       case 'xoa': return json_(Object.assign({ ok: true }, xoa_(String(p.id || ''))));
       case 'gia': return json_({ ok: true, gia: layGia_(p.ma || []), at: new Date().toISOString() });
+      case 'ket_doc': return json_({ ok: true, ket: docKet_() });
+      case 'ket_ghi': return json_(Object.assign({ ok: true }, ghiKet_(p.ket)));
       case 'ai': return json_(Object.assign({ ok: true }, hoiAI_(String(p.tom || ''), String(p.hoi || ''))));
       default: return json_({ ok: false, loi: 'Không rõ thao tác' });
     }
@@ -452,5 +455,32 @@ function chonModel_(key, moi) {
 function modelKhac_(cur) {
   let a = []; try { a = JSON.parse(PropertiesService.getScriptProperties().getProperty('GEMINI_ALT') || '[]'); } catch (e) { }
   const i = a.indexOf(cur); return a[(i + 1) % a.length] || cur;
+}
+
+/* ============================ KÉT ĐỒNG BỘ (đã mã hoá phía app) ============================ */
+const KET_TAB = 'App · Két';
+function ketSheet_() {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  let sh = ss.getSheetByName(KET_TAB);
+  if (!sh) { sh = ss.insertSheet(KET_TAB); sh.getRange('A1').setValue('Dữ liệu app Ngân hàng Mintun đã mã hoá. Đừng sửa tab này.'); sh.hideSheet(); }
+  return sh;
+}
+function docKet_() {
+  const sh = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(KET_TAB);
+  if (!sh || sh.getLastRow() < 2) return '';
+  return sh.getRange(2, 1, sh.getLastRow() - 1, 1).getValues().map(r => r[0]).join('');
+}
+function ghiKet_(ket) {
+  ket = String(ket || '');
+  if (ket.length < 20 || ket.length > 3e6) throw new Error('Két không hợp lệ');
+  const o = JSON.parse(ket); if (o.v !== 2 || !o.ct || !o.iv || !o.salt) throw new Error('Két phải được mã hoá');
+  const lock = LockService.getScriptLock(); lock.waitLock(20000);
+  try {
+    const sh = ketSheet_(), parts = [];
+    for (let i = 0; i < ket.length; i += 45000) parts.push(["'" + ket.slice(i, i + 45000)]);
+    if (sh.getLastRow() > 1) sh.getRange(2, 1, sh.getLastRow() - 1, 1).clearContent();
+    sh.getRange(2, 1, parts.length, 1).setValues(parts);
+    return { luu: ket.length };
+  } finally { lock.releaseLock(); }
 }
 

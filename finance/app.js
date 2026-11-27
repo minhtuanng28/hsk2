@@ -121,7 +121,7 @@ function empty() {
   <button class="btn pri" data-act="${has ? 'refresh' : 'settings'}">${has ? 'Cập nhật ngay' : 'Mở Cài đặt'}</button> <a class="btn" style="text-decoration:none;display:inline-block" href="${GUIDE}" target="_blank" rel="noopener">Hướng dẫn</a></div></div>`;
 }
 function render() {
-  $('#syncTxt').textContent = M ? syncLabel() : 'Chưa cập nhật';
+  $('#syncTxt').textContent = M ? syncLabel() : 'Chưa cập nhật'; syncBadge();
   $('#dueDot').hidden = !isDue();
   $('#bHide').innerHTML = ST.hide ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 3l18 18M10.6 6.1A9.7 9.7 0 0 1 12 6c5 0 9 6 9 6a15.6 15.6 0 0 1-3 3.5M6.6 6.6C4.4 8 3 12 3 12s4 6 9 6a8.9 8.9 0 0 0 4-1"/></svg>' : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12s4-6 9-6 9 6 9 6-4 6-9 6-9-6-9-6z"/><circle cx="12" cy="12" r="2.8"/></svg>';
   $$('#tabs button[data-tab]').forEach(b => b.classList.toggle('on', b.dataset.tab === tab));
@@ -413,10 +413,12 @@ function openSettings() {
   <h3 class="sub" style="margin:18px 0 4px">MẬT KHẨU 6 SỐ</h3><p class="note" style="margin:0 0 8px">Tự khoá khi rời app quá 3 phút hoặc 10 phút không thao tác.</p>
   <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn sm" id="sSync">Đồng bộ ngay</button><button class="btn sm" id="sPin">Đổi mật khẩu</button><button class="btn sm" id="sLock">Khoá ngay</button></div>
   <h3 class="sub" style="margin:18px 0 4px">TÀI KHOẢN</h3><p class="note" style="margin:0 0 8px">${user ? esc(user.email || user.displayName || '') : 'Chưa đăng nhập'}</p>
-  <div style="display:flex;gap:8px;flex-wrap:wrap"><a class="btn sm" href="${ACAD}" style="text-decoration:none">Về Học viện</a>${user ? '<button class="btn sm" id="sOut">Đăng xuất</button>' : ''}</div>`);
+  <p class="note" style="margin:0 0 8px">Đồng bộ qua 2 đường: Google (Firebase) ${user ? '✓' : '✗ chưa đăng nhập'} · két trong Google Sheet ${okUrl(ST.cfg.url) ? '✓' : '✗'}${syncSt.ok ? ' · lần cuối ' + new Date(syncSt.ok).toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' }) : ''}${syncSt.err ? ' · lỗi: ' + esc(syncSt.err) : ''}</p>
+  <div style="display:flex;gap:8px;flex-wrap:wrap">${user ? '' : '<button class="btn sm pri" id="sIn">Đăng nhập Google</button>'}<a class="btn sm" href="${ACAD}" style="text-decoration:none">Về Học viện</a>${user ? '<button class="btn sm" id="sOut">Đăng xuất</button>' : ''}</div>`);
   $('#sSave').onclick = () => { const u = $('#sU').value.trim(), k = $('#sK').value.trim(); if (!okUrl(u)) return toast('Link phải có dạng https://script.google.com/macros/s/…/exec'); if (k.length < 16) return toast('Mã kết nối chưa đúng'); ST.cfg = { url: u, key: k }; save(true, 'cfg'); closeSheet(); refresh(); };
   $('#sAI').onclick = e => { const b = e.target.closest('button'); if (!b) return; ST.ai_on = b.dataset.v === '1'; $$('#sAI button').forEach(x => x.classList.toggle('on', x === b)); save(true, 'ai_on'); };
-  $('#sSync').onclick = async () => { if (!fb || !ref) return toast('Chưa đăng nhập Google'); toast('Đang đồng bộ…'); await pushCloud(); toast('Đã đồng bộ với các máy khác'); };
+  $('#sSync').onclick = () => { toast('Đang đồng bộ…'); pushCloud(true); };
+  if ($('#sIn')) $('#sIn').onclick = () => fb && fb.auth.signInWithRedirect(fb.A, new fb.auth.GoogleAuthProvider());
   $('#sPin').onclick = () => { closeSheet(); showLock('change1'); }; $('#sLock').onclick = () => { closeSheet(); lockNow(); };
   if ($('#sOut')) $('#sOut').onclick = () => fb && fb.auth.signOut(fb.A).then(() => location.reload());
 }
@@ -493,8 +495,8 @@ async function pinDone() {
   if (lockMode === 'create' || lockMode === 'change1') { pinFirst = pin; lockMode = lockMode === 'create' ? 'confirm' : 'change2'; drawLock(); return; }
   if (lockMode === 'confirm' || lockMode === 'change2') {
     if (pin !== pinFirst) { lockMode = lockMode === 'confirm' ? 'create' : 'change1'; drawLock('Hai lần nhập không khớp, làm lại nhé', true); return; }
-    lockBusy = true; drawLock(); const chg = lockMode === 'change2'; K = await VA.make(pin); lockBusy = false;
-    if (!chg) { Object.assign(ST, blank(), cloudLegacy ? { cfg: cloudLegacy.cfg || ST.cfg, goals: cloudLegacy.goals || [], map: cloudLegacy.map || {} } : {}, legacy || {}); legacy = null; cloudLegacy = null; }
+    lockBusy = true; drawLock(); const chg = lockMode === 'change2'; K = await VA.make(pin); PIN = pin; lockBusy = false;
+    if (!chg) { Object.assign(ST, blank(), pendingCfg ? { cfg: pendingCfg } : {}, cloudLegacy ? { cfg: cloudLegacy.cfg || ST.cfg, goals: cloudLegacy.goals || [], map: cloudLegacy.map || {} } : {}, legacy || {}); legacy = null; cloudLegacy = null; }
     save(); $('#lock').hidden = true; lockMode = null; build(); render(); toast(chg ? 'Đã đổi mật khẩu' : 'Đã tạo mật khẩu. Nhớ kỹ 6 số này nha!'); armIdle();
     if (!chg && (DEMO || ST.cfg.url && ST.cfg.key) && !ST.doc) refresh(true); return;
   }
@@ -502,9 +504,9 @@ async function pinDone() {
     if (VA.wait()) { drawLock(); return; }
     lockBusy = true; drawLock();
     try {
-      await unlockWith(pin); VA.ok(); lockBusy = false; $('#lock').hidden = true; lockMode = null; build(); render(); armIdle();
+      await unlockWith(pin); PIN = pin; if (pendingCfg && !okUrl(ST.cfg.url)) { ST.cfg = pendingCfg; save(true, 'cfg'); } pendingCfg = null; VA.ok(); lockBusy = false; $('#lock').hidden = true; lockMode = null; build(); render(); armIdle();
       if (Q.get('add') && M) setTimeout(openAdd, 300);
-      if ((DEMO || ST.cfg.url && ST.cfg.key) && (!ST.sync || Date.now() - ST.sync > 6 * 36e5)) refresh(true); else if (M) pushCloud();
+      if ((DEMO || ST.cfg.url && ST.cfg.key) && (!ST.sync || Date.now() - ST.sync > 6 * 36e5)) refresh(true); pushCloud();
     } catch (e) { lockBusy = false; const t = VA.fail(); drawLock(t.until > Date.now() ? '' : 'Sai mật khẩu (' + t.n + ' lần)', true); }
   }
 }
@@ -521,11 +523,10 @@ async function unlockWith(pin) {
   data.inv = data.inv || { holdings: [], deposits: [] }; data.inv.holdings = data.inv.holdings || []; data.inv.deposits = data.inv.deposits || [];
   K = base.k; ST = data; saveLocal();
 }
-function lockNow() { if (!K && !$('#lock').hidden) return; K = null; ST = blank(); M = null; P = null; closeSheet(); $('#view').innerHTML = ''; showLock('unlock'); }
+function lockNow() { if (!K && !$('#lock').hidden) return; K = null; PIN = ''; ST = blank(); M = null; P = null; closeSheet(); $('#view').innerHTML = ''; showLock('unlock'); }
 function armIdle() { clearTimeout(idleT); if (K) idleT = setTimeout(lockNow, 10 * 60e3); }
 ['pointerdown', 'keydown', 'scroll'].forEach(ev => document.addEventListener(ev, () => { if (K) armIdle(); }, { passive: true, capture: true }));
 document.addEventListener('visibilitychange', () => { if (document.hidden) hiddenAt = Date.now(); else { if (K && hiddenAt && Date.now() - hiddenAt > 3 * 60e3) lockNow(); else if (K) pullCloud(); $('#dueDot').hidden = !isDue(); } });
-async function pullCloud() { if (!fb || !ref || !K) return; try { const sn = await fb.fs.getDoc(ref); await adoptCloud(sn.exists() ? sn.data().money : null); } catch (e) { } }
 function pinKey(k) {
   if ($('#lock').hidden || lockBusy || lockMode === 'wait') return;
   if (k === 'b') { pinBuf = pinBuf.slice(0, -1); drawLock(); return; }
@@ -559,32 +560,67 @@ function mergeRemote(c) {
   ST.inv = ST.inv || { holdings: [], deposits: [] }; ST.inv.holdings = ST.inv.holdings || []; ST.inv.deposits = ST.inv.deposits || [];
   return changed;
 }
-let pushing = false;
-async function pushCloud() {
-  if (!fb || !ref || DEMO || !K || pushing) return; pushing = true;
+/* ===== đồng bộ: 2 đường song song — Firebase (đăng nhập Google) và két trong Google Sheet qua Apps Script (chỉ cần link + mã).
+   Cả hai chỉ chứa dữ liệu ĐÃ MÃ HOÁ bằng mật khẩu 6 số. ===== */
+let pushing = false, lastCt = '', PIN = '', syncSt = { ok: 0, err: '' };
+async function openBox(m) {     // mở két từ máy khác, kể cả khi máy đó tạo két riêng (salt khác) với cùng mật khẩu
+  if (m.salt === K.salt) return VA.open(K, m);
+  if (!PIN) throw new Error('salt');
+  const r = await VA.unlock(PIN, m); K = r.k; return r.data;   // thống nhất về khoá của két kia
+}
+async function remoteBoxes() {
+  const out = [];
+  if (fb && ref) { try { const sn = await fb.fs.getDoc(ref), m = sn.exists() ? JSON.parse(sn.data().money || 'null') : null; if (m && m.v === 2) out.push(m); } catch (e) { syncSt.err = 'Firebase: ' + (e.code || e.message); } }
+  if (okUrl(ST.cfg.url) && ST.cfg.key) { try { const j = await api('ket_doc'); if (j.ket) { const m = JSON.parse(j.ket); if (m.v === 2) out.push(m); } } catch (e) { syncSt.err = 'Sheet: ' + e.message; } }
+  return out.sort((a, b) => (a.upd || 0) - (b.upd || 0));
+}
+async function pullMerge() {
+  let changed = false;
+  for (const m of await remoteBoxes()) {
+    if (m.ct === lastCt) continue;
+    try { if (mergeRemote(await openBox(m))) changed = true; } catch (e) { syncSt.err = 'Máy khác dùng mật khẩu khác'; }
+  }
+  if (changed) { saveLocal(); build(); render(); }
+  return changed;
+}
+async function pushCloud(manual) {
+  if (DEMO || !K || pushing) return; pushing = true; syncSt.err = '';
   try {
-    const sn = await fb.fs.getDoc(ref), m = sn.exists() ? JSON.parse(sn.data().money || 'null') : null;
-    if (m && m.v === 2 && m.ct !== (cloudBox && cloudBox.ct)) {
-      if (m.salt !== K.salt) { pushing = false; toast('Mật khẩu đã đổi trên máy khác, nhập lại nhé'); return lockNow(); }
-      try { if (mergeRemote(await VA.open(K, m))) { saveLocal(); build(); render(); } } catch (e) { pushing = false; return lockNow(); }
-    }
-  } catch (e) { console.warn('pull', e); }
-  pushing = false;
-  return pushCloud2();
+    await pullMerge();
+    let sum = null;
+    if (M) { try { sum = F.fullSummary(M, ST.goals, ST.inv, ST.px, ST.sync, ST.ai && ST.ai.res ? ST.ai.res.tong : ''); } catch (e) { } }
+    const box = await VA.seal(K, { cfg: ST.cfg, goals: ST.goals, map: ST.map, inv: ST.inv, px: ST.px, ai: ST.ai, ai_on: ST.ai_on, ts: ST.ts || {}, sum }, { upd: ST.upd, sync: ST.sync || 0 });
+    const s = JSON.stringify(box); let ok = 0;
+    if (fb && ref) { try { await fb.fs.setDoc(ref, { money: s }, { merge: true }); ok++; } catch (e) { syncSt.err = 'Firebase: ' + (e.code || e.message); } }
+    if (okUrl(ST.cfg.url) && ST.cfg.key) { try { await api('ket_ghi', { ket: s }); ok++; } catch (e) { syncSt.err = 'Sheet: ' + e.message; } }
+    if (ok) { lastCt = box.ct; cloudBox = box; syncSt.ok = Date.now(); }
+    if (manual) toast(ok ? 'Đã đồng bộ (' + ok + '/2 đường)' + (syncSt.err ? ' · ' + syncSt.err : '') : 'Chưa đồng bộ được: ' + (syncSt.err || 'chưa có kết nối'));
+  } catch (e) { syncSt.err = e.message; if (manual) toast('Lỗi đồng bộ: ' + e.message); }
+  finally { pushing = false; syncBadge(); }
 }
-async function pushCloud2() {
-  if (!fb || !ref || DEMO || !K) return;
-  let sum = null;
-  if (M) { try { sum = F.fullSummary(M, ST.goals, ST.inv, ST.px, ST.sync, ST.ai && ST.ai.res ? ST.ai.res.tong : ''); } catch (e) { console.warn(e); } }
-  try { const box = await VA.seal(K, { cfg: ST.cfg, goals: ST.goals, map: ST.map, inv: ST.inv, px: ST.px, ai: ST.ai, ai_on: ST.ai_on, ts: ST.ts || {}, sum }, { upd: ST.upd, sync: ST.sync || 0 }); await fb.fs.setDoc(ref, { money: JSON.stringify(box) }, { merge: true }); cloudBox = box; } catch (e) { console.warn('cloud', e); }
-}
+const pullCloud = async () => { if (!K || DEMO || pushing) return; pushing = true; try { await pullMerge(); syncSt.ok = Date.now(); } catch (e) { } pushing = false; syncBadge(); };
+function syncBadge() { const el = $('#syncTxt'); if (!el || !K) return; el.textContent = (M ? syncLabel() : '') + (syncSt.err && !syncSt.ok ? ' · chưa đồng bộ' : syncSt.ok ? ' · đã đồng bộ ' + new Date(syncSt.ok).toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' }) : ''); }
+setInterval(() => { if (K && !document.hidden) pullCloud(); }, 90e3);
 async function adoptCloud(s) {
   let m = null; try { m = JSON.parse(s || 'null'); } catch (e) { }
   cloudChecked = true;
   if (m && m.v === 2) cloudBox = m; else if (m && m.v === 1) cloudLegacy = m;
-  if (K) { if (m && m.v === 2) { if (m.salt !== K.salt) return lockNow(); try { if (mergeRemote(await VA.open(K, m))) { saveLocal(); build(); render(); } } catch (e) { return lockNow(); } } return; }
+  if (K) { if (m && m.v === 2 && m.ct !== lastCt) { try { if (mergeRemote(await openBox(m))) { saveLocal(); build(); render(); } } catch (e) { } } return; }
   if (!$('#lock').hidden || lockMode) showLock(lockState());
 }
+/* kết nối không cần Google: dán link web app + APP_KEY, lấy két từ sheet */
+async function connectByKey() {
+  const u = $('#gU').value.trim(), k = $('#gK').value.trim();
+  if (!okUrl(u) || k.length < 16) return ($('#gateMsg').textContent = 'Link hoặc mã chưa đúng');
+  $('#gateMsg').textContent = 'Đang kết nối…';
+  try {
+    const r = await fetch(u, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ key: k, action: 'ket_doc' }) }); const j = await r.json();
+    if (!j.ok) throw new Error(j.loi || 'lỗi');
+    const m = j.ket ? JSON.parse(j.ket) : null; if (m && m.v === 2) cloudBox = m;
+    pendingCfg = { url: u, key: k }; cloudChecked = true; $('#gate').hidden = true; showLock(lockState());
+  } catch (e) { $('#gateMsg').textContent = 'Không kết nối được: ' + e.message; }
+}
+let pendingCfg = null;
 if (DEMO) { $('#gate').hidden = true; showLock(); }
 else {
   if (localBox) $('#gate').hidden = true;
@@ -599,8 +635,9 @@ else {
           fs.onSnapshot(ref, d => { const mm = d.exists() ? d.data().money : null; if (K && mm && !d.metadata.hasPendingWrites) adoptCloud(mm); }, () => { }); }
         else { ref = null; if (!localBox) $('#gate').hidden = false; }
       });
+      $('#gConn').onclick = connectByKey;
       $('#signin').onclick = () => auth.signInWithPopup(fb.A, new auth.GoogleAuthProvider()).catch(e => { if (/popup/.test(e.code || '')) auth.signInWithRedirect(fb.A, new auth.GoogleAuthProvider()); else $('#gateMsg').textContent = 'Đăng nhập lỗi: ' + (e.code || e); });
-    } catch (e) { $('#gateMsg').textContent = 'Không tải được Firebase, kiểm tra mạng.'; cloudChecked = true; if (lockMode) showLock(lockState()); }
+    } catch (e) { $('#gateMsg').textContent = 'Không tải được Firebase, có thể kết nối bằng link + mã bên dưới.'; $('#gConn').onclick = connectByKey; }
   })();
 }
 let rzT; window.addEventListener('resize', () => { clearTimeout(rzT); rzT = setTimeout(() => { if (M && K && !$('#sheet').classList.contains('on')) render(); }, 300); });

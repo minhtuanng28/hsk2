@@ -87,6 +87,14 @@ Muốn kiểm tra: chạy hàm `thuDoc`. Nhật ký sẽ báo số dòng, số g
 
 **Chạy mãi không cần Claude:** app nằm trên GitHub Pages, dữ liệu ở Google Sheet + Firebase, AI dùng key Gemini của bạn. Không phụ thuộc gói Claude.
 
+## Đồng bộ giữa các máy
+
+App đồng bộ qua 2 đường cùng lúc, cả hai chỉ chứa dữ liệu đã mã hoá bằng mật khẩu 6 số:
+1. **Firebase** khi đã đăng nhập Google.
+2. **Tab ẩn "App · Két" trong chính Google Sheet** qua Apps Script, chỉ cần link + APP_KEY. Dùng được cả khi app ngoài màn hình iPhone không đăng nhập được Google.
+
+Máy mới: ở màn hình đăng nhập chọn "Kết nối bằng link + mã sheet", dán link + APP_KEY, rồi nhập mật khẩu 6 số. Cài đặt → Đồng bộ ngay để ép đồng bộ; dòng trạng thái cho biết đường nào đang chạy.
+
 ## Sửa lỗi nhanh
 
 | Lỗi | Cách xử lý |
