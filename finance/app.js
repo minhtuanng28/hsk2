@@ -26,7 +26,8 @@ function defaultP() { const L = F.lastIdx(M), mo = M.months[L], now = new Date()
 let saveQ = Promise.resolve();
 function saveLocal() { if (!K) return; const k = K, snap = JSON.parse(JSON.stringify(ST)); saveQ = saveQ.then(async () => { try { const box = await VA.seal(k, snap, { upd: snap.upd }); localStorage.setItem(LSV, JSON.stringify(box)); localBox = box; localStorage.removeItem(LS); } catch (e) { console.warn('vault', e); } }); }
 let cloudT = null;
-function save(cloud = true) { if (!K) return; ST.upd = Date.now(); saveLocal(); if (cloud && !DEMO) { clearTimeout(cloudT); cloudT = setTimeout(pushCloud, 1200); } }
+const SECT = ['cfg', 'goals', 'map', 'inv', 'ai', 'ai_on'];
+function save(cloud = true, ...secs) { if (!K) return; ST.upd = Date.now(); ST.ts = ST.ts || {}; secs.forEach(x => ST.ts[x] = ST.upd); saveLocal(); if (cloud && !DEMO) { clearTimeout(cloudT); cloudT = setTimeout(pushCloud, 1200); } }
 
 /* ===== định dạng + chế độ ẩn số ===== */
 const pct1 = r => Math.abs(r) < .1 ? (Math.round(r * 1000) / 10).toFixed(1).replace('.', ',') + '%' : F.pct(r);
@@ -69,7 +70,7 @@ async function runAI() {
   if (!M || aiBusy || !ST.ai_on) return; aiBusy = true; render();
   try { const j = await api('ai', { tom: F.aiBrief(M, ST.goals, ST.inv, ST.px, M.stamp) }); ST.ai = { res: j.ai, at: Date.now(), model: j.model }; }
   catch (e) { ST.ai = Object.assign({}, ST.ai || {}, { err: e.message, errAt: Date.now() }); }
-  aiBusy = false; save(); render();
+  aiBusy = false; save(true, 'ai'); render();
 }
 async function refresh(silent) {
   if (busy || !K) return; busy = true; $('#bUpd').classList.add('spin');
@@ -263,8 +264,8 @@ function holdForm(h) {
     if (!code || !qty) return toast('Cần mã và số lượng');
     const o = { id: h.id || 'h' + Date.now().toString(36), type, code, qty, cost, date: $('#hD').value || '', manual: parseAmt($('#hM').value, true) || '' };
     const L = ST.inv.holdings, i = L.findIndex(x => x.id === o.id); if (i >= 0) L[i] = o; else L.push(o);
-    save(); closeSheet(); render(); refreshPrices(true).then(render); };
-  if (h.id) $('#hX').onclick = e => { if (!e.target.dataset.sure) { e.target.dataset.sure = 1; e.target.textContent = 'Bấm lần nữa để xoá'; return; } ST.inv.holdings = ST.inv.holdings.filter(x => x.id !== h.id); save(); closeSheet(); render(); };
+    save(true, 'inv'); closeSheet(); render(); refreshPrices(true).then(render); };
+  if (h.id) $('#hX').onclick = e => { if (!e.target.dataset.sure) { e.target.dataset.sure = 1; e.target.textContent = 'Bấm lần nữa để xoá'; return; } ST.inv.holdings = ST.inv.holdings.filter(x => x.id !== h.id); save(true, 'inv'); closeSheet(); render(); };
 }
 function importForm() {
   sheet(`<h2>Nhập nhanh danh mục</h2><div class="sub">Mỗi dòng một mã: <b>MÃ  SỐ LƯỢNG  GIÁ VỐN</b>. Giá vốn gõ như app chứng khoán (65.5 = 65.500 đ). Thêm chữ <b>quy</b> cuối dòng nếu là quỹ mở. Mã đã có sẽ được thay.</div>
@@ -279,7 +280,7 @@ function importForm() {
   $('#iT').oninput = () => { const r = parse(); $('#iP').innerHTML = r.map(x => x.bad ? `<span class="down">Không hiểu: ${esc(x.bad)}</span>` : `${esc(x.code)}: ${x.qty} × ${F.vnd(x.cost)} = ${F.short(x.qty * x.cost)}`).join('<br>'); };
   $('#iS').onclick = () => { const r = parse().filter(x => !x.bad && x.qty > 0); if (!r.length) return toast('Chưa có dòng hợp lệ');
     r.forEach(x => { const L = ST.inv.holdings, i = L.findIndex(h => h.code === x.code), o = Object.assign({ id: i >= 0 ? L[i].id : 'h' + Date.now().toString(36) + x.code, date: '', manual: '' }, x); if (i >= 0) L[i] = Object.assign(L[i], o); else L.push(o); });
-    save(); closeSheet(); render(); toast('Đã lưu ' + r.length + ' mã, đang lấy giá…'); refreshPrices(true).then(render); };
+    save(true, 'inv'); closeSheet(); render(); toast('Đã lưu ' + r.length + ' mã, đang lấy giá…'); refreshPrices(true).then(render); };
 }
 function depForm(d) {
   d = d || {};
@@ -291,8 +292,8 @@ function depForm(d) {
   $('#dSv').onclick = () => { const amt = parseAmt($('#dA').value), rate = Number(String($('#dR').value).replace(',', '.')) || 0;
     if (!amt || !$('#dS').value) return toast('Cần số tiền và ngày gửi');
     const o = { id: d.id || 'd' + Date.now().toString(36), bank: $('#dB').value.trim(), amt, rate, term: Number($('#dT').value) || 0, start: $('#dS').value };
-    const L = ST.inv.deposits, i = L.findIndex(x => x.id === o.id); if (i >= 0) L[i] = o; else L.push(o); save(); closeSheet(); render(); };
-  if (d.id) $('#dX').onclick = e => { if (!e.target.dataset.sure) { e.target.dataset.sure = 1; e.target.textContent = 'Bấm lần nữa để xoá'; return; } ST.inv.deposits = ST.inv.deposits.filter(x => x.id !== d.id); save(); closeSheet(); render(); };
+    const L = ST.inv.deposits, i = L.findIndex(x => x.id === o.id); if (i >= 0) L[i] = o; else L.push(o); save(true, 'inv'); closeSheet(); render(); };
+  if (d.id) $('#dX').onclick = e => { if (!e.target.dataset.sure) { e.target.dataset.sure = 1; e.target.textContent = 'Bấm lần nữa để xoá'; return; } ST.inv.deposits = ST.inv.deposits.filter(x => x.id !== d.id); save(true, 'inv'); closeSheet(); render(); };
 }
 
 /* ----- hạng mục chi tiết ----- */
@@ -346,8 +347,8 @@ function goalForm(g) {
   $('#gSave').onclick = () => { const name = $('#gN').value.trim(), target = parseAmt($('#gT').value); if (!name || !target) return toast('Cần tên và số tiền mục tiêu');
     const o = { id: g.id || 'g' + Date.now().toString(36), name, kind, target, deadline: $('#gD').value || '', note: $('#gO').value.trim() }, s = parseAmt($('#gS').value) || 0;
     if (lk) { o.link = $$('#gLink input:checked').map(x => x.value); if (!o.link.length) return toast('Chọn ít nhất 1 hạng mục'); o.from = $('#gF').value || '0000-00'; o.start = s; } else { o.link = []; o.cur = s; o.start = 0; }
-    const i = ST.goals.findIndex(x => x.id === o.id); if (i >= 0) ST.goals[i] = o; else ST.goals.push(o); save(); closeSheet(); render(); toast('Đã lưu mục tiêu'); };
-  if (g.id) $('#gDel').onclick = e => { const b = e.target; if (!b.dataset.sure) { b.dataset.sure = 1; b.textContent = 'Bấm lần nữa để xoá'; return; } ST.goals = ST.goals.filter(x => x.id !== g.id); save(); closeSheet(); render(); };
+    const i = ST.goals.findIndex(x => x.id === o.id); if (i >= 0) ST.goals[i] = o; else ST.goals.push(o); save(true, 'goals'); closeSheet(); render(); toast('Đã lưu mục tiêu'); };
+  if (g.id) $('#gDel').onclick = e => { const b = e.target; if (!b.dataset.sure) { b.dataset.sure = 1; b.textContent = 'Bấm lần nữa để xoá'; return; } ST.goals = ST.goals.filter(x => x.id !== g.id); save(true, 'goals'); closeSheet(); render(); };
 }
 
 /* ----- Sổ ghi ----- */
@@ -413,8 +414,8 @@ function openSettings() {
   <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn sm" id="sPin">Đổi mật khẩu</button><button class="btn sm" id="sLock">Khoá ngay</button></div>
   <h3 class="sub" style="margin:18px 0 4px">TÀI KHOẢN</h3><p class="note" style="margin:0 0 8px">${user ? esc(user.email || user.displayName || '') : 'Chưa đăng nhập'}</p>
   <div style="display:flex;gap:8px;flex-wrap:wrap"><a class="btn sm" href="${ACAD}" style="text-decoration:none">Về Học viện</a>${user ? '<button class="btn sm" id="sOut">Đăng xuất</button>' : ''}</div>`);
-  $('#sSave').onclick = () => { const u = $('#sU').value.trim(), k = $('#sK').value.trim(); if (!okUrl(u)) return toast('Link phải có dạng https://script.google.com/macros/s/…/exec'); if (k.length < 16) return toast('Mã kết nối chưa đúng'); ST.cfg = { url: u, key: k }; save(); closeSheet(); refresh(); };
-  $('#sAI').onclick = e => { const b = e.target.closest('button'); if (!b) return; ST.ai_on = b.dataset.v === '1'; $$('#sAI button').forEach(x => x.classList.toggle('on', x === b)); save(); };
+  $('#sSave').onclick = () => { const u = $('#sU').value.trim(), k = $('#sK').value.trim(); if (!okUrl(u)) return toast('Link phải có dạng https://script.google.com/macros/s/…/exec'); if (k.length < 16) return toast('Mã kết nối chưa đúng'); ST.cfg = { url: u, key: k }; save(true, 'cfg'); closeSheet(); refresh(); };
+  $('#sAI').onclick = e => { const b = e.target.closest('button'); if (!b) return; ST.ai_on = b.dataset.v === '1'; $$('#sAI button').forEach(x => x.classList.toggle('on', x === b)); save(true, 'ai_on'); };
   $('#sPin').onclick = () => { closeSheet(); showLock('change1'); }; $('#sLock').onclick = () => { closeSheet(); lockNow(); };
   if ($('#sOut')) $('#sOut').onclick = () => fb && fb.auth.signOut(fb.A).then(() => location.reload());
 }
@@ -425,7 +426,7 @@ function closeSheet() { $('#sheet').classList.remove('on'); hideTip(); }
 $('#sheet').addEventListener('click', e => { if (e.target.id === 'sheet') closeSheet(); });
 document.addEventListener('keydown', e => { if (e.key === 'Escape') closeSheet(); });
 document.addEventListener('change', e => {
-  const s = e.target.closest('select[data-map]'); if (s) { ST.map[s.dataset.map] = s.value; save(); build(); render(); return; }
+  const s = e.target.closest('select[data-map]'); if (s) { ST.map[s.dataset.map] = s.value; save(true, 'map'); build(); render(); return; }
   const pf = e.target.closest('select[data-pf]'); if (pf) { P[pf.dataset.pf] = pf.value; render(); }
 });
 $('#tabs').addEventListener('click', e => { const b = e.target.closest('button[data-tab]'); if (!b) return; if (b.dataset.tab === 'add') return openAdd(); go(b.dataset.tab); });
@@ -465,7 +466,7 @@ document.addEventListener('click', async e => {
   if (d.act === 'gnew') return goalForm({ kind: d.kind });
   if (d.cat) return openCat(d.cat);
   if (d.gedit) return goalForm(ST.goals.find(g => g.id === d.gedit));
-  if (d.gadd) { const g = ST.goals.find(x => x.id === d.gadd); const v = parseAmt(prompt('Cộng thêm vào "' + g.name + '" (VD 2tr):', '') || ''); if (v) { g.cur = (Number(g.cur) || 0) + v; save(); render(); } return; }
+  if (d.gadd) { const g = ST.goals.find(x => x.id === d.gadd); const v = parseAmt(prompt('Cộng thêm vào "' + g.name + '" (VD 2tr):', '') || ''); if (v) { g.cur = (Number(g.cur) || 0) + v; save(true, 'goals'); render(); } return; }
   if (d.gsug) { const i = F.lastFull(M), sp = F.avgBefore(M, i + 1, 12, 'spend'), y = new Date().getFullYear(), sv = M.cats.filter(c => c.group === 'tichluy' && /tiet kiem|vang/.test(F.norm(c.name))).map(c => c.name);
     const s = { ef: { name: 'Quỹ dự phòng 6 tháng', kind: 'ngan', target: Math.round(sp * 6 / 1e6) * 1e6, deadline: y + 1 + '-06', link: sv, note: '6 tháng chi tiêu trung bình, để ở chỗ rút được ngay.' }, ef3: { name: 'Quỹ dự phòng 3 tháng', kind: 'ngan', target: Math.round(sp * 3 / 1e6) * 1e6, deadline: y + '-12', link: sv }, big: { name: 'Món lớn sắp mua', kind: 'ngan' }, trip: { name: 'Chuyến du lịch', kind: 'ngan' }, inv: { name: 'Danh mục đầu tư', kind: 'dai', deadline: (y + 5) + '-12', link: M.cats.filter(c => c.group === 'tichluy' && /chung khoan|dau tu/.test(F.norm(c.name))).map(c => c.name) } }[d.gsug];
     if (s.link && !s.link.length) delete s.link; return goalForm(s); }
@@ -507,20 +508,23 @@ async function pinDone() {
   }
 }
 async function unlockWith(pin) {
-  const useCloud = cloudBox && (!localBox || cloudBox.salt !== localBox.salt || (cloudBox.upd || 0) >= (localBox.upd || 0));
-  let base = null, data = blank();
-  if (useCloud) {
-    base = await VA.unlock(pin, cloudBox); const c = base.data;
-    Object.assign(data, { cfg: c.cfg || data.cfg, goals: c.goals || [], map: c.map || {}, inv: c.inv || data.inv, px: c.px || {}, ai: c.ai || null, ai_on: c.ai_on !== false, upd: cloudBox.upd || 0 });
-    if (localBox) { try { const l = localBox.salt === cloudBox.salt ? { data: await VA.open(base.k, localBox) } : await VA.unlock(pin, localBox); const x = l.data; Object.assign(data, { doc: x.doc, sync: x.sync, pending: x.pending || [], recent: x.recent || {}, px: x.px || {}, pxAt: x.pxAt || 0, hide: !!x.hide }); } catch (e) { localStorage.removeItem(LSV); localBox = null; } }
-  } else { base = await VA.unlock(pin, localBox); Object.assign(data, base.data); }
+  let base = null, data = blank(), localOk = false;
+  if (localBox) { try { base = await VA.unlock(pin, localBox); Object.assign(data, base.data); localOk = true; } catch (e) { } }
+  if (cloudBox) {
+    let c = null;
+    if (base && base.k.salt === cloudBox.salt) c = await VA.open(base.k, cloudBox).catch(() => null);
+    if (!c) { const cb = await VA.unlock(pin, cloudBox); c = cb.data; if (!localOk || base.k.salt !== cloudBox.salt) { base = cb; if (localOk) { /* mật khẩu đổi ở máy khác: giữ sổ cache máy này */ } } }
+    ST = data; mergeRemote(c); data = ST;
+  } else if (!localOk) throw new Error('sai');
+  if (!localOk && localBox) { localStorage.removeItem(LSV); localBox = null; }
   data.inv = data.inv || { holdings: [], deposits: [] }; data.inv.holdings = data.inv.holdings || []; data.inv.deposits = data.inv.deposits || [];
-  K = base.k; ST = data; if (useCloud) saveLocal();
+  K = base.k; ST = data; saveLocal();
 }
 function lockNow() { if (!K && !$('#lock').hidden) return; K = null; ST = blank(); M = null; P = null; closeSheet(); $('#view').innerHTML = ''; showLock('unlock'); }
 function armIdle() { clearTimeout(idleT); if (K) idleT = setTimeout(lockNow, 10 * 60e3); }
 ['pointerdown', 'keydown', 'scroll'].forEach(ev => document.addEventListener(ev, () => { if (K) armIdle(); }, { passive: true, capture: true }));
-document.addEventListener('visibilitychange', () => { if (document.hidden) hiddenAt = Date.now(); else { if (K && hiddenAt && Date.now() - hiddenAt > 3 * 60e3) lockNow(); $('#dueDot').hidden = !isDue(); } });
+document.addEventListener('visibilitychange', () => { if (document.hidden) hiddenAt = Date.now(); else { if (K && hiddenAt && Date.now() - hiddenAt > 3 * 60e3) lockNow(); else if (K) pullCloud(); $('#dueDot').hidden = !isDue(); } });
+async function pullCloud() { if (!fb || !ref || !K) return; try { const sn = await fb.fs.getDoc(ref); await adoptCloud(sn.exists() ? sn.data().money : null); } catch (e) { } }
 function pinKey(k) {
   if ($('#lock').hidden || lockBusy || lockMode === 'wait') return;
   if (k === 'b') { pinBuf = pinBuf.slice(0, -1); drawLock(); return; }
@@ -541,17 +545,43 @@ async function forgot() {
 
 /* ===== Firebase: cùng tài khoản với Học viện, dữ liệu tài chính lưu dạng mã hoá ===== */
 let fb = null, user = null, ref = null;
+/** gộp dữ liệu từ máy khác theo từng phần (mục tiêu, danh mục, kết nối…): phần nào sửa sau thì thắng */
+function mergeRemote(c) {
+  if (!c) return false; ST.ts = ST.ts || {}; const rt = c.ts || {}; let changed = false;
+  const empty = (s, v) => s === 'inv' ? !v || !((v.holdings || []).length || (v.deposits || []).length) : s === 'goals' ? !v || !v.length : s === 'cfg' ? !v || !v.url : false;
+  SECT.forEach(s => {
+    if (c[s] === undefined) return;
+    const lt = ST.ts[s] || 0, r = rt[s] || 0;
+    if (r > lt || (r === lt && empty(s, ST[s]) && !empty(s, c[s]))) { ST[s] = c[s]; ST.ts[s] = r; changed = true; }
+  });
+  if (c.px && Object.keys(c.px).length && !Object.keys(ST.px || {}).length) ST.px = c.px;
+  ST.inv = ST.inv || { holdings: [], deposits: [] }; ST.inv.holdings = ST.inv.holdings || []; ST.inv.deposits = ST.inv.deposits || [];
+  return changed;
+}
+let pushing = false;
 async function pushCloud() {
+  if (!fb || !ref || DEMO || !K || pushing) return; pushing = true;
+  try {
+    const sn = await fb.fs.getDoc(ref), m = sn.exists() ? JSON.parse(sn.data().money || 'null') : null;
+    if (m && m.v === 2 && m.ct !== (cloudBox && cloudBox.ct)) {
+      if (m.salt !== K.salt) { pushing = false; toast('Mật khẩu đã đổi trên máy khác, nhập lại nhé'); return lockNow(); }
+      try { if (mergeRemote(await VA.open(K, m))) { saveLocal(); build(); render(); } } catch (e) { pushing = false; return lockNow(); }
+    }
+  } catch (e) { console.warn('pull', e); }
+  pushing = false;
+  return pushCloud2();
+}
+async function pushCloud2() {
   if (!fb || !ref || DEMO || !K) return;
   let sum = null;
   if (M) { try { sum = F.fullSummary(M, ST.goals, ST.inv, ST.px, ST.sync, ST.ai && ST.ai.res ? ST.ai.res.tong : ''); } catch (e) { console.warn(e); } }
-  try { const box = await VA.seal(K, { cfg: ST.cfg, goals: ST.goals, map: ST.map, inv: ST.inv, px: ST.px, ai: ST.ai, ai_on: ST.ai_on, sum }, { upd: ST.upd, sync: ST.sync || 0 }); await fb.fs.setDoc(ref, { money: JSON.stringify(box) }, { merge: true }); cloudBox = box; } catch (e) { console.warn('cloud', e); }
+  try { const box = await VA.seal(K, { cfg: ST.cfg, goals: ST.goals, map: ST.map, inv: ST.inv, px: ST.px, ai: ST.ai, ai_on: ST.ai_on, ts: ST.ts || {}, sum }, { upd: ST.upd, sync: ST.sync || 0 }); await fb.fs.setDoc(ref, { money: JSON.stringify(box) }, { merge: true }); cloudBox = box; } catch (e) { console.warn('cloud', e); }
 }
 async function adoptCloud(s) {
   let m = null; try { m = JSON.parse(s || 'null'); } catch (e) { }
   cloudChecked = true;
   if (m && m.v === 2) cloudBox = m; else if (m && m.v === 1) cloudLegacy = m;
-  if (K) { if (m && m.v === 2 && (m.upd || 0) > (ST.upd || 0)) { try { const c = await VA.open(K, m); ST.cfg = c.cfg || ST.cfg; ST.goals = c.goals || []; ST.map = c.map || {}; if (c.inv) ST.inv = c.inv; if (c.ai) ST.ai = c.ai; ST.upd = m.upd; saveLocal(); build(); render(); } catch (e) { lockNow(); } } else if ((ST.upd || 0) > ((m && m.upd) || 0)) pushCloud(); return; }
+  if (K) { if (m && m.v === 2) { if (m.salt !== K.salt) return lockNow(); try { if (mergeRemote(await VA.open(K, m))) { saveLocal(); build(); render(); } } catch (e) { return lockNow(); } } return; }
   if (!$('#lock').hidden || lockMode) showLock(lockState());
 }
 if (DEMO) { $('#gate').hidden = true; showLock(); }
@@ -564,7 +594,8 @@ else {
       const a = app.initializeApp(FBCFG); fb = { auth, fs, A: auth.getAuth(a), D: fs.getFirestore(a) };
       auth.onAuthStateChanged(fb.A, async u => {
         user = u;
-        if (u) { ref = fs.doc(fb.D, 'users', u.uid); $('#gate').hidden = true; try { const sn = await fs.getDoc(ref); await adoptCloud(sn.exists() ? sn.data().money : null); } catch (e) { cloudChecked = true; if (lockMode) showLock(lockState()); } }
+        if (u) { ref = fs.doc(fb.D, 'users', u.uid); $('#gate').hidden = true; try { const sn = await fs.getDoc(ref); await adoptCloud(sn.exists() ? sn.data().money : null); } catch (e) { cloudChecked = true; if (lockMode) showLock(lockState()); }
+          fs.onSnapshot(ref, d => { const mm = d.exists() ? d.data().money : null; if (K && mm && !d.metadata.hasPendingWrites) adoptCloud(mm); }, () => { }); }
         else { ref = null; if (!localBox) $('#gate').hidden = false; }
       });
       $('#signin').onclick = () => auth.signInWithPopup(fb.A, new auth.GoogleAuthProvider()).catch(e => { if (/popup/.test(e.code || '')) auth.signInWithRedirect(fb.A, new auth.GoogleAuthProvider()); else $('#gateMsg').textContent = 'Đăng nhập lỗi: ' + (e.code || e); });
