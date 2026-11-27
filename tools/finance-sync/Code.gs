@@ -321,7 +321,8 @@ function json_(o) { return ContentService.createTextOutput(JSON.stringify(o)).se
 
 /** Thử trong trình soạn thảo: chạy rồi xem Nhật ký thực thi. */
 function thuGia() {
-  Logger.log(JSON.stringify(layGia_([{ ma: 'FPT', loai: 'cp' }, { ma: 'E1VFVN30', loai: 'cp' }, { ma: 'DCDS', loai: 'quy' }]), null, 1).slice(0, 3000));
+  const g = layGia_([{ ma: 'FPT', loai: 'cp' }, { ma: 'E1VFVN30', loai: 'cp' }, { ma: 'DCDS', loai: 'quy' }, { ma: 'VESAF', loai: 'quy' }]);
+  Object.keys(g).forEach(k => Logger.log(k + ': ' + (g[k].loi || (g[k].gia + ' đ · ' + g[k].ngay + ' · ' + g[k].nguon + ' · ' + (g[k].chuoi || []).length + ' ngày' + (g[k].ten ? ' · ' + g[k].ten : '')))));
 }
 
 function layGia_(list) {
