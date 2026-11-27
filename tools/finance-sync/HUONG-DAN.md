@@ -71,6 +71,22 @@ Muốn kiểm tra: chạy hàm `thuDoc`. Nhật ký sẽ báo số dòng, số g
 - Mục tiêu ngắn hạn và dài hạn: tự cộng từ hạng mục tích lũy trên sheet hoặc tự nhập số, tính cần để dành bao nhiêu mỗi tháng.
 - Mỗi ngày Bắp chọn một lời khuyên. Cảnh báo quan trọng được ưu tiên.
 
+## Bản 2: dashboard, sức khoẻ tài chính, đầu tư, Bắp AI
+
+**Ô A1 của tab thu chi:** gõ mốc cập nhật, ví dụ `Update gần nhất: 11h15 AM 27/11/2026`. App hiện dòng này ở đầu dashboard. Tháng đang điền dở vẫn xem được.
+
+**Bắp AI (Gemini), làm 1 lần:**
+1. Lấy API key ở **aistudio.google.com → Get API key** (dùng chung key với app Sức khoẻ cũng được).
+2. Trong Apps Script **Ngan hang Mintun**: bánh răng **Cài đặt dự án → Thuộc tính tập lệnh → Thêm thuộc tính**, tên `GEMINI_KEY`, giá trị là key. Lưu.
+3. Không cần triển khai lại. Bấm **Cập nhật** trong app là Bắp phân tích. App chỉ gửi số tổng hợp theo tháng, điểm sức khoẻ và danh mục, không gửi ghi chú.
+4. Thử nhanh: chọn hàm `thuAI` rồi Chạy, xem Nhật ký thực thi.
+
+**Giá chứng khoán:** cổ phiếu/ETF lấy giá đóng cửa từ VNDirect (dự phòng TCBS), quỹ mở lấy NAV từ Fmarket. Chạy `thuGia` để kiểm tra. Mã nào không lấy được giá thì nhập "giá tự nhập" trong app.
+
+**Khi sửa Code.gs:** Triển khai → Quản lý triển khai → bút chì → Phiên bản: Phiên bản mới → Triển khai. Link web app giữ nguyên.
+
+**Chạy mãi không cần Claude:** app nằm trên GitHub Pages, dữ liệu ở Google Sheet + Firebase, AI dùng key Gemini của bạn. Không phụ thuộc gói Claude.
+
 ## Sửa lỗi nhanh
 
 | Lỗi | Cách xử lý |

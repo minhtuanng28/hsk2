@@ -81,7 +81,8 @@
       if (hit) hit[0].cm[hit[1]].push(c.t); else if (c.t) loose.push(c);
     });
     const tx = (doc.gd || []).filter(g => g.trang_thai !== 'xoá').map(g => Object.assign({}, g, { d: new Date(g.ts) })).sort((a, b) => b.d - a.d);
-    const M = { months, cats, loose, tx, at: doc.at, file: doc.file };
+    const stamp = String((D[0] || [])[0] || '').trim();
+    const M = { months, cats, loose, tx, at: doc.at, file: doc.file, stamp: norm(stamp) === 'thang' ? '' : stamp };
     M.mon = months.map((mo, i) => monthStats(M, i));
     // tháng đang điền dở: tháng hiện tại, hoặc 1–3 tháng cuối có thu < 50% TB và dòng lương còn trống
     const L = M.mon.length - 1, now = new Date(), nowK = now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0');
@@ -279,6 +280,148 @@
   }
 
 
+
+  /* ---------- kỳ xem: tháng / quý / năm / tuỳ chọn ---------- */
+  function periodRange(M, P) {
+    const ms = M.months, n = ms.length; if (!n) return null;
+    const idx = k => ms.findIndex(m => m.k === k);
+    let a, b, label, prev = null;
+    if (P.t === 'thang') { a = b = Math.max(0, Math.min(n - 1, P.i)); label = 'Tháng ' + ms[a].label; prev = a > 0 ? [a - 1, a - 1] : null; }
+    else if (P.t === 'quy') {
+      const q = P.q, y = P.y, inQ = m => m.y === y && Math.ceil(m.m / 3) === q;
+      const ids = ms.map((m, i) => inQ(m) ? i : -1).filter(i => i >= 0); if (!ids.length) return null;
+      a = ids[0]; b = ids[ids.length - 1]; label = 'Quý ' + q + '/' + y;
+      const pq = q === 1 ? 4 : q - 1, py = q === 1 ? y - 1 : y, pids = ms.map((m, i) => m.y === py && Math.ceil(m.m / 3) === pq ? i : -1).filter(i => i >= 0);
+      prev = pids.length ? [pids[0], pids[pids.length - 1]] : null;
+    } else if (P.t === 'nam') {
+      const ids = ms.map((m, i) => m.y === P.y ? i : -1).filter(i => i >= 0); if (!ids.length) return null;
+      a = ids[0]; b = ids[ids.length - 1]; label = 'Năm ' + P.y;
+      const pids = ms.map((m, i) => m.y === P.y - 1 ? i : -1).filter(i => i >= 0); prev = pids.length ? [pids[0], pids[pids.length - 1]] : null;
+    } else {
+      a = Math.max(0, idx(P.from)); b = idx(P.to); if (b < 0) b = n - 1; if (a > b) { const t = a; a = b; b = t; }
+      label = ms[a].label + ' → ' + ms[b].label; const len = b - a + 1; prev = a - len >= 0 ? [a - len, a - 1] : null;
+    }
+    const R = range(M, a, b); R.label = label; R.partial = M.mon.slice(a, b + 1).some(x => x.partial);
+    R.prev = prev ? range(M, prev[0], prev[1]) : null;
+    return R;
+  }
+
+  /* ---------- đầu tư ---------- */
+  function depositValue(d, at) {
+    const P = Number(d.amt) || 0, r = (Number(d.rate) || 0) / 100, st = d.start ? new Date(d.start + 'T00:00:00') : null;
+    if (!st || !P) return { now: P, interest: 0, maturity: null, atMat: P, daysLeft: null };
+    at = at || new Date();
+    const mat = new Date(st); mat.setMonth(mat.getMonth() + (Number(d.term) || 0));
+    const end = d.term ? Math.min(at, mat) : at, days = Math.max(0, (end - st) / 864e5);
+    const interest = P * r * days / 365, totalDays = d.term ? (mat - st) / 864e5 : null;
+    return { now: P + interest, interest, maturity: d.term ? mat : null, atMat: totalDays ? P + P * r * totalDays / 365 : null, daysLeft: d.term ? Math.max(0, Math.ceil((mat - at) / 864e5)) : null };
+  }
+  function portfolio(inv, px) {
+    inv = inv || {}; px = px || {};
+    const H = (inv.holdings || []).map(h => {
+      const p = px[String(h.code || '').toUpperCase()] || {}, qty = Number(h.qty) || 0, cost = (Number(h.cost) || 0) * qty;
+      const price = p.gia || Number(h.manual) || Number(h.cost) || 0, value = price * qty, prevV = (p.truoc || price) * qty;
+      return Object.assign({}, h, { price, value, cost, pl: value - cost, plPct: cost ? (value - cost) / cost : 0, day: value - prevV, dayPct: prevV ? (value - prevV) / prevV : 0, series: p.chuoi || [], date: p.ngay || '', src: p.nguon || (h.manual ? 'tự nhập' : ''), name: p.ten || h.name || '', err: p.loi || '' });
+    });
+    const D = (inv.deposits || []).map(d => Object.assign({}, d, depositValue(d)));
+    const stockV = H.reduce((s, h) => s + h.value, 0), stockC = H.reduce((s, h) => s + h.cost, 0), depV = D.reduce((s, d) => s + d.now, 0), depC = D.reduce((s, d) => s + (Number(d.amt) || 0), 0);
+    const day = H.reduce((s, h) => s + h.day, 0);
+    // giá trị danh mục theo ngày (giả định nắm giữ số lượng hiện tại)
+    const dates = {}; H.forEach(h => h.series.forEach(([d]) => dates[d] = 1));
+    const hist = Object.keys(dates).sort().slice(-120).map(d => {
+      let v = 0; H.forEach(h => { const ser = h.series; let last = null; for (const x of ser) { if (x[0] <= d) last = x[1]; else break; } v += (last || h.price) * (Number(h.qty) || 0); });
+      return [d, v + depV];
+    });
+    return { H, D, stockV, stockC, depV, depC, total: stockV + depV, cost: stockC + depC, pl: stockV - stockC + (depV - depC), day, hist };
+  }
+
+  /* ---------- sức khoẻ tài chính ---------- */
+  const sc = (v, lo, hi) => Math.round(Math.max(0, Math.min(1, (v - lo) / (hi - lo))) * 100);
+  function health(M, goals, inv, px) {
+    const i = lastFull(M), a12 = k => avgBefore(M, i + 1, 12, k), a6 = k => avgBefore(M, i + 1, 6, k);
+    const inc12 = a12('inc'), sp12 = a12('spend'), inc6 = a6('inc');
+    const pf = portfolio(inv, px);
+    const sav = M.cats.filter(c => c.group === 'tichluy' && /tiet kiem|vang/.test(norm(c.name)));
+    let liquid = pf.depV; if (!liquid) { const all = range(M, 0, M.mon.length - 1); liquid = sav.reduce((s, c) => s + Math.max(0, all.cat[c.id]), 0); }
+    const efMonths = sp12 > 0 ? liquid / sp12 : 0, rate6 = inc6 > 0 ? a6('tichluy') / inc6 : 0;
+    const fixR = inc12 > 0 ? a12('codinh') / inc12 : 0, spR = inc6 > 0 ? a6('spend') / inc6 : 0;
+    let n3 = 0, p3 = 0; if (i >= 5) { n3 = range(M, i - 2, i).linhhoat / 3; p3 = range(M, i - 5, i - 3).linhhoat / 3; }
+    const flexTrend = p3 > 0 ? n3 / p3 - 1 : 0;
+    let deficit = 0; for (let j = Math.max(0, i - 11); j <= i; j++) if (M.mon[j].free < 0) deficit++;
+    const incs = []; for (let j = Math.max(0, i - 11); j <= i; j++) if (M.mon[j].inc > 0) incs.push(M.mon[j].inc);
+    const mu = incs.reduce((s, x) => s + x, 0) / (incs.length || 1), cv = incs.length > 2 ? Math.sqrt(incs.reduce((s, x) => s + (x - mu) ** 2, 0) / incs.length) / mu : 0;
+    const R12 = range(M, i - 11, i), srcN = M.cats.filter(c => c.group === 'thu' && R12.inc > 0 && R12.cat[c.id] / R12.inc >= .1).length;
+    const y = M.months[i].y, cut = M.months[i].m, ytd = yy => { let s = 0; M.months.forEach((mo, j) => { if (mo.y === yy && mo.m <= cut && !M.mon[j].partial) s += M.mon[j].inc; }); return s; };
+    const g1 = ytd(y), g0 = ytd(y - 1), growth = g0 > 0 ? g1 / g0 - 1 : 0;
+    const invCats = M.cats.filter(c => c.group === 'tichluy' && /chung khoan|dau tu|co phieu|quy/.test(norm(c.name)));
+    let invM = 0; for (let j = Math.max(0, i - 11); j <= i; j++) if (invCats.some(c => (c.vals[j] || 0) > 0)) invM++;
+    const nAssets = pf.H.length + pf.D.length, plPct = pf.stockC > 0 ? (pf.stockV - pf.stockC) / pf.stockC : null;
+    const gp = (goals || []).map(g => goalProgress(M, g)).filter(p => p.target > 0), save12 = a12('tichluy');
+    const onTrack = gp.length ? gp.filter(p => p.done || p.need == null || save12 >= p.need).length / gp.length : null;
+    const pill = (key, name, items) => { const s = Math.round(items.reduce((t, x) => t + x.s * x.w, 0) / items.reduce((t, x) => t + x.w, 0)); return { key, name, score: s, items }; };
+    const P = [
+      pill('save', 'Tích lũy & dự phòng', [
+        { n: 'Tỉ lệ tích lũy 6 tháng', v: pct(rate6), goal: '≥ 20–30%', s: sc(rate6, 0, .3), w: 1 },
+        { n: 'Quỹ dự phòng', v: efMonths.toFixed(1).replace('.', ',') + ' tháng chi tiêu', goal: '≥ 6 tháng', s: sc(efMonths, 0, 6), w: 1 }]),
+      pill('spend', 'Chi tiêu', [
+        { n: 'Chi cố định / thu nhập', v: pct(fixR), goal: '≤ 35%', s: sc(-fixR, -.6, -.2), w: 1 },
+        { n: 'Chi tiêu / thu nhập 6 tháng', v: pct(spR), goal: '≤ 70%', s: sc(-spR, -1, -.6), w: 1 },
+        { n: 'Chi linh hoạt 3 tháng gần đây', v: (flexTrend >= 0 ? '+' : '') + pct(flexTrend), goal: 'không tăng', s: sc(-flexTrend, -.5, 0), w: 1 },
+        { n: 'Tháng thâm hụt (12 tháng)', v: deficit + ' tháng', goal: '0 tháng', s: Math.max(0, 100 - deficit * 15), w: 1 }]),
+      pill('income', 'Thu nhập', [
+        { n: 'Độ ổn định', v: 'dao động ' + pct(cv), goal: '≤ 20%', s: sc(-cv, -.8, -.2), w: 1 },
+        { n: 'Nguồn thu đáng kể (≥10%)', v: srcN + ' nguồn', goal: '≥ 3 nguồn', s: srcN >= 3 ? 100 : srcN === 2 ? 70 : srcN === 1 ? 40 : 0, w: 1 },
+        { n: 'Tăng trưởng cùng kỳ', v: g0 > 0 ? (growth >= 0 ? '+' : '') + pct(growth) : 'chưa đủ dữ liệu', goal: '≥ +10%', s: g0 > 0 ? sc(growth, -.2, .1) : 50, w: 1 }]),
+      pill('invest', 'Đầu tư & mục tiêu', [
+        { n: 'Đều đặn đầu tư (12 tháng)', v: invM + '/12 tháng', goal: '≥ 10 tháng', s: sc(invM, 0, 10), w: 1 },
+        { n: 'Lãi/lỗ danh mục', v: plPct == null ? 'chưa nhập danh mục' : (plPct >= 0 ? '+' : '') + pct(plPct), goal: '≥ 0%', s: plPct == null ? 50 : sc(plPct, -.2, .2), w: 1 },
+        { n: 'Đa dạng hoá', v: nAssets + ' tài sản', goal: '≥ 4 tài sản', s: nAssets ? Math.min(100, 20 + nAssets * 20) : 30, w: 1 },
+        { n: 'Mục tiêu đúng tiến độ', v: onTrack == null ? 'chưa có mục tiêu' : pct(onTrack), goal: '100%', s: onTrack == null ? 50 : Math.round(onTrack * 100), w: 1 }])
+    ];
+    const score = Math.round(P.reduce((s, p) => s + p.score, 0) / P.length);
+    return { score, grade: grade(score), pillars: P, i, efMonths, liquid, rate6, pf };
+  }
+  function grade(s) { return s >= 80 ? 'Rất khoẻ' : s >= 65 ? 'Khoẻ' : s >= 50 ? 'Ổn' : s >= 35 ? 'Cần cải thiện' : 'Báo động'; }
+
+  /** thay đổi theo hạng mục: kỳ hiện tại so với kỳ trước (cùng độ dài) */
+  function catChanges(M, R) {
+    if (!R || !R.prev) return [];
+    return M.cats.filter(c => c.group === 'codinh' || c.group === 'linhhoat').map(c => ({ c, now: R.cat[c.id] || 0, before: R.prev.cat[c.id] || 0 })).map(x => Object.assign(x, { d: x.now - x.before }))
+      .filter(x => x.now || x.before).sort((a, b) => Math.abs(b.d) - Math.abs(a.d));
+  }
+
+  /** bản tóm tắt gửi Gemini (không gửi tên người khác, chỉ số tổng hợp) */
+  function aiBrief(M, goals, inv, px, stamp) {
+    const H = health(M, goals, inv, px), i = H.i, f = n => short(n);
+    const L = [];
+    L.push('Số liệu đến: ' + (stamp || M.months[M.mon.length - 1].label) + '. Tháng phân tích chính: ' + M.months[i].label + '.');
+    L.push('12 tháng gần nhất (tháng: thu / chi cố định / chi linh hoạt / tích lũy / còn dư):');
+    M.mon.slice(Math.max(0, i - 11), i + 1).forEach(m => L.push(`${m.label}: ${f(m.inc)} / ${f(m.codinh)} / ${f(m.linhhoat)} / ${f(m.tichluy)} / ${f(m.free)}`));
+    const R12 = range(M, i - 11, i);
+    L.push('Nguồn thu 12 tháng: ' + M.cats.filter(c => c.group === 'thu').map(c => `${c.name} ${f(R12.cat[c.id])} (${pct(R12.inc ? R12.cat[c.id] / R12.inc : 0)})`).join(', '));
+    L.push('Chi theo hạng mục 12 tháng: ' + M.cats.filter(c => c.group === 'codinh' || c.group === 'linhhoat').map(c => ({ n: c.name, v: R12.cat[c.id] })).sort((a, b) => b.v - a.v).map(x => x.n + ' ' + f(x.v)).join(', '));
+    L.push('Tích lũy 12 tháng: ' + M.cats.filter(c => c.group === 'tichluy').map(c => c.name + ' ' + f(R12.cat[c.id])).join(', '));
+    L.push(`Điểm sức khoẻ tài chính: ${H.score}/100 (${H.grade}). ` + H.pillars.map(p => `${p.name} ${p.score}: ` + p.items.map(x => `${x.n} ${x.v}`).join('; ')).join(' | '));
+    const pf = H.pf;
+    if (pf.H.length || pf.D.length) {
+      L.push(`Danh mục đầu tư: tổng ${f(pf.total)}, vốn ${f(pf.cost)}, lãi/lỗ ${f(pf.pl)}.`);
+      pf.H.forEach(h => L.push(`- ${h.code} (${h.type === 'quy' ? 'quỹ mở' : 'cổ phiếu/ETF'}): ${h.qty} đv, giá vốn ${f(h.cost / (h.qty || 1))}, giá ${f(h.price)}, lãi/lỗ ${pct(h.plPct)}`));
+      pf.D.forEach(d => L.push(`- Tiền gửi ${d.bank || ''}: ${f(d.amt)} lãi ${d.rate}%/năm kỳ hạn ${d.term || 0} tháng, lãi tạm tính ${f(d.interest)}`));
+    } else L.push('Chưa nhập danh mục đầu tư chi tiết.');
+    (goals || []).forEach(g => { const p = goalProgress(M, g); L.push(`Mục tiêu ${g.name}: ${f(p.cur)}/${f(p.target)}${g.deadline ? ' hạn ' + g.deadline : ''}${p.need != null ? ', cần ' + f(p.need) + '/tháng' : ''}`); });
+    return L.join('\n');
+  }
+
+
+  /** tóm tắt đầy đủ cho Học viện (điểm sức khoẻ, danh mục, lời khuyên) */
+  function fullSummary(M, goals, inv, px, sync, aiText) {
+    const sum = summary(M, goals, sync), H = health(M, goals, inv, px);
+    sum.health = { score: H.score, grade: H.grade, pillars: H.pillars.map(p => ({ n: p.name, s: p.score })) };
+    sum.pf = { total: H.pf.total, pl: H.pf.pl, cost: H.pf.cost, day: H.pf.day, n: H.pf.H.length + H.pf.D.length };
+    sum.stamp = M.stamp || ''; sum.ai = aiText || '';
+    return sum;
+  }
+
   /* ---------- Két sắt: mã hoá dữ liệu bằng mật khẩu 6 số (PBKDF2-SHA256 → AES-GCM 256) ---------- */
   const b64 = u => btoa(String.fromCharCode(...new Uint8Array(u)));
   const ub64 = s => Uint8Array.from(atob(s), c => c.charCodeAt(0));
@@ -314,5 +457,5 @@
   };
 
   root.MintunVault = Vault;
-  root.MintunFin = { GROUPS, parse, range, avgBefore, catAvg, lastIdx, lastFull, vnd, short, pct, num, norm, goalProgress, tips, tipOfDay, summary, defaultGroup, dayNo };
+  root.MintunFin = { GROUPS, fullSummary, parse, periodRange, portfolio, depositValue, health, grade, catChanges, aiBrief, range, avgBefore, catAvg, lastIdx, lastFull, vnd, short, pct, num, norm, goalProgress, tips, tipOfDay, summary, defaultGroup, dayNo };
 })(typeof window !== 'undefined' ? window : globalThis);

@@ -322,6 +322,8 @@ body.eco #hud-tl,body.eco #pomo,body.eco .ib,body.eco #dockbtn,body.eco #dockgri
 .bk .bkp{grid-column:1/-1;height:7px;border-radius:5px;background:var(--chip);overflow:hidden}.bk .bkp u{display:block;height:100%;background:#00a383;border-radius:5px}
 .bk .bkpin{text-align:center;padding:10px 0}.bk .bkdots{display:flex;justify-content:center;gap:12px;margin:8px 0}.bk .bkdots i{width:13px;height:13px;border-radius:50%;border:2px solid var(--mute)}.bk .bkdots i.on{background:#c9930e;border-color:#c9930e}
 .bk .bkmsg{color:#e5484d;font-size:12.5px;min-height:18px;margin:6px 0}.bk .bkpad{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;max-width:260px;margin:0 auto}.bk .bkpad button{height:52px;border-radius:16px;border:1px solid var(--line);background:var(--solid);font-size:21px;font-weight:600;cursor:pointer}
+.bk .bkhs{display:flex;gap:12px;align-items:center;margin-top:12px;border:1px solid var(--line);border-radius:14px;padding:10px 12px}.bk .bkhs svg{width:72px;height:72px;flex:none}.bk .bkhs>div{flex:1}.bk .bkhs small{font-size:11px;color:var(--mute)}.bk .bkhs b{display:block;font-size:16px;margin-bottom:4px}
+.bk .bkpl{display:grid;grid-template-columns:1fr 70px 22px;gap:6px;align-items:center;font-size:11.5px}.bk .bkpl i{height:5px;border-radius:3px;background:var(--chip);overflow:hidden}.bk .bkpl u{display:block;height:100%;border-radius:3px}.bk .bkpl em{font-style:normal;text-align:right;font-weight:700}
 .bk .bkdue{border-radius:12px;padding:9px 12px;background:rgba(229,72,77,.12);color:#e5484d;font-size:12.5px;font-weight:600;margin-top:10px}
 .fhero{border:1px solid var(--line);border-radius:16px;padding:14px;background:linear-gradient(135deg,rgba(31,158,106,.12),rgba(47,95,208,.06))}.fin .fhero h3{margin:0 0 6px;font-size:16px}.fin .fhero p{margin:0;font-size:13px;line-height:1.5}
 .fweeks{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:12px}.fweeks div{border-left:4px solid var(--k);background:var(--chip);border-radius:10px;padding:7px 9px}.fweeks b{display:block;font-size:11px;color:var(--k)}.fweeks span{font-size:12.5px;font-weight:700}
@@ -3256,7 +3258,9 @@ async function bankRefresh(){
  if(!F){toast(V('Chưa tải được bộ phân tích','Analyzer not loaded'));return}
  if(bankBusy)return;bankBusy=true;if(panelState&&panelState.kind==='bank')renderPanel();
  try{const r=await fetch(MONEY.cfg.url,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({key:MONEY.cfg.key,action:'doc',moi:true})});const j=await r.json();if(!j.ok)throw new Error(j.loi||'error');
-  const M2=F.parse(j,MONEY.map||{});MONEY.sum=F.summary(M2,MONEY.goals||[],Date.now());
+  const M2=F.parse(j,MONEY.map||{}),inv=MONEY.inv||{holdings:[],deposits:[]};
+  if((inv.holdings||[]).length){try{const g=await (await fetch(MONEY.cfg.url,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({key:MONEY.cfg.key,action:'gia',ma:inv.holdings.map(h=>({ma:h.code,loai:h.type==='quy'?'quy':'cp'}))})})).json();if(g.ok)MONEY.px=Object.assign({},MONEY.px||{},g.gia||{})}catch(e){}}
+  MONEY.sum=F.fullSummary?F.fullSummary(M2,MONEY.goals||[],inv,MONEY.px||{},Date.now(),MONEY.sum&&MONEY.sum.ai||''):F.summary(M2,MONEY.goals||[],Date.now());
   if(fb&&fb.user&&BK_K&&MBOX){const box=await window.MintunVault.seal(BK_K,MONEY,{upd:MBOX.upd||0,sync:MONEY.sum.sync});await fb.fs.setDoc(fb.fs.doc(fb.D,'users',fb.user.uid),{money:JSON.stringify(box)},{merge:true});MBOX=box}
   toast(V('Đã cập nhật sổ thu chi','Ledger updated'))}
  catch(e){toast(V('Cập nhật lỗi: ','Update failed: ')+String(e&&e.message||e).slice(0,80))}
@@ -3294,6 +3298,12 @@ function bankPanel(){if(bankLocked())return bankPinPad();const r=RM.bank,s=MONEY
  const tip=bankTipOfDay();
  h+=`<div class="bkcat">${BANK_CAT}<div><b>Bắp · ${esc(new Date().toLocaleDateString('vi-VN',{weekday:'long',day:'numeric',month:'numeric'}))}</b><p>${esc(tip||V('Bấm Cập nhật để Bắp đọc sổ nha.','Tap Update.'))}</p></div></div>`;
  if(bankDue())h+=`<div class="bkdue">${V('Đã tới mốc chốt sổ (ngày 1 và 16). Điền xong sheet thì bấm Cập nhật.','Ledger checkpoint reached (1st and 16th). Fill the sheet, then Update.')}</div>`;
+ if(s&&s.health){const hs=s.health,col=x=>x>=65?'#66800B':x>=45?'#AD8301':'#AF3029',C=2*Math.PI*30;
+  h+=`<div class="bkhs"><svg viewBox="0 0 72 72"><circle r="30" cx="36" cy="36" fill="none" stroke="var(--line)" stroke-width="7"/><circle r="30" cx="36" cy="36" fill="none" stroke="${col(hs.score)}" stroke-width="7" stroke-linecap="round" stroke-dasharray="${(hs.score/100*C).toFixed(1)} ${C.toFixed(1)}" transform="rotate(-90 36 36)"/><text x="36" y="41" text-anchor="middle" font-size="17" font-weight="800" fill="currentColor">${hs.score}</text></svg>
+   <div><small>${V('Sức khoẻ tài chính','Financial health')}</small><b>${esc(hs.grade)}</b>${(hs.pillars||[]).map(p=>`<div class="bkpl"><span>${esc(p.n)}</span><i><u style="width:${p.s}%;background:${col(p.s)}"></u></i><em>${p.s}</em></div>`).join('')}</div></div>`;
+  if(s.pf&&s.pf.n)h+=`<div class="bkr" style="margin-top:8px"><span>${V('Danh mục đầu tư','Portfolio')}</span><b>${bSh(s.pf.total)} <small style="color:${s.pf.pl>=0?'#66800B':'#AF3029'}">${s.pf.pl>=0?'+':''}${bSh(s.pf.pl)}</small></b></div>`;
+  if(s.ai)h+=`<p class="note" style="margin-top:8px"><b>Bắp AI:</b> ${esc(s.ai)}</p>`;
+  if(s.stamp)h+=`<p class="note">${esc(s.stamp)}</p>`}
  if(s){h+=`<h4>${V('Tháng','Month')} ${esc(s.month)}${s.partial?' · '+V('tháng ','month ')+esc(s.partial)+V(' đang điền',' in progress'):''}</h4>
   <div class="bkk" style="margin-top:0"><div style="--k:#338ced"><small>${V('Tiền vào','In')}</small><b>${bSh(s.inc)}</b><i>TB 6T ${bSh(s.avgInc)}</i></div><div style="--k:#e76624"><small>${V('Chi tiêu','Spent')}</small><b>${bSh(s.spend)}</b><i>TB 6T ${bSh(s.avgSpend)}</i></div>
   <div style="--k:#00a888"><small>${V('Tích lũy','Saved')}</small><b>${bSh(s.save)}</b><i>${Math.round(s.rate*100)}% ${V('thu nhập','of income')}</i></div><div style="--k:#7a8592"><small>${s.free>=0?V('Còn dư','Left'):V('Thâm hụt','Deficit')}</small><b>${bSh(s.free)}</b><i>${s.free>=0?V('chưa phân bổ','unallocated'):V('lấy tiền cũ bù','from savings')}</i></div></div>
